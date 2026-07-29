@@ -1,0 +1,66 @@
+---
+title: "HTTPS в dev"
+description: "Раздача dev-серверов по HTTPS для secure-context API — опционально и без конфигурации."
+---
+
+По умолчанию каждый dev-сервер работает по обычному HTTP — этого хватает почти всегда. Включайте
+HTTPS, когда работаете с тем, что браузер разрешает только в **secure context**: service worker /
+установка PWA, `getUserMedia` (камера/микрофон), Web Crypto, куки `SameSite=None` или
+OAuth-редирект, требующий `https://`. Это же позволяет приложению звать **локально запущенный** API
+без блокировки как mixed content.
+
+Механизм опциональный и без конфигурации: один раз генерируете сертификат, и dev-сервер сам его
+подхватывает. Нет сертификата — обычный HTTP, как раньше.
+
+## Разово: установите mkcert
+
+[mkcert](https://github.com/FiloSottile/mkcert) создаёт сертификат, которому доверяет ваша машина,
+так что браузер не показывает предупреждений.
+
+| ОС | Установка |
+|----|-----------|
+| macOS | `brew install mkcert` |
+| Windows | `choco install mkcert` (или `scoop install mkcert`) |
+| Linux | установите `certutil` (`libnss3-tools` / `nss-tools`), затем mkcert |
+
+## Включить HTTPS для части
+
+Выполните внутри той части, которую хотите раздавать по HTTPS (работает одинаково в любой части):
+
+```bash
+npm run setup-https
+```
+
+Он ставит локальный удостоверяющий центр (первый запуск может запросить права админа) и пишет
+`localhost.pem` + `localhost-key.pem` в корень проекта. Затем запустите dev-сервер как обычно — он
+обнаружит пару и раздаст по HTTPS:
+
+| Часть | Команда | URL |
+|------|---------|-----|
+| `shipwide_api` | `npm run serve` | `https://localhost:3000` |
+| `shipwide_app` | `npm run serve` | `https://localhost:8100` |
+| `shipwide_admin` | `npm run serve` | `https://localhost:5174` |
+| `shipwide_website` | `npm run serve` | `https://localhost:4321` |
+
+Сертификаты в gitignore и локальны для машины — каждый разработчик запускает `setup-https` один раз.
+Они никогда не уезжают: продакшен-TLS терминирует ваш реверс-прокси.
+
+## Весь стек по HTTPS
+
+1. `npm run setup-https` и в `shipwide_api`, и в `shipwide_app`.
+2. Задайте `VITE_BACKEND_URL=https://localhost:3000` в приложении.
+3. Запустите оба dev-сервера.
+
+Dev-CORS API уже разрешает HTTPS-origin приложения и админки, так что дополнительная настройка не
+нужна.
+
+## Десктоп (Tauri)
+
+Dev-окно Tauri грузит свой `devUrl`, который должен совпадать со схемой Vite. Используйте
+`npm run serve:desktop` (вместо `tauri dev`) — он обнаруживает пару сертификатов и наводит Tauri на
+нужный `https://` / `http://` URL автоматически.
+
+## Выключить
+
+Удалите два `.pem` из корня проекта — dev-сервер откатится на обычный HTTP при следующем старте.
+Чтобы ещё убрать доверенный CA с машины, выполните `mkcert -uninstall`.

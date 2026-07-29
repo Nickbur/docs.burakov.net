@@ -1,0 +1,70 @@
+---
+title: "Architecture"
+description: "How the four parts connect, the wire contract they share, and the building-block model."
+---
+
+Shipwide is a multi-platform starter kit: the shared foundation extracted from real
+production apps, packaged to be generic and reusable. It's a starting point you build your
+product on — not a finished app.
+
+## How the parts connect
+
+- **`shipwide_api` is the single backend.** Both the **app** and the **admin panel** talk to
+  it over HTTP; nothing else sits between them.
+- **The app** (`VITE_BACKEND_URL`) and **the admin** (`VITE_API_URL`) are separate origins —
+  the admin reads everyone's data, so it's deployed and gated separately.
+- **The app resolves its API origin once**, through `getAvailableServer()`
+  (`src/helpers/systemUtils.ts`) — the single place every request gets its base URL. It reads
+  `VITE_BACKEND_URL`, upgrades a non-local origin to HTTPS, and caches the choice for the
+  session. Set `VITE_BACKEND_FALLBACK` too and it health-checks both and fails over to the
+  backup; leave it empty and a single backend is used directly with no probe.
+- **The website** is standalone marketing; its only optional tie-in is the support form,
+  which posts to the API when you set `PUBLIC_SUPPORT_ENDPOINT` (otherwise it runs in demo mode).
+- Each client sends a `client_id` (the app defaults to `app`, the admin uses `admin`) so the
+  API can label sessions. It's a claim, never authorization.
+
+## Shared wire contract
+
+App, API and admin all agree on:
+
+- One version prefix **`/v1/...`**; **camelCase** fields; **ISO-8601 UTC** timestamps;
+  **UUIDv7** ids.
+- Errors are flat `{ "code": "snake_case_reason", "message": "for logs" }` — clients switch on
+  `code`; `message` is never shown to end users.
+- Auth is **Bearer** (`Authorization: Bearer <access>`) — no cookies, no CSRF surface.
+
+## Auth model — one model everywhere
+
+Passwordless: a six-digit email code where **sign-in and sign-up are the same act**. Google /
+Apple sign-in sit alongside. Access tokens are short (15 min) and rotate on refresh (30-day
+refresh), each bound to a `sessions` row so a revoked session dies immediately. The admin
+panel uses the same model, staff-scoped, with optional TOTP. Full detail in
+[Backend](/shipwide/backend).
+
+## Building blocks, not a finished app
+
+- **Every exported piece is a ready-to-use building block** — a handler, a composable, an
+  api-client function, a component. Something not wired up *right now* isn't dead code; it's
+  waiting for you to use it.
+- **The placeholder screens are intentional** — the app's account / sessions / settings
+  screens are stubs on purpose. The kit gives you the plumbing; you build on top.
+- **Remove code only if** it's genuinely broken (references deleted tables / env / packages),
+  a true duplicate of logic that lives elsewhere, or an architecture violation — not merely
+  because "nothing calls it yet."
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Backend" icon="server" href="/shipwide/backend">
+    Modules, auth, routes, scripts, ops.
+  </Card>
+  <Card title="App" icon="mobile" href="/shipwide/app">
+    Layout, auth, encrypted storage, native builds.
+  </Card>
+  <Card title="Admin" icon="user-shield" href="/shipwide/admin">
+    Architecture, sign-in, i18n/RTL, deploy.
+  </Card>
+  <Card title="Website" icon="globe" href="/shipwide/website">
+    Content, rebranding, i18n, fonts.
+  </Card>
+</CardGroup>

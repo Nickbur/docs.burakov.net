@@ -1,0 +1,106 @@
+---
+title: "Backend"
+description: "shipwide_api — Fastify + Drizzle + PostgreSQL + Redis. Modules, auth, routes, scripts and ops."
+---
+
+The backend half of the kit — Fastify + Drizzle + PostgreSQL + Redis. Single-app: one
+deployment serves one product. The code is the source of truth.
+
+## Module architecture
+
+Three layers per feature — keep all complete:
+
+```
+src/modules/<feature>/
+├── <feature>.service.ts   — pure business logic, no HTTP. All functions exported.
+├── <feature>.handlers.ts  — Fastify handlers. ALL exported, even if not mounted by default.
+├── <feature>.routes.ts    — THIN default wiring. Delegates to handlers, never reimplements.
+└── <feature>.schemas.ts   — Zod schemas. All exported.
+```
+
+Supporting layers: `src/config` (zod env + constants), `src/db` (Drizzle client, schema,
+migrate, seed), `src/plugins` (cors, rate-limit, auth, swagger, error handler), `src/shared`
+(errors, crypto, uuidv7, username rules, email, serializers), `src/jobs`.
+
+<Note>
+  Every exported service function, handler, schema and type is a **ready-to-use building
+  block**. An exported handler that no default route mounts is **not** dead code — wire it up
+  when you need it. Remove something only if it's broken, a true duplicate, or an architecture
+  violation.
+</Note>
+
+## Auth model — passwordless only
+
+One model: a six-digit email code. **Sign-in and sign-up are the same act** — the first valid
+code for an unknown address creates the account. No password, no register/login split, no
+reset, no separate email verification.
+
+- `POST /v1/auth/code` — emails a code. **204 for any address** (not an enumeration oracle).
+  10-min life, 5 attempts, single use, hashed at rest, constant-time compare.
+- `POST /v1/auth/code/verify` — **sign in** · **create-and-sign-in** (username auto-generated
+  from the email) · **`deletion_pending`** (soft-deleted → `restoreToken`).
+- Google / Apple sign-in available alongside.
+- Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
+  `sessions` row; live-session check cached in Redis with a DB fallback.
+
+<Warning>
+  Don't reintroduce a password flow — passwordless is a deliberate product decision.
+</Warning>
+
+**Test / review accounts:** `TEST_ACCOUNTS=email:6digits,…` — a fixed code for App Store /
+Google Play review and CI. Verifies only against a pre-seeded `is_test` account, so a fixed
+code never creates one. Every fixed-code sign-in is logged at `warn`.
+
+## What's in the box
+
+| Area | Routes |
+|------|--------|
+| Auth | `POST /v1/auth/code` · `/code/verify` · `/restore` · `/token/refresh` · `/sign-out` · `/google` · `/apple/*` |
+| Account | `GET/PATCH /v1/account/me` · `/username/check` · `/username` · `/email` · `/email/confirm` · `DELETE /v1/account` |
+| Sessions | `GET /v1/sessions` · `/current` · `DELETE /v1/sessions` · `/:id` · `PUT /:id` |
+| Upload | `POST /v1/upload` + chunked upload start/append/status/complete/abort · file delete/serve |
+| Push | `POST /v1/push/test` (verify delivery to the signed-in user's own devices) |
+| Support | `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `/:id/reply` |
+| Subscriptions | `POST /v1/subscriptions/webhook` · `GET /me` · `POST /sync` · `GET /premium-example` — off until configured |
+| Gamification | `GET /v1/gamification/stats` — points awarded server-side only |
+| Admin | auth methods · users (role, delete/restore/purge, sessions, entitlements, gamification) · sessions · tickets · uploads · push · audit · ops |
+| Health | `GET /v1/health` · `/version` · `/app-version` (client version policy) |
+
+Interactive reference at `/docs` (Swagger UI). Other mechanics: **username** (auto from email,
+live availability, 30-day change cooldown), **email change** by code, **account deletion** that
+feels instant (sessions killed now) with physical purge after `PURGE_AFTER_DAYS`.
+
+## App version policy & upgrade gate
+
+The app publishes a version policy the client honours — set it in **Admin → Settings**, no deploy:
+
+- **Latest version** → a soft "update available" dot when the installed build is older. A nudge.
+- **Min. supported version** → a **hard gate**: a build below it is blocked. Enforced two ways —
+  the app checks `/v1/app-version` on launch + hourly, **and** every request sends
+  `X-App-Version` so the API answers **`426 Upgrade Required`** for a stale build. Recovery
+  endpoints (`/health`, `/version`, `/app-version`) are never gated.
+
+Leave a field empty to disable that half. Separately, `API_DEPRECATION` / `API_SUNSET` add the
+RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
+
+## Scripts
+
+| Script | What it does |
+|--------|--------------|
+| `switch_to_dev` / `switch_to_prod` | copy `env/env.dev\|prod` → `.env` |
+| `dev` / `build` / `start` | tsx watch / compile / run compiled |
+| `db:generate` / `db:migrate` / `db:studio` | migration from schema / apply / Drizzle Studio |
+| `seed` | test/review accounts |
+| `purge` | physically delete accounts past the soft-delete window (daily cron) |
+| `gamification:reset` | zero every user's score for the new period (cron) |
+| `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
+| `test` | Vitest |
+
+## Operational notes
+
+- The container boots **`migrate → seed → serve`**.
+- Run **purge** daily on cron; in the prod image use the compiled path: `node dist/jobs/purge.js`.
+- Email: point `SMTP_*` at a transactional provider (Postmark works). Set **SPF, DKIM, DMARC** —
+  with passwordless auth, a code in spam means nobody can sign in.
+- CORS: `CORS_ORIGINS` = exact web origin(s); native schemes and the admin's `ADMIN_URL` are
+  always allowed.

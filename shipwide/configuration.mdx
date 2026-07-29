@@ -1,0 +1,52 @@
+---
+title: "Configuration"
+description: "Where every environment variable lives, and the cross-part wiring that must agree."
+---
+
+Each part's **full** env table is in its own doc — this page is the map and the gotchas.
+
+## Conventions
+
+- Each part ships two templates, `env/env.dev` and `env/env.prod`; a script copies the chosen
+  one to `.env`: `npm run switch_to_dev` / `switch_to_prod`. `.env` is gitignored.
+- **`VITE_*` (app, admin) and `PUBLIC_*` (website) are inlined into the built bundle** — so
+  **switch to prod before building**, and **never put a secret in one** (it ships to every
+  visitor). They're for public values: URLs, public keys, feature flags.
+- **Real secrets live only in the API's server environment** (`env.prod` on the server) — filled
+  into the `CHANGE-ME` placeholders, never committed.
+
+## Where each part's variables live
+
+| Part | Prefix | Full table |
+|------|--------|-----------|
+| `shipwide_api` | (server env) | [Backend](/shipwide/backend) + `src/config/env.ts` (validated source of truth) |
+| `shipwide_app` | `VITE_` | [App](/shipwide/app) + `src/vite-env.d.ts` |
+| `shipwide_admin` | `VITE_` | [Admin](/shipwide/admin) |
+| `shipwide_website` | `PUBLIC_` | [Website](/shipwide/website) |
+
+## The minimum to boot the backend
+
+`DATABASE_URL`, `REDIS_URL`, `JWT_SECRET` (≥32 chars). Everything else (Google/Apple, SMTP,
+RevenueCat, OneSignal, admin) is optional and inert until configured — an unconfigured
+integration returns a clear error rather than crashing at boot.
+
+## Cross-part wiring that must agree
+
+- **App/website → API base**: `VITE_BACKEND_URL` (app), `PUBLIC_SUPPORT_ENDPOINT` (website
+  support form). Empty backend URL on the website = support form runs in demo mode.
+- **Admin origin ↔ API CORS**: set `ADMIN_URL` in the API env to the admin's origin, or CORS
+  refuses it (looks like an auth bug). Native schemes are always allowed.
+- **`CORS_ORIGINS`** (API) must list each web origin (app web build, website) exactly.
+- **`client_id`**: app `VITE_CLIENT_ID` (default `app`), admin `admin` — just a session label.
+
+## Gotchas
+
+<Warning>
+  **OneSignal:** the app only knows `VITE_ONESIGNAL_APP_ID` (public). The REST **API key is a
+  server secret** in `shipwide_api` — never move it into a `VITE_*`.
+</Warning>
+
+- **`VITE_APP_NAME`** namespaces *all* local data on the app (encrypted storage, settings, cache,
+  deep-link scheme). Changing it after launch orphans users' existing local data.
+- **Add any new `VITE_*` to `src/vite-env.d.ts`** — `vite/client`'s index signature means a typo
+  is not a type error, it just reads `undefined`.

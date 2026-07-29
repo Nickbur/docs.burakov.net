@@ -1,0 +1,110 @@
+---
+title: "Page progress bar"
+description: "A thin, bottom-of-screen page-loading bar — automatic on every route, opt-in for data pages."
+---
+
+Shipwide ships a thin, bottom-of-screen progress bar that visualizes page loading — the kind you
+see on YouTube or GitHub. It works out of the box on every page and platform (Web/PWA, iOS,
+Android, Desktop) with **zero per-page setup** for the common case, and offers a simple opt-in for
+pages that load their own data.
+
+## How it works
+
+A **single shared bar instance** — there is never more than one bar on screen:
+
+1. **Automatic (router-driven).** The router shows the bar during navigation, most visibly on the
+   web where visiting a route downloads its lazy-loaded chunk. Every page gets this for free.
+2. **Opt-in (page-driven).** A page that fetches its own data drives the same bar through the
+   fetch, so the bar reflects the real load.
+
+The two are **mutually exclusive per route**, which guarantees a single, non-conflicting bar.
+
+- **Trickle:** `start()` shows the bar and lets it creep toward 90% on its own; `done()` finishes
+  it to 100% and hides it. It looks alive even when the duration is unknown.
+- **Show-delay (200 ms):** navigations faster than this never flash the bar. On native builds route
+  chunks are bundled, so navigation is instant and the router bar simply doesn't appear.
+- **Accessibility:** honors `prefers-reduced-motion` — the slide transition and stream dots switch off.
+
+## Quick start: nothing to do
+
+For a normal page that just renders (no data fetch on entry), **do nothing** — the router-driven
+bar already covers it. This is every static page in the kit.
+
+## Adding a data-loading page
+
+<Steps>
+  <Step title="Mark the route">
+    In `src/router/routes.ts`, so the router hands the bar to the page instead of completing it on arrival:
+
+    ```ts
+    {
+      path: '/reports',
+      component: () => import('@/views/pages/reports/Reports.vue'),
+      meta: { requiresAuth: true, managesProgress: true },
+    }
+    ```
+  </Step>
+  <Step title="Drive it — always complete in a finally">
+    ```ts
+    import { useRouteProgress } from '@/composables/useRouteProgress';
+    const pageProgress = useRouteProgress();
+
+    onMounted(async () => {
+      pageProgress.start();          // show + auto-trickle
+      try {
+        await loadReports();
+      } finally {
+        pageProgress.done();         // ALWAYS complete, even on error
+      }
+    });
+    ```
+  </Step>
+  <Step title="(Optional) multi-step">
+    Call `set()` between stages for a determinate bar (this stops the auto-trickle):
+
+    ```ts
+    pageProgress.start();
+    await loadHeader();  pageProgress.set(0.4);
+    await loadRows();    pageProgress.set(0.8);
+    await loadFooter();  pageProgress.done();
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Canonical examples in the kit: `Subscription.vue`, `Support.vue`, `Onboarding.vue` are wired
+  exactly this way — copy from them.
+</Tip>
+
+## API — `useRouteProgress()`
+
+The global bar, used 99% of the time. All calls target the same shared instance.
+
+| Member | Description |
+|--------|-------------|
+| `progress` | `Ref<number>` `0..1`; `1` = idle/hidden. |
+| `start()` | Show the bar and let it trickle forward automatically until `done()`. |
+| `set(p, b?)` | Jump to an explicit value; **stops** the trickle (you drive it now). |
+| `done()` | Complete to 100% and hide. Safe to call multiple times. |
+
+For a bar that must be separate from the global one (e.g. inside a modal), use the low-level keyed
+`useSharedPageProgress(key)`, or `useCombinedPageProgress(...keys)` to wait on several sources.
+
+## Best practices
+
+- **Always `done()` in a `finally`.** If the fetch throws and you don't complete, the bar stays visible.
+- **Don't mark static pages `managesProgress`.** Set the flag but never call `done()` and the bar hangs.
+- **Prefer the global bar.** Two global-position bars would overlap.
+- **`start()` vs `set()`:** `start()` = "I don't know how long, show activity"; `set()` = "I know the real percentage".
+
+## Customization
+
+All in `useRouteProgress.ts` and `styles/components/page-progress-bar.scss`:
+
+| Want to change | Where |
+|----------------|-------|
+| Color | `--progress-background` in the scss |
+| Thickness | `height` in the scss (default `3px`) |
+| Vertical position | `bottom` in the scss (swap for `top` to pin under the status bar) |
+| Show-delay | `SHOW_DELAY_MS` in the composable (default `200`) |
+| Trickle speed / ceiling | `TRICKLE_INTERVAL_MS` (260) / `TRICKLE_CEILING` (0.9) |

@@ -1,0 +1,97 @@
+---
+title: "Приложение"
+description: "shipwide_app — Vue 3 + Ionic + Capacitor + Tauri. Одна кодовая база для веба, мобильных и десктопа."
+---
+
+Клиентская половина набора — Vue 3 + Ionic + Capacitor (iOS/Android) + Tauri (десктоп), одна
+кодовая база для веба, мобильных и десктопа. Источник истины — код.
+
+## Строительные блоки и намеренные заглушки
+
+Каждый экспортируемый composable, компонент, api-функция и тип — **готовый строительный блок**.
+Экраны аккаунта / сессий / настроек (`views/pages/account/*`, `_settings/AccountSettings.vue`) —
+**намеренные стабы**: экраны продукта вы строите поверх; набор поставляет проводку за ними.
+
+## Раскладка
+
+```
+src/
+├── composables/use<Feature>.ts   — переиспользуемая логика (upload, onesignal, brute-force, sentry…)
+├── views/
+│   ├── pages/_base/              — Login, Logout, Splash
+│   ├── pages/onboarding/         — онбординг, включая выбор username
+│   ├── pages/account/, _settings/— экраны-заглушки для доработки вами
+│   └── components/               — готовые компоненты
+├── services/
+│   ├── networkRequests/api/      — api-клиент: core/ + auth, account, sessions, upload
+│   └── localStorage/             — слой шифрованного хранилища + помощники по доменам
+├── stores/                       — Pinia (accountStore, systemStore, settingsStore…)
+├── helpers/security/             — управление токенами, JWT-утилиты
+├── router/, i18n/, types/, styles/
+```
+
+<Warning>
+  **Правило слоёв:** страницы/composables зовут **api-слой**; они никогда не строят URL запросов и
+  не переписывают запросы. (Переписывание запроса когда-то увело чанковую загрузку на устаревший префикс.)
+</Warning>
+
+## Хранилище сессии — шифрованное, неэкспортируемый ключ
+
+`services/localStorage/core/secure_storage.ts` — прозрачный слой **AES-GCM поверх IndexedDB**:
+
+- Ключ — **случайный, неэкспортируемый `CryptoKey`** — не выводится из отпечатка устройства, не
+  хранится как сырые байты. WebCrypto (с аутентификацией); никакого `crypto-js`.
+- **Канарейка** ловит рассинхрон ключа/данных и один раз чисто сбрасывает хранилище (сброс = выход,
+  ведь здесь живёт только сессия).
+- Работает в веб-сборке и в WebView Capacitor / Tauri.
+
+Это держит токены вне открытого текста на диске. Это **не** защита от XSS — реальная привязка к
+устройству это `sessions.device_id` на API.
+
+## Быстрый старт
+
+```bash
+npm install
+npm run serve          # Ionic dev-сервер (веб)
+npm run serve:desktop  # Tauri desktop dev (авто-подстройка под HTTP/HTTPS Vite)
+npm run build          # vue-tsc + vite build
+npm run build:native   # build + cap sync (iOS / Android)
+```
+
+Скопируйте `env/.env.example` → `.env` и укажите `VITE_BACKEND_URL` на бэкенд. Любую новую
+переменную добавляйте и в `src/vite-env.d.ts` — у `vite/client` индексная сигнатура, поэтому опечатка
+не ошибка типа, а просто `undefined`.
+
+<Warning>
+  **Отладка WebView выключена по умолчанию.** Релизные сборки из `npm run build:native` **не**
+  инспектируются через `chrome://inspect` / Safari Web Inspector. Для отладки на устройстве соберите
+  через `npm run build:native:debug` — и никогда не публикуйте такую сборку.
+</Warning>
+
+## Окружение
+
+| Переменная | Что делает |
+|-----------|-----------|
+| `VITE_BACKEND_URL` | Базовый URL API. **Обязательна.** Не-локальный origin авто-апгрейдится до HTTPS. |
+| `VITE_BACKEND_FALLBACK` | Опциональный резервный API; при задании проверяется и включается при падении основного. |
+| `VITE_APP_NAME` | Префикс-неймспейс для **всего локального** (хранилище, настройки, кэш, deep-link). Смена осиротит существующие локальные данные. |
+| `VITE_APP_VERSION` | Отправляется в Sentry как релиз. |
+| `VITE_CLIENT_ID` | Метка сессии для API (по умолчанию `app`). |
+| `VITE_GOOGLE_CLIENT_ID` | Вход через Google. Опционально. |
+| `VITE_SENTRY_DSN` | Трекинг ошибок. Опционально — пусто отключает Sentry. |
+| `VITE_ONESIGNAL_APP_ID` | Push. Опционально. (REST-**ключ** — серверный секрет, никогда не `VITE_*`.) |
+| `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Ссылки в сторы по платформам. |
+
+## Нативные сборки (Capacitor 8 / Tauri)
+
+| Цель | Требование |
+|------|-----------|
+| Обе | Node **22+** |
+| iOS | Xcode **26+**, target 15. Cap 8 генерирует **SPM**-проект (без CocoaPods `.xcworkspace`). |
+| Android | SDK **36** (min 24), JDK **21**, Gradle 8.14.3 / AGP 8.13. |
+| Десктоп | Rust stable; `src-tauri/icons/` генерируется из `public/pwa-512.png` через `npx tauri icon`. |
+
+Для iOS/Android используйте `npm run build:native` — он ставит `SHIPWIDE_NATIVE=1`, чтобы
+предсжатые ассеты `.gz`/`.br` не попадали в нативные WebView (там мёртвый груз, и они ломают
+упаковщик Android). Обычный `npm run build` оставляет их для веб/PWA. Проекты `ios/` и `android/`
+**закоммичены**.

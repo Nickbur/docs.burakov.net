@@ -1,0 +1,85 @@
+---
+title: "Website"
+description: "shipwide_website — a fast, static Astro marketing site with a hand-written SCSS design system."
+---
+
+The marketing site for a single app: a fast, custom-designed site built with **Astro** (static
+output), a **hand-written SCSS design system** (no UI framework), **astro-i18next** for
+translations, and **Iconify** for icons. No account portal — this is the public marketing site.
+Everything ships as placeholder content: drop in your brand, copy and assets and go.
+
+## Quick start
+
+```bash
+npm install
+npm run switch_to_dev   # env/env.dev → .env
+npm run serve           # http://localhost:4321
+# production:
+npm run switch_to_prod  # env/env.prod → .env (set your domain first)
+npm run build           # astro-i18next generate + astro check + astro build → static output
+```
+
+## Where things live
+
+| Path | What it is |
+|------|------------|
+| `src/data/site.ts` | Brand name, email, social links, navigation. **Edit this first.** |
+| `src/data/product.ts` | The product: download channels, pricing plans, features, screenshots. |
+| `src/screenshots/*.png` | Home hero gallery — name them `01-…`, `02-…` for order. Delete the demo files. |
+| `src/data/legal.ts` | Structure of the Privacy / Terms documents. |
+| `public/locales/en/*.json` | All human-readable copy, one file per namespace. |
+| `src/content/blog/*.md` · `changelog/*.md` | Blog posts / release notes — one Markdown file each. |
+| `src/styles/` | The SCSS design system (tokens, base, components, utilities). |
+
+<Note>
+  **Rule of thumb:** language-neutral facts (URLs, prices, handles) live in `src/data/`; anything
+  a reader sees as words lives in `public/locales/`.
+</Note>
+
+## Rebranding (the short path)
+
+<Steps>
+  <Step title="Brand & product data">
+    Edit `src/data/site.ts` (`name`, emails, socials — the brand name in header/footer/titles is
+    driven entirely by `site.name`) and `src/data/product.ts` (download links, prices, features).
+  </Step>
+  <Step title="Assets">
+    Replace `public/favicon.svg` (optionally add `public/og-default.png`); drop your app
+    screenshots into `src/screenshots/` (`01-…`, `02-…`) and delete the demo images.
+  </Step>
+  <Step title="Domain & copy">
+    Set `PUBLIC_SITE_URL` in `env/env.prod`; swap the copy in `public/locales/en/*.json`.
+  </Step>
+</Steps>
+
+## Design tokens & fonts
+
+Colours, fonts, radii, spacing, elevation and motion are CSS custom properties in
+`src/styles/_variables.scss`, with light and dark themes:
+
+- **Accent** is a dusty-indigo ramp (`--accent-50…900`) — change `--accent-400` (dark) /
+  `--accent-600` (light) and it propagates everywhere.
+- **Neutrals** are warm greys, not pure zinc.
+- **Fonts are a pairing:** a display face — **Golos Text**, self-hosted via
+  `@fontsource/golos-text` — on headings (`--font-display`), and the system stack for body/UI.
+  Any OFL font with Cyrillic works.
+
+## Languages
+
+Ships **English + Russian**; the switcher is in the header. Adding a third language is five steps
+(codes in `astro-i18next.config.ts`, `astro.config.mjs`, `Header.astro` + `nav.json`, copy
+`public/locales/en/` → `<code>/` and translate, then `npm run build`). English-only: drop `"ru"`
+from the three lists and delete `public/locales/ru/`.
+
+<Warning>
+  `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit the
+  English source; the Russian tree regenerates.
+</Warning>
+
+## Content, support form, monitoring
+
+- **Blog & changelog** are Astro content collections — add a Markdown file, it appears.
+- **Support form:** set `PUBLIC_SUPPORT_ENDPOINT` to your backend's endpoint to make it post.
+  Empty (default) = demo mode ("email us" notice), no posting.
+- **Sentry** loads only when `PUBLIC_SENTRY_DSN` is set, cookies are accepted, and it's not
+  `localhost`.

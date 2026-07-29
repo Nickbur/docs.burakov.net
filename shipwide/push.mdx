@@ -1,0 +1,94 @@
+---
+title: "Push & VoIP"
+description: "How push works across the kit, high-priority pushes, and the path to full VoIP calling."
+---
+
+How push works across the kit, how to send high-priority pushes, and the exact path to add full
+VoIP calling on top.
+
+## How standard push works
+
+One identity, both directions:
+
+- **App → OneSignal:** on login the app calls `OneSignal.login(user.id)`, setting the OneSignal
+  **External ID** to the account's immutable UUID. It fans out to all of the user's devices.
+- **Server → OneSignal:** `sendPushToUser(userId, …)` targets `include_aliases: { external_id:
+  [userId] }`. `userId` *is* the alias.
+- **Delivery truth:** OneSignal returns `200` with a `recipients` count even for an empty
+  audience, so the helpers treat delivery as `recipients >= 1` (the `delivered` flag the admin
+  panel and the "test notification" button surface).
+
+<Note>
+  Everything is a no-op that returns `false` when `ONESIGNAL_APP_ID` / `ONESIGNAL_API_KEY` are
+  unset — the kit ships push **off** by default.
+</Note>
+
+`push.service.ts` is the whole server surface: `sendPushToUser`, `sendPushBroadcast`, and
+`sendVoipPushToUser` (a building block — see below).
+
+## High-priority / time-sensitive pushes
+
+Pass `PushOptions` to raise priority and shorten the delivery window:
+
+```ts
+await sendPushToUser(userId, 'Ride arriving', 'Your driver is 2 min away', { rideId }, {
+  priority: 10,          // FCM high priority: wakes the screen, bypasses battery saver
+  ttl: 60,               // stop trying after 60s — a stale alert is worse than none
+  contentAvailable: true // wake a backgrounded app to handle it
+});
+```
+
+| Option | OneSignal field | Notes |
+|---|---|---|
+| `priority` | `priority` | 1–10; `10` = high (Android/FCM). |
+| `ttl` | `ttl` | Seconds; keep small for time-sensitive. |
+| `contentAvailable` | `content_available` | Wakes a backgrounded app; required for data-only handling. |
+| `apnsPushTypeOverride` | `apns_push_type_override` | `'alert' \| 'background' \| 'voip'`. |
+| `collapseId` | `collapse_id` | A newer push replaces an undelivered one with the same id. |
+
+This is enough for high-priority alerts on both platforms **without any native work**. It is *not*
+enough for a native call UI — that is VoIP.
+
+## VoIP-ready server layer (included)
+
+`sendVoipPushToUser(userId, data, options?)` sends a `voip` APNs push through a **separate**
+OneSignal app (`ONESIGNAL_VOIP_APP_ID` / `ONESIGNAL_VOIP_API_KEY`), with call-appropriate defaults
+(`apns_push_type_override: 'voip'`, `content_available: true`, `ttl: 30`). It targets the same
+External ID alias, so identity needs no extra work.
+
+<Warning>
+  Why a **separate** OneSignal app: iOS VoIP requires a *VoIP-type* APNs certificate, and a
+  OneSignal app holds one APNs certificate. So calls need their own OneSignal app with the VoIP
+  cert; standard notifications keep using `ONESIGNAL_APP_ID`. This is only the **server half** —
+  on its own the push arrives, but nothing rings the device.
+</Warning>
+
+## Adding full native VoIP
+
+What's left is native and platform-specific — the exact shape of a working implementation:
+
+- **iOS — PushKit + CallKit.** A Capacitor plugin registers `PKPushRegistry` and, on an incoming
+  VoIP push, reports a call to CallKit (`CXProvider`). iOS 13+ **requires** reporting a call for
+  every VoIP push. The app's `.entitlements` needs the `voip` background mode.
+- **Android — high-priority FCM + ConnectionService.** The call push must be **data-only** (no
+  `notification`/`headings`/`contents`), or FCM routes it to the tray and your service never runs.
+  `sendVoipPushToUser` intentionally sends `data` only. A custom `FirebaseMessagingService` starts
+  a foreground service and posts a full-screen-intent notification.
+- **Web.** No true VoIP — a "call" is a high-priority notification via the OneSignal service worker.
+
+### Checklist to go live with calls
+
+<Steps>
+  <Step title="OneSignal VoIP app">
+    Create a second OneSignal app for VoIP; upload the Apple **VoIP** APNs certificate to it. Set
+    `ONESIGNAL_VOIP_APP_ID` / `ONESIGNAL_VOIP_API_KEY`.
+  </Step>
+  <Step title="Native pieces">
+    Add the iOS PushKit/CallKit plugin + `voip` entitlement; register the VoIP token on login. Add
+    the Android data-only `FirebaseMessagingService` + `ConnectionService` + full-screen intent.
+  </Step>
+  <Step title="Signal & test">
+    Call `sendVoipPushToUser(...)` from your call-signaling code. Test on **physical devices** —
+    CallKit and VoIP pushes do not work in the iOS Simulator.
+  </Step>
+</Steps>

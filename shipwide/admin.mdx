@@ -1,0 +1,99 @@
+---
+title: "Admin"
+description: "shipwide_admin — a Vue 3 SPA operator panel on its own origin, gated behind a network boundary."
+---
+
+The operator admin panel — a Vue 3 SPA on its own origin, run against `shipwide_api`. It reads
+every account's data and every support thread, so serve it **separately** from the app and put
+it behind a network gate (Cloudflare Access, IP allowlist). Single-app: no product registry or
+multi-app machinery — the surface is what a single-app operator needs (accounts, sessions,
+support tickets, uploads, push, audit, ops).
+
+## Design & i18n
+
+- **Design system is the Shipwide site's** — same tokens/buttons/badges/`<dialog>`/header/footer,
+  plus an `Admin` mark beside the brand so it's never mistaken for the public site.
+- **Multilingual (en + ru to start).** Language + theme switch from the header and sign-in
+  screen, both remembered.
+- **Add a language** by dropping `<code>.json` into `src/i18n/locales/` + one line in
+  `src/i18n/locales.ts` (`rtl: true` for RTL). Bundles load on demand.
+- **RTL wired** — a `rtl` flag drives `dir`; CSS uses flexbox + logical flow.
+
+## Quick start
+
+```bash
+npm install
+npm run switch_to_dev        # env/env.dev → .env (points at localhost:3000)
+npm run serve                # http://localhost:5174
+```
+
+Vite inlines `VITE_*` at build time → switch to prod **before** building. The API must allow
+this origin: `ADMIN_URL` in the API env is added to CORS, so `ADMIN_URL` and the port here must
+agree.
+
+## Signing in
+
+The sign-in screen offers only what `GET /v1/admin/auth/methods` reports:
+
+1. **Root credentials** — `ADMIN_LOGIN` + `ADMIN_PASSWORD` (API env). Independent of mail —
+   works when everything else is broken.
+2. **Emailed one-time code** — staff-only passwordless route at `/v1/admin/auth/code`.
+
+If TOTP is enrolled, neither route returns a session directly — both hand back a 5-minute
+challenge; a recovery code works in the same box.
+
+## Architecture
+
+```
+src/
+├── config/          # everything product-specific, driven by VITE_*
+├── i18n/            # vue-i18n setup + en/ru locale files
+├── core/            # the reusable half — assumes nothing about the product
+│   ├── api/ auth/ storage/ ui/ composables/
+├── modules/         # every API call, in one file
+├── stores/          # auth + chrome (Pinia)
+├── components/      # header, footer, dialog, toasts, table pieces
+├── views/           # one per screen
+└── styles/          # the design system, ported from the site
+```
+
+<Note>
+  **`core/` never names the product** — so you rebrand by editing `.env`, not code. Anything that
+  would be a hardcoded string lives in `src/config/`.
+</Note>
+
+### Pieces that are easy to get wrong
+
+- **One axios instance, not a factory.** Refresh is single-flight — two concurrent 401s don't
+  each spend a rotating token.
+- **Refresh happens before expiry**, not only on a 401 — admin sessions are short.
+- **Tokens in an encrypted IndexedDB store** (non-exportable `CryptoKey` + canary). Keeps
+  credentials out of plaintext at rest; not an XSS defence.
+- **The router gate is not a security boundary** — the API authorises every request and re-reads
+  the role each time.
+- **TypeScript pinned to 6.x, not 7.x** — TS 7 drops the JS `tsc` that `vue-tsc` 3 patches, so
+  `build` throws under TS 7.
+
+## Environment
+
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `VITE_API_URL` | `http://localhost:3000` | The API this panel administers |
+| `VITE_CLIENT_ID` | `admin` | Storage namespace / session label |
+| `VITE_BRAND` | `Shipwide` | Header and footer — set to your product name |
+| `VITE_SITE_URL` | — | Linked from the footer; empty hides the link |
+
+## Deployment
+
+```bash
+docker build \
+  --build-arg VITE_API_URL=https://api.example.com \
+  --build-arg VITE_SITE_URL=https://example.com \
+  --build-arg VITE_BRAND="Your product" -t shipwide-admin .
+docker run -p 8080:80 shipwide-admin
+```
+
+nginx serves the SPA, falls through to `index.html`, caches hashed assets forever / `index.html`
+never, sends `noindex` + `DENY`. Outside the image: (1) point `ADMIN_URL` in the API env at this
+origin or CORS refuses it; (2) put a **network gate** in front — nothing here needs to be
+publicly reachable.

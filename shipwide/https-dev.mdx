@@ -1,0 +1,65 @@
+---
+title: "HTTPS in dev"
+description: "Serve the dev servers over HTTPS for secure-context APIs — opt-in and zero-config."
+---
+
+By default every dev server runs over plain HTTP, which is all you need most of the time. Turn
+on HTTPS when you're working on something the browser only allows in a **secure context** —
+service workers / PWA installation, `getUserMedia` (camera/mic), Web Crypto, `SameSite=None`
+cookies, or an OAuth redirect that insists on `https://`. It's also what lets the app call a
+**locally-run** API without the browser blocking it as mixed content.
+
+The mechanism is opt-in and zero-config: generate a certificate once and the dev server picks it
+up automatically. No certificate — plain HTTP, exactly as before.
+
+## One-time: install mkcert
+
+[mkcert](https://github.com/FiloSottile/mkcert) creates a certificate your machine trusts, so
+the browser shows no warning.
+
+| OS | Install |
+|----|---------|
+| macOS | `brew install mkcert` |
+| Windows | `choco install mkcert` (or `scoop install mkcert`) |
+| Linux | install `certutil` (`libnss3-tools` / `nss-tools`), then mkcert |
+
+## Enable HTTPS for a part
+
+Run this inside whichever part you want served over HTTPS (works the same in every part):
+
+```bash
+npm run setup-https
+```
+
+It installs a local certificate authority (the first run may prompt for admin rights) and writes
+`localhost.pem` + `localhost-key.pem` into the project root. Then start the dev server as usual —
+it detects the pair and serves over HTTPS:
+
+| Part | Command | URL |
+|------|---------|-----|
+| `shipwide_api` | `npm run serve` | `https://localhost:3000` |
+| `shipwide_app` | `npm run serve` | `https://localhost:8100` |
+| `shipwide_admin` | `npm run serve` | `https://localhost:5174` |
+| `shipwide_website` | `npm run serve` | `https://localhost:4321` |
+
+The certificates are gitignored and machine-local — each developer runs `setup-https` once. They
+never ship: production TLS is terminated by your reverse proxy.
+
+## Running the whole stack over HTTPS
+
+1. `npm run setup-https` in both `shipwide_api` and `shipwide_app`.
+2. Set the app's `VITE_BACKEND_URL=https://localhost:3000`.
+3. Start both dev servers.
+
+The API's dev CORS already allows the HTTPS app and admin origins, so no extra config is needed.
+
+## Desktop (Tauri)
+
+Tauri's dev window loads its own `devUrl`, which must match the scheme Vite serves. Use
+`npm run serve:desktop` (instead of `tauri dev`) and it detects the certificate pair and points
+Tauri at the right `https://` / `http://` URL automatically.
+
+## Turn it off
+
+Delete the two `.pem` files from the project root — the dev server falls back to plain HTTP on
+the next start. To also remove the trusted CA, run `mkcert -uninstall`.

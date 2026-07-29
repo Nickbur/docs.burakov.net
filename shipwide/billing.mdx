@@ -1,0 +1,104 @@
+---
+title: "Billing & subscriptions"
+description: "Subscriptions and in-app purchases with RevenueCat + Paddle — env-only activation, mock mode."
+---
+
+How billing works across the kit, how you turn it on with **env only** (no code changes), and
+how to test it with **no RevenueCat account at all**.
+
+## Architecture — the server is the source of truth
+
+Two layers, one identity (`app_user_id` = the account's immutable `user.id`, the same id push uses):
+
+- **On device** — the RevenueCat SDK makes purchases and gives an instant, offline copy of the
+  user's entitlements (fast UI gating).
+- **On the server** — RevenueCat posts a **webhook** for every purchase/renewal/cancellation. The
+  API stores the result in the `entitlements` table. This is what server-enforced features trust;
+  the device's copy is only ever a cache of it.
+
+```
+ device SDK ─purchase─▶ App Store / Play / Stripe ─▶ RevenueCat ─webhook─▶ API `entitlements`
+     │                                                                          │
+     └── instant UI gating (store.isPro)      server-enforced gating (requireEntitlement) ─┘
+```
+
+<Note>
+  Everything is **off until configured**, exactly like OneSignal/Sentry: no keys ⇒ the webhook
+  401s, the paywall hides, `requireEntitlement` denies. The kit builds and runs unchanged.
+</Note>
+
+Subscriptions **and** lifetime (non-consumable) unlocks both collapse to one `entitlements` row
+per `(user, entitlement)`. "Active" is derived, never stored. There is **no consumable/credit
+ledger** — deliberately out of scope.
+
+## Activation — env only
+
+**Client (`shipwide_app`, `.env`)**
+
+| Var | Meaning |
+|---|---|
+| `VITE_REVENUECAT_IOS_KEY` | Apple public SDK key |
+| `VITE_REVENUECAT_ANDROID_KEY` | Google public SDK key |
+| `VITE_REVENUECAT_WEB_KEY` | RevenueCat Web public key — used on web **and** Tauri desktop |
+| `VITE_REVENUECAT_ENTITLEMENT_ID` | The entitlement premium features gate on (default `pro`) |
+| `VITE_REVENUECAT_MOCK` | `true` = fake billing provider (see Mock mode) |
+
+**API (`shipwide_api`, `.env`)**
+
+| Var | Meaning |
+|---|---|
+| `REVENUECAT_WEBHOOK_AUTH` | Shared secret the webhook must present in its `Authorization` header |
+| `REVENUECAT_SECRET_KEY` | *(optional)* enables `POST /sync` and promo grants |
+
+## Dashboard checklist (the part env can't do)
+
+Store IAP inherently needs dashboard setup. The kit's promise is **no code changes**, not "no setup".
+
+<Steps>
+  <Step title="RevenueCat">
+    Create a project; add an app per platform you sell on (Apple, Google, Web). Copy each public
+    SDK key → the three `VITE_` vars; a secret key → `REVENUECAT_SECRET_KEY`.
+  </Step>
+  <Step title="Stores">
+    App Store Connect + Google Play Console — create the subscription + one-time products,
+    agreements/banking, a subscription group, license testers.
+  </Step>
+  <Step title="Web billing engine">
+    For the web/Tauri build, connect a RevenueCat web engine: **Web Billing** (Stripe-backed) or
+    **Paddle** (a Merchant of Record handling global sales tax/VAT, available where Stripe isn't).
+    The client (`@revenuecat/purchases-js`) is the same either way — the engine is a dashboard choice.
+  </Step>
+  <Step title="Entitlement, offering, webhook">
+    Create an entitlement `pro` and an offering; attach the store products. Set the webhook URL to
+    `https://<your-api>/v1/subscriptions/webhook` with the Authorization value equal to
+    `REVENUECAT_WEBHOOK_AUTH`.
+  </Step>
+</Steps>
+
+## Server & client surface
+
+| Route | Auth | Use |
+|---|---|---|
+| `POST /v1/subscriptions/webhook` | RevenueCat shared secret | Ingest events → upsert `entitlements` (idempotent, order-safe) |
+| `GET /v1/subscriptions/me` | user session | The caller's entitlements (server truth) |
+| `POST /v1/subscriptions/sync` | user session | Pull authoritative state from RevenueCat now |
+| `GET /v1/subscriptions/premium-example` | session + `requireEntitlement('pro')` | Reference for server-side gating |
+
+On the client: `useRevenueCat()` (one wrapper, three providers — native / web-Tauri / mock),
+`useSubscriptionStore()` (`isPro`, `has(id)`), and `RevenueCatInitializer.vue` (configures on boot,
+mirrors auth). Reference UI: `Subscription.vue` (paywall + manage) and `PremiumExample.vue`.
+
+## Mock mode — develop with no account
+
+<Tip>
+  Set `VITE_REVENUECAT_MOCK=true` (also implicit in dev with no key). The mock provider serves fake
+  offerings and simulates purchase/restore, so the entire paywall → unlock → manage flow works
+  locally before any store/RevenueCat account exists. Nothing reaches a real store.
+</Tip>
+
+## Compliance
+
+Apple and Google require digital subscriptions to be sold through their IAP inside their apps.
+Web billing (Web Billing/Stripe or Paddle) is for the **web** build only; the iOS/Android builds
+must not surface a web purchase path — RevenueCat routes per platform automatically. On Capacitor 8
+the native SDK is pinned to `@revenuecat/purchases-capacitor` 13.x.

@@ -1,0 +1,117 @@
+---
+title: "FAQ и устранение неполадок"
+description: "Быстрые решения того, на чём спотыкаются — чаще всего это переменная окружения."
+---
+
+Большинство «сломалось» оказывается незаданной или несогласованной переменной окружения — см.
+[Конфигурацию](/ru/shipwide/configuration).
+
+## Вход / почта
+
+<AccordionGroup>
+  <Accordion title="Код не приходит (dev)">
+    В dev `EMAIL_DEV_MODE=true` печатает 6-значный код в **консоль API** — письмом он не шлётся.
+    Читайте там.
+  </Accordion>
+  <Accordion title="Код не приходит (prod)">
+    Задайте `SMTP_*` и настройте **SPF, DKIM, DMARC** на домене-отправителе — без них коды попадают в
+    спам, и никто не войдёт.
+  </Accordion>
+  <Accordion title="Нет поля пароля">
+    Так задумано: авторизация — шестизначный email-код; вход и регистрация это один акт. Не добавляйте
+    парольный поток.
+  </Accordion>
+</AccordionGroup>
+
+## Админ-панель
+
+<AccordionGroup>
+  <Accordion title="«Сломано» / ошибка CORS / вход не завершается">
+    Задайте `ADMIN_URL` в env **API** на точный origin админки — API добавит его в CORS автоматически,
+    а рассинхрон читается как баг авторизации.
+  </Accordion>
+  <Accordion title="Не удаётся войти">
+    Используйте `ADMIN_LOGIN` / `ADMIN_PASSWORD` из env API или email-код сотрудника (печатается в
+    консоль API в dev). Первый админ приходит из `ADMIN_EMAILS`.
+  </Accordion>
+  <Accordion title="Сборка падает с ошибкой TypeScript">
+    Админка зафиксирована на **TypeScript 6** (`vue-tsc` пока не поддерживает нативный компилятор TS 7)
+    — не поднимайте до 7.
+  </Accordion>
+</AccordionGroup>
+
+## Приложение ↔ API
+
+<AccordionGroup>
+  <Accordion title="Приложение не достучится до API">
+    Проверьте `VITE_BACKEND_URL`. Не на localhost клиент **требует HTTPS**; и `CORS_ORIGINS` API
+    должен перечислять веб-origin приложения.
+  </Accordion>
+  <Accordion title="Поменял VITE_* / PUBLIC_*, но ничего не изменилось">
+    Они **вшиваются на этапе сборки** — пересоберите (для Docker-образа админки — с правильным
+    `--build-arg`).
+  </Accordion>
+  <Accordion title="Переменная читается как undefined">
+    Объявите каждую `VITE_*` в `src/vite-env.d.ts` — опечатка это не ошибка типа, а просто undefined.
+  </Accordion>
+  <Accordion title="Пользователи потеряли локальные данные после обновления">
+    Вы сменили `VITE_APP_NAME` — он неймспейсит всё локальное хранилище/настройки/кэш. Задайте один
+    раз, до запуска.
+  </Accordion>
+</AccordionGroup>
+
+## Push и подписки
+
+<AccordionGroup>
+  <Accordion title="Push не доставляется">
+    Он **выключен до настройки** — задайте `ONESIGNAL_APP_ID` + `ONESIGNAL_API_KEY` (сервер). См.
+    [Push и VoIP](/ru/shipwide/push).
+  </Accordion>
+  <Accordion title="Пейволл скрыт / вебхук отдаёт 401">
+    Биллинг **выключен до настройки** — задайте ключи RevenueCat (клиент) + `REVENUECAT_WEBHOOK_AUTH`
+    (сервер). Для разработки без аккаунта поставьте `VITE_REVENUECAT_MOCK=true`. См.
+    [Биллинг](/ru/shipwide/billing).
+  </Accordion>
+</AccordionGroup>
+
+## Нативные сборки
+
+<AccordionGroup>
+  <Accordion title="Сборка Android падает">
+    Используйте **JDK 21** (встроенный JBR Android Studio), SDK 36 и `npm run build:native` (он
+    исключает предсжатые веб-ассеты, ломающие упаковщик Android).
+  </Accordion>
+  <Accordion title="В проекте iOS нет .xcworkspace">
+    Верно — Capacitor 8 генерирует **SPM**-проект. Нужен Xcode 26+.
+  </Accordion>
+  <Accordion title="VoIP-звонки не звонят в симуляторе">
+    И не могут — тестируйте CallKit / VoIP-пуши на **физическом устройстве**.
+  </Accordion>
+  <Accordion title="Не удаётся инспектировать WebView на устройстве">
+    Так задумано — отладка WebView **выключена по умолчанию**, чтобы релизные сборки не
+    инспектировались. Соберите этот установочник через `npm run build:native:debug`, и никогда его не публикуйте.
+  </Accordion>
+</AccordionGroup>
+
+## Прочее
+
+<AccordionGroup>
+  <Accordion title="Форма поддержки не отправляет">
+    Задайте `PUBLIC_SUPPORT_ENDPOINT` на эндпоинт поддержки вашего API; пусто (по умолчанию) =
+    demo-режим (уведомление «напишите нам»), без постинга.
+  </Accordion>
+  <Accordion title="Правил русскую страницу, и она откатилась">
+    `src/pages/ru/` **генерируется** `astro-i18next generate` при сборке и в gitignore — правьте
+    английский источник; RU регенерируется.
+  </Accordion>
+  <Accordion title="npm audit сообщает об уязвимостях">
+    Все advisory идут от **`@ionic/cli`** — dev-инструмента за `npm run serve`. Их **нет** в
+    поставляемом приложении: `npm audit --omit=dev` показывает **0**. Ничего оттуда не попадает в
+    сборку iOS / Android / веб / десктоп.
+  </Accordion>
+  <Accordion title="Это мёртвый код?">
+    Нет — набор поставляет **строительные блоки**. Экспортированный хендлер/composable/компонент без
+    текущего потребителя намеренен; подключите его, когда понадобится. Удаляйте код только если он
+    реально сломан, это настоящий дубликат или нарушение архитектуры.
+  </Accordion>
+</AccordionGroup>

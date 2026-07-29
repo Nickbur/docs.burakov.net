@@ -1,0 +1,98 @@
+---
+title: "Gamification"
+description: "Activity points + an optional reward loop — config-driven, env-gated, live with demo actions."
+---
+
+An engagement engine you wire to your own product's actions: users earn points for doing things,
+the app shows a stats screen, and — if you switch it on — crossing a threshold each period grants
+a free subscription period. It ships **live with two demo actions**, and it's **config-driven**:
+you add your own actions in one place, no engine code to touch.
+
+## The mechanic
+
+- **Award** — call `awardPoints(userId, actionKey)` from wherever an action worth points happens.
+  The engine keeps a running **total** plus a **per-action breakdown**.
+- **Reward (optional, off by default)** — the first time a user's total crosses
+  `GAMIFICATION_REWARD_THRESHOLD` in a period, they're granted a free subscription period (a local
+  `promotional` entitlement — no store, no RevenueCat call). Skipped for a user who already holds
+  the entitlement (it's a win-back, never overwrites an active paid subscription).
+- **Reset** — a cron job zeroes everyone at the start of each period. Set the period to `none` to
+  accumulate for life.
+
+<Warning>
+  Points are **only ever awarded server-side** from trusted call sites — a client can't be trusted
+  to score itself, so there is deliberately no "add points" endpoint.
+</Warning>
+
+## The rule table — the one place you edit
+
+`shipwide_api/src/config/constants.ts` → `GAMIFICATION_ACTIONS`:
+
+```ts
+export const GAMIFICATION_ACTIONS = {
+  daily_login:       { points: 10, labelKey: 'gamification.actions.daily_login' },
+  profile_completed: { points: 50, labelKey: 'gamification.actions.profile_completed' },
+} as const satisfies Record<string, { points: number; labelKey: string }>;
+```
+
+To add your own action:
+
+<Steps>
+  <Step title="Add a row">
+    e.g. `invited_friend: { points: 25, labelKey: 'gamification.actions.invited_friend' }`.
+  </Step>
+  <Step title="Award it">
+    Call `awardPoints(userId, 'invited_friend')` from the server code where it happens (`awardOnce`
+    for one-time milestones, `awardDailyThrottled` for once-a-day actions).
+  </Step>
+  <Step title="Label it">
+    Add the label to the app's `i18n/locales/*/gamification.json` under `actions`.
+  </Step>
+</Steps>
+
+The stats screen renders the new row automatically — the table is built from the rule table the
+server sends, not hardcoded in the app.
+
+## Demo actions (delete or keep)
+
+| Action | Points | Where it's awarded |
+|---|---|---|
+| `daily_login` | 10 | `auth.service` — once per UTC day, on real sign-ins (refresh doesn't count) |
+| `profile_completed` | 50 | `account.service` — once, when the user first has both a name and an avatar |
+
+Both are **best-effort**: a gamification failure can never break sign-in or a profile update.
+
+## Activation — env only
+
+The engine and stats screen are **always on**. The **reward loop is off by default** — it hands
+out real premium access, so you opt in. `shipwide_api/.env`:
+
+| Var | Default | Meaning |
+|---|---|---|
+| `GAMIFICATION_RESET_PERIOD` | `monthly` | `monthly` · `weekly` · `none` |
+| `GAMIFICATION_REWARD_ENABLED` | `false` | Turn on the threshold → free-period reward |
+| `GAMIFICATION_REWARD_THRESHOLD` | `1000` | Points needed to earn the reward |
+| `GAMIFICATION_REWARD_DAYS` | `30` | Days of free access the reward grants |
+| `GAMIFICATION_REWARD_ENTITLEMENT_ID` | *(empty)* | Which entitlement to grant; empty = `pro` |
+
+The reward reuses the same `entitlements` table your subscriptions use ([Billing](/shipwide/billing)),
+so a granted free period reads as an ordinary active entitlement everywhere. It works with **no
+RevenueCat account** — the grant is local.
+
+## Scheduling the reset
+
+Run it from cron at the start of each period — a **no-op when `none`**, so the same cron entry can
+stay in place while you turn resets off:
+
+```bash
+# monthly — prod image: node dist/jobs/gamification-reset.js
+0 0 1 * *   npm --prefix /app run gamification:reset
+```
+
+## Server surface
+
+`awardPoints` (atomic total + breakdown, fires the reward hook on threshold crossing), `awardOnce`,
+`awardDailyThrottled`, `GET /v1/gamification/stats`, and the reset job. Operators can view a user's
+score and apply a manual `adjust` (`{ delta }`, audited, never triggers the reward hook) on the
+admin user-detail page. On the client, `views/pages/account/Stats.vue` renders the total (count-up),
+a progress bar to the threshold (only when the reward is enabled), and the breakdown table.

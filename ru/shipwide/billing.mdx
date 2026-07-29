@@ -1,0 +1,103 @@
+---
+title: "Биллинг и подписки"
+description: "Подписки и встроенные покупки на RevenueCat + Paddle — активация только через env, mock-режим."
+---
+
+Как биллинг работает во всём наборе, как включить его **только через env** (без правок кода) и как
+протестировать **вообще без аккаунта RevenueCat**.
+
+## Архитектура — источник истины на сервере
+
+Два слоя, одна идентичность (`app_user_id` = неизменный `user.id` аккаунта, тот же id, что у push):
+
+- **На устройстве** — SDK RevenueCat совершает покупки и даёт мгновенную оффлайн-копию entitlement'ов
+  пользователя (быстрое гейтирование UI).
+- **На сервере** — RevenueCat постит **вебхук** на каждую покупку/продление/отмену. API сохраняет
+  результат в таблицу `entitlements`. Именно ей доверяют серверные фичи; копия на устройстве — лишь кэш.
+
+```
+ SDK устройства ─покупка─▶ App Store / Play / Stripe ─▶ RevenueCat ─вебхук─▶ API `entitlements`
+     │                                                                          │
+     └── мгновенное гейтирование UI (store.isPro)   серверное гейтирование (requireEntitlement) ─┘
+```
+
+<Note>
+  Всё **выключено до настройки**, ровно как OneSignal/Sentry: нет ключей ⇒ вебхук отдаёт 401, пейволл
+  скрыт, `requireEntitlement` отказывает. Набор собирается и работает без изменений.
+</Note>
+
+Подписки **и** пожизненные (non-consumable) разблокировки схлопываются в одну строку `entitlements`
+на `(user, entitlement)`. «Активно» вычисляется, не хранится. **Реестра consumable/кредитов нет** —
+намеренно вне области.
+
+## Активация — только env
+
+**Клиент (`shipwide_app`, `.env`)**
+
+| Переменная | Значение |
+|---|---|
+| `VITE_REVENUECAT_IOS_KEY` | Публичный SDK-ключ Apple |
+| `VITE_REVENUECAT_ANDROID_KEY` | Публичный SDK-ключ Google |
+| `VITE_REVENUECAT_WEB_KEY` | Публичный Web-ключ RevenueCat — для веба **и** десктопа Tauri |
+| `VITE_REVENUECAT_ENTITLEMENT_ID` | Entitlement, которым гейтятся премиум-фичи (по умолчанию `pro`) |
+| `VITE_REVENUECAT_MOCK` | `true` = фейковый провайдер биллинга (см. Mock-режим) |
+
+**API (`shipwide_api`, `.env`)**
+
+| Переменная | Значение |
+|---|---|
+| `REVENUECAT_WEBHOOK_AUTH` | Общий секрет, который вебхук предъявляет в заголовке `Authorization` |
+| `REVENUECAT_SECRET_KEY` | *(опционально)* включает `POST /sync` и промо-гранты |
+
+## Чеклист в дашбордах (что env не сделает)
+
+Стор-IAP по своей природе требует настройки в дашбордах. Обещание набора — **без правок кода**, а не
+«без настройки».
+
+<Steps>
+  <Step title="RevenueCat">
+    Создайте проект; добавьте приложение под каждую платформу продаж (Apple, Google, Web). Скопируйте
+    каждый публичный SDK-ключ → три `VITE_`; секретный ключ → `REVENUECAT_SECRET_KEY`.
+  </Step>
+  <Step title="Сторы">
+    App Store Connect + Google Play Console — создайте продукты подписки + разовые, соглашения/банкинг,
+    группу подписок, тест-аккаунты лицензий.
+  </Step>
+  <Step title="Веб-движок биллинга">
+    Для веб/Tauri подключите веб-движок RevenueCat: **Web Billing** (на Stripe) или **Paddle**
+    (Merchant of Record, берёт на себя мировой налог/НДС и доступен там, где нет Stripe). Клиент
+    (`@revenuecat/purchases-js`) одинаков — движок это выбор в дашборде.
+  </Step>
+  <Step title="Entitlement, offering, вебхук">
+    Создайте entitlement `pro` и offering; привяжите стор-продукты. Задайте URL вебхука на
+    `https://<your-api>/v1/subscriptions/webhook` со значением Authorization, равным `REVENUECAT_WEBHOOK_AUTH`.
+  </Step>
+</Steps>
+
+## Серверная и клиентская поверхность
+
+| Маршрут | Auth | Назначение |
+|---|---|---|
+| `POST /v1/subscriptions/webhook` | общий секрет RevenueCat | Приём событий → upsert `entitlements` (идемпотентно, устойчиво к порядку) |
+| `GET /v1/subscriptions/me` | сессия | Entitlement'ы вызывающего (серверная истина) |
+| `POST /v1/subscriptions/sync` | сессия | Подтянуть авторитетное состояние из RevenueCat сейчас |
+| `GET /v1/subscriptions/premium-example` | сессия + `requireEntitlement('pro')` | Пример серверного гейтирования |
+
+На клиенте: `useRevenueCat()` (одна обёртка, три провайдера — native / web-Tauri / mock),
+`useSubscriptionStore()` (`isPro`, `has(id)`) и `RevenueCatInitializer.vue` (настройка при старте,
+зеркалит авторизацию). Референс-UI: `Subscription.vue` (пейволл + управление) и `PremiumExample.vue`.
+
+## Mock-режим — разработка без аккаунта
+
+<Tip>
+  Задайте `VITE_REVENUECAT_MOCK=true` (также неявно в dev без ключа). Mock-провайдер отдаёт фейковые
+  offerings и симулирует покупку/восстановление, так что весь поток пейволл → разблокировка →
+  управление работает локально до появления любого стор/RevenueCat-аккаунта. Ничего не уходит в реальный стор.
+</Tip>
+
+## Комплаенс
+
+Apple и Google требуют продавать цифровые подписки через их IAP внутри их приложений. Веб-биллинг
+(Web Billing/Stripe или Paddle) — только для **веб**-сборки; сборки iOS/Android не должны показывать
+веб-путь покупки — RevenueCat маршрутизирует по платформам автоматически. На Capacitor 8 нативный SDK
+зафиксирован на `@revenuecat/purchases-capacitor` 13.x.

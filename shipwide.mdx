@@ -1,0 +1,48 @@
+---
+title: "Shipwide"
+description: "A multi-platform starter kit — build your product on one shared foundation for web, iOS, Android and desktop."
+---
+
+Shipwide is a **multi-platform starter kit**: the shared foundation extracted from real
+production apps, packaged to be generic and reusable. It's a starting point you build your
+product on — not a finished app. **Four parts, one product:**
+
+| Part | What it is | Stack |
+|------|------------|-------|
+| `shipwide_api` | The backend — accounts, auth, sessions, subscriptions, support, uploads, admin API | Fastify + Drizzle + PostgreSQL + Redis (Node 22+) |
+| `shipwide_app` | The client — one codebase for web, iOS, Android, desktop | Vue 3 + Ionic + Capacitor + Tauri |
+| `shipwide_admin` | The operator panel — run one deployment | Vue 3 SPA |
+| `shipwide_website` | The marketing site | Astro (static) + SCSS |
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/shipwide/quickstart">
+    Run all four parts locally in a few minutes.
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/shipwide/architecture">
+    How the parts connect and the wire contract they share.
+  </Card>
+  <Card title="Configuration" icon="gear" href="/shipwide/configuration">
+    Every environment variable, per part, and the wiring that must agree.
+  </Card>
+  <Card title="Customization" icon="paintbrush" href="/shipwide/customization">
+    Rebrand and theme the app, admin and site.
+  </Card>
+</CardGroup>
+
+## Building blocks, not a finished app
+
+This is the mental model that makes the kit make sense:
+
+- **Every exported piece is a ready-to-use building block** — a backend handler, a Vue
+  composable, an api-client function, a component. Something not wired to a route or page
+  *right now* isn't dead code; it's waiting for you to use it.
+- **The placeholder screens are intentional** — the app's account / sessions / settings
+  screens are stubs on purpose. The kit gives you the plumbing; you build your product
+  screens on top.
+- **Remove code only if** it's genuinely broken, a true duplicate of logic that lives
+  elsewhere, or an architecture violation — not merely because "nothing calls it yet."
+
+<Note>
+  The code is always the source of truth. These docs describe the kit that ships; when a
+  detail matters, the implementation is the final word.
+</Note>

@@ -1,0 +1,99 @@
+---
+title: "App"
+description: "shipwide_app — Vue 3 + Ionic + Capacitor + Tauri. One codebase for web, mobile and desktop."
+---
+
+The client half of the kit — Vue 3 + Ionic + Capacitor (iOS/Android) + Tauri (desktop), one
+codebase across web, mobile and desktop. The code is the source of truth.
+
+## Building blocks & intentional stubs
+
+Every exported composable, component, api function and type is a **ready-to-use building
+block** — wire it up when you need it. The account / sessions / settings screens
+(`views/pages/account/*`, `_settings/AccountSettings.vue`) are **placeholder stubs on
+purpose**: you build your product screens on top; the kit supplies the plumbing behind them.
+
+## Layout
+
+```
+src/
+├── composables/use<Feature>.ts   — reusable logic (upload, onesignal, brute-force, sentry…)
+├── views/
+│   ├── pages/_base/              — Login, Logout, Splash
+│   ├── pages/onboarding/         — onboarding incl. username selection
+│   ├── pages/account/, _settings/— placeholder screens for you to build out
+│   └── components/               — ready-made components
+├── services/
+│   ├── networkRequests/api/      — api client: core/ + auth, account, sessions, upload
+│   └── localStorage/             — encrypted storage layer + per-domain helpers
+├── stores/                       — Pinia (accountStore, systemStore, settingsStore…)
+├── helpers/security/             — token management, JWT utils
+├── router/, i18n/, types/, styles/
+```
+
+<Warning>
+  **Layering rule:** pages/composables call the **api layer**; they never build request URLs or
+  reimplement requests. (Reimplementing a request is what once let the chunk upload drift onto a
+  stale prefix.)
+</Warning>
+
+## Session storage — encrypted, non-exportable key
+
+`services/localStorage/core/secure_storage.ts` is a transparent **AES-GCM over IndexedDB** layer:
+
+- The key is a **random, non-exportable `CryptoKey`** — never derived from a device fingerprint,
+  never stored as raw bytes. WebCrypto (authenticated); no `crypto-js`.
+- A **canary** detects a key/data mismatch and resets the store once, cleanly (a reset = a
+  sign-out, since only the session lives here).
+- Works in the web build and in the Capacitor / Tauri WebViews.
+
+It keeps tokens out of plaintext at rest. It is **not** an XSS defence — real device-binding is
+the API's `sessions.device_id`.
+
+## Quick start
+
+```bash
+npm install
+npm run serve          # Ionic dev server (web)
+npm run serve:desktop  # Tauri desktop dev (auto-matches Vite's HTTP/HTTPS scheme)
+npm run build          # vue-tsc + vite build
+npm run build:native   # build + cap sync (iOS / Android)
+```
+
+Copy `env/.env.example` → `.env` and point `VITE_BACKEND_URL` at the backend. Add any new var
+to `src/vite-env.d.ts` too — `vite/client` has an index signature, so a typo is not a type
+error, it just reads `undefined`.
+
+<Warning>
+  **WebView debugging is off by default.** Release builds from `npm run build:native` are **not**
+  inspectable via `chrome://inspect` / Safari Web Inspector. To debug on a device build with
+  `npm run build:native:debug` — and never ship a build made that way.
+</Warning>
+
+## Environment
+
+| Variable | What it does |
+|----------|--------------|
+| `VITE_BACKEND_URL` | API base. **Required.** A non-local origin is auto-upgraded to HTTPS. |
+| `VITE_BACKEND_FALLBACK` | Optional backup API; health-checked and failed over to when set. |
+| `VITE_APP_NAME` | Namespace prefix for **everything local** (storage, settings, cache, deep-link scheme). Changing it orphans existing local data. |
+| `VITE_APP_VERSION` | Reported to Sentry as the release. |
+| `VITE_CLIENT_ID` | Session label sent to the API (defaults to `app`). |
+| `VITE_GOOGLE_CLIENT_ID` | Google sign-in. Optional. |
+| `VITE_SENTRY_DSN` | Error tracking. Optional — empty disables Sentry. |
+| `VITE_ONESIGNAL_APP_ID` | Push. Optional. (The REST **key** is a server secret — never a `VITE_*`.) |
+| `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Store links, per platform. |
+
+## Native builds (Capacitor 8 / Tauri)
+
+| Target | Requirement |
+|--------|-------------|
+| Both | Node **22+** |
+| iOS | Xcode **26+**, target 15. Cap 8 generates an **SPM**-based project (no CocoaPods `.xcworkspace`). |
+| Android | SDK **36** (min 24), JDK **21**, Gradle 8.14.3 / AGP 8.13. |
+| Desktop | Rust stable; `src-tauri/icons/` generated from `public/pwa-512.png` via `npx tauri icon`. |
+
+Use `npm run build:native` for iOS/Android — it sets `SHIPWIDE_NATIVE=1` so the pre-compressed
+`.gz`/`.br` web assets aren't bundled into the native WebViews (dead weight there, and they break
+Android's asset packager). Plain `npm run build` keeps them for the web/PWA deploy. The `ios/`
+and `android/` projects are **committed**.

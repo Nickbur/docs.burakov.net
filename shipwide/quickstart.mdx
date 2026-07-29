@@ -1,0 +1,103 @@
+---
+title: "Quickstart"
+description: "Get all four parts of Shipwide running locally."
+---
+
+New to the layout? Read [Architecture](/shipwide/architecture) first. Every environment
+variable is collected in [Configuration](/shipwide/configuration).
+
+## Prerequisites
+
+- **Node 22+** and npm.
+- **Docker** (for local PostgreSQL + Redis) — or your own Postgres 17 / Redis 7.
+- Native builds only: **Xcode 26+** (iOS), **Android SDK 36 + JDK 21** (Android), **Rust
+  stable** (desktop). Not needed to run the web app.
+
+## 1. Backend (`shipwide_api`) — start here
+
+<Steps>
+  <Step title="Install and configure">
+    ```bash
+    cd shipwide_api
+    npm install
+    npm run switch_to_dev          # env/env.dev → .env (local defaults, ready as-is)
+    ```
+  </Step>
+  <Step title="Start Postgres + Redis">
+    ```bash
+    docker compose up -d db redis  # or: docker compose up --build for everything
+    ```
+  </Step>
+  <Step title="Migrate, seed, serve">
+    ```bash
+    npm run db:migrate
+    npm run seed                   # test/review accounts (no-op if TEST_ACCOUNTS is empty)
+    npm run serve                  # http://localhost:3000
+    ```
+  </Step>
+</Steps>
+
+Check it: `curl http://localhost:3000/v1/health`. Interactive API reference:
+`http://localhost:3000/docs`. The minimum env is `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`
+(≥32 chars) — `env.dev` sets them.
+
+<Note>
+  **Email in dev:** `EMAIL_DEV_MODE=true` prints one-time sign-in codes to the API console
+  instead of emailing them, so the passwordless flow works with no SMTP.
+</Note>
+
+## 2. App (`shipwide_app`)
+
+```bash
+cd shipwide_app
+npm install
+cp env/.env.example .env           # then set VITE_BACKEND_URL=http://localhost:3000
+npm run serve                      # Ionic dev server (web) — http://localhost:8100
+```
+
+Sign in: enter any email → read the 6-digit code from the **API console** → you're in (an
+unknown address is created on the spot). Native: `npm run build:native`, then open the
+`ios/` / `android/` project — see [App](/shipwide/app).
+
+## 3. Admin panel (`shipwide_admin`)
+
+```bash
+cd shipwide_admin
+npm install
+npm run switch_to_dev              # env/env.dev → .env (points at :3000)
+npm run serve                      # http://localhost:5174
+```
+
+Sign in with the `ADMIN_LOGIN` / `ADMIN_PASSWORD` you set in the **API's** env, or an emailed
+staff code (printed to the API console). The first admin is bootstrapped from `ADMIN_EMAILS`.
+The API allows this origin automatically via `ADMIN_URL` — keep `ADMIN_URL` and the port in
+agreement.
+
+## 4. Website (`shipwide_website`)
+
+```bash
+cd shipwide_website
+npm install
+npm run switch_to_dev              # env/env.dev → .env
+npm run serve                      # http://localhost:4321
+```
+
+It's all placeholder content — see [Website](/shipwide/website) and
+[Customization](/shipwide/customization) to make it yours.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/shipwide/configuration">
+    Every environment variable, per part.
+  </Card>
+  <Card title="HTTPS in dev" icon="lock" href="/shipwide/https-dev">
+    Serve the dev servers over HTTPS when you need a secure context.
+  </Card>
+  <Card title="Billing" icon="credit-card" href="/shipwide/billing">
+    Turn on subscriptions and in-app purchases.
+  </Card>
+  <Card title="Deployment" icon="cloud-arrow-up" href="/shipwide/deployment">
+    Ship each part to production.
+  </Card>
+</CardGroup>

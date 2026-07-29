@@ -1,0 +1,60 @@
+---
+title: "Customization"
+description: "Rebrand and theme the app, admin and site — design tokens, fonts and languages."
+---
+
+The kit ships as placeholder content over a shared design system (dusty-indigo accent, warm
+neutrals, **Golos Text** display font). Here's how to make each part yours.
+
+## Website — the fastest wins
+
+<Steps>
+  <Step title="Brand & product">
+    `src/data/site.ts` — brand `name` (drives header/footer/titles everywhere), emails, socials,
+    nav. `src/data/product.ts` — download links, pricing plans, features, screenshots.
+  </Step>
+  <Step title="Assets & domain">
+    Replace `public/favicon.svg` (optionally add `public/og-default.png`); set `PUBLIC_SITE_URL`
+    in `env/env.prod`.
+  </Step>
+  <Step title="Copy & screenshots">
+    Swap the copy in `public/locales/en/*.json`; drop your store screenshots into
+    `src/screenshots/` named `01-…`, `02-…` (they render as a fan of phone mockups); delete the
+    demo images.
+  </Step>
+</Steps>
+
+## Design tokens & fonts (site + admin share the system)
+
+- Tokens are CSS custom properties in `src/styles/_variables.scss` (light + dark themes).
+- **Accent**: a dusty-indigo ramp `--accent-50…900`. Change `--accent-400` (dark) /
+  `--accent-600` (light) and it propagates everywhere.
+- **Neutrals** are warm greys, not pure zinc.
+- **Display font**: Golos Text, self-hosted via `@fontsource/golos-text` (imported in
+  `Base.astro`), on headings (`--font-display`); system stack for body. To swap:
+  `npm install @fontsource/<name>`, change the two imports, point `--font-display` at it. Any OFL
+  font (with Cyrillic if you keep RU) works.
+
+## App
+
+- **`VITE_APP_NAME`** — your product's local namespace (storage, settings, cache, deep-link
+  scheme). Set it **before** launch; changing it later orphans existing local data.
+- **Icons**: desktop `src-tauri/icons/` is generated from `public/pwa-512.png` via
+  `npx tauri icon`; replace the PWA/app icons in `public/`.
+- **Links**: `VITE_STORE_*_URL` (About "Update" button, per platform), `VITE_LEGAL_PRIVACY_URL`
+  / `VITE_LEGAL_TERMS_URL`.
+- **Screens**: the account / sessions / settings screens are stubs — build your product screens
+  on the composables and api layer the kit provides.
+
+## Admin
+
+- `VITE_BRAND` (header/footer name) and `VITE_SITE_URL` (footer link). `core/` never names the
+  product — you rebrand by editing `.env`, not code.
+- Shares the site's design tokens; recolour via the same accent ramp.
+
+## Languages
+
+- **Website**: 5-step add (see [Website](/shipwide/website) → Languages). Ships en + ru.
+- **App / admin**: drop `<code>.json` into `src/i18n/locales/` and register it in
+  `src/i18n/locales.ts` (mark `rtl: true` for right-to-left). Bundles load on demand.
+  English-only? Remove the `ru` entry and its JSON.

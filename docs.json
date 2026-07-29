@@ -1,0 +1,126 @@
+{
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
+    "name": "Burakov",
+    "description": "Documentation for Burakov apps and developer packages.",
+    "colors": {
+        "primary": "#4b4f95",
+        "light": "#7178bd",
+        "dark": "#3d417e"
+    },
+    "favicon": "/favicon.svg",
+    "fonts": {
+        "heading": {
+            "family": "Golos Text"
+        }
+    },
+    "navigation": {
+        "languages": [
+            {
+                "language": "en",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "shipwide",
+                            "shipwide/quickstart",
+                            "shipwide/architecture"
+                        ]
+                    },
+                    {
+                        "group": "The four parts",
+                        "pages": [
+                            "shipwide/backend",
+                            "shipwide/app",
+                            "shipwide/admin",
+                            "shipwide/website"
+                        ]
+                    },
+                    {
+                        "group": "Guides",
+                        "pages": [
+                            "shipwide/configuration",
+                            "shipwide/customization",
+                            "shipwide/deployment",
+                            "shipwide/https-dev"
+                        ]
+                    },
+                    {
+                        "group": "Features",
+                        "pages": [
+                            "shipwide/billing",
+                            "shipwide/push",
+                            "shipwide/gamification",
+                            "shipwide/progress-bar"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "shipwide/faq"
+                        ]
+                    }
+                ]
+            },
+            {
+                "language": "ru",
+                "groups": [
+                    {
+                        "group": "Начало работы",
+                        "pages": [
+                            "ru/shipwide",
+                            "ru/shipwide/quickstart",
+                            "ru/shipwide/architecture"
+                        ]
+                    },
+                    {
+                        "group": "Четыре части",
+                        "pages": [
+                            "ru/shipwide/backend",
+                            "ru/shipwide/app",
+                            "ru/shipwide/admin",
+                            "ru/shipwide/website"
+                        ]
+                    },
+                    {
+                        "group": "Руководства",
+                        "pages": [
+                            "ru/shipwide/configuration",
+                            "ru/shipwide/customization",
+                            "ru/shipwide/deployment",
+                            "ru/shipwide/https-dev"
+                        ]
+                    },
+                    {
+                        "group": "Возможности",
+                        "pages": [
+                            "ru/shipwide/billing",
+                            "ru/shipwide/push",
+                            "ru/shipwide/gamification",
+                            "ru/shipwide/progress-bar"
+                        ]
+                    },
+                    {
+                        "group": "Справка",
+                        "pages": [
+                            "ru/shipwide/faq"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "navbar": {
+        "links": [
+            {
+                "label": "burakov.net",
+                "href": "https://burakov.net"
+            }
+        ]
+    },
+    "footer": {
+        "socials": {
+            "github": "https://github.com/Nickbur"
+        }
+    }
+}
