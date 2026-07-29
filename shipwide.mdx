@@ -29,20 +29,12 @@ product on — not a finished app. **Four parts, one product:**
   </Card>
 </CardGroup>
 
-## Building blocks, not a finished app
+## What you're starting from
 
-This is the mental model that makes the kit make sense:
+Shipwide is a foundation, not a finished app — here's what that means in practice:
 
-- **Every exported piece is a ready-to-use building block** — a backend handler, a Vue
-  composable, an api-client function, a component. Something not wired to a route or page
-  *right now* isn't dead code; it's waiting for you to use it.
-- **The placeholder screens are intentional** — the app's account / sessions / settings
-  screens are stubs on purpose. The kit gives you the plumbing; you build your product
-  screens on top.
-- **Remove code only if** it's genuinely broken, a true duplicate of logic that lives
-  elsewhere, or an architecture violation — not merely because "nothing calls it yet."
-
-<Note>
-  The code is always the source of truth. These docs describe the kit that ships; when a
-  detail matters, the implementation is the final word.
-</Note>
+- **The exported pieces are ready to use** — backend handlers, Vue composables, api-client
+  functions, components. Some aren't wired into a screen yet; that's intentional, they're
+  there for you to build on.
+- **The account, sessions and settings screens are placeholders on purpose.** The kit gives
+  you the plumbing behind them; you build your product's screens on top.

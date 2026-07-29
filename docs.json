@@ -15,97 +15,46 @@
         }
     },
     "navigation": {
-        "languages": [
+        "groups": [
             {
-                "language": "en",
-                "groups": [
-                    {
-                        "group": "Getting started",
-                        "pages": [
-                            "shipwide",
-                            "shipwide/quickstart",
-                            "shipwide/architecture"
-                        ]
-                    },
-                    {
-                        "group": "The four parts",
-                        "pages": [
-                            "shipwide/backend",
-                            "shipwide/app",
-                            "shipwide/admin",
-                            "shipwide/website"
-                        ]
-                    },
-                    {
-                        "group": "Guides",
-                        "pages": [
-                            "shipwide/configuration",
-                            "shipwide/customization",
-                            "shipwide/deployment",
-                            "shipwide/https-dev"
-                        ]
-                    },
-                    {
-                        "group": "Features",
-                        "pages": [
-                            "shipwide/billing",
-                            "shipwide/push",
-                            "shipwide/gamification",
-                            "shipwide/progress-bar"
-                        ]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": [
-                            "shipwide/faq"
-                        ]
-                    }
+                "group": "Getting started",
+                "pages": [
+                    "shipwide",
+                    "shipwide/quickstart",
+                    "shipwide/architecture"
                 ]
             },
             {
-                "language": "ru",
-                "groups": [
-                    {
-                        "group": "Начало работы",
-                        "pages": [
-                            "ru/shipwide",
-                            "ru/shipwide/quickstart",
-                            "ru/shipwide/architecture"
-                        ]
-                    },
-                    {
-                        "group": "Четыре части",
-                        "pages": [
-                            "ru/shipwide/backend",
-                            "ru/shipwide/app",
-                            "ru/shipwide/admin",
-                            "ru/shipwide/website"
-                        ]
-                    },
-                    {
-                        "group": "Руководства",
-                        "pages": [
-                            "ru/shipwide/configuration",
-                            "ru/shipwide/customization",
-                            "ru/shipwide/deployment",
-                            "ru/shipwide/https-dev"
-                        ]
-                    },
-                    {
-                        "group": "Возможности",
-                        "pages": [
-                            "ru/shipwide/billing",
-                            "ru/shipwide/push",
-                            "ru/shipwide/gamification",
-                            "ru/shipwide/progress-bar"
-                        ]
-                    },
-                    {
-                        "group": "Справка",
-                        "pages": [
-                            "ru/shipwide/faq"
-                        ]
-                    }
+                "group": "The four parts",
+                "pages": [
+                    "shipwide/backend",
+                    "shipwide/app",
+                    "shipwide/admin",
+                    "shipwide/website"
+                ]
+            },
+            {
+                "group": "Guides",
+                "pages": [
+                    "shipwide/configuration",
+                    "shipwide/customization",
+                    "shipwide/deployment",
+                    "shipwide/https-dev"
+                ]
+            },
+            {
+                "group": "Features",
+                "pages": [
+                    "shipwide/billing",
+                    "shipwide/push",
+                    "shipwide/gamification",
+                    "shipwide/progress-bar"
+                ]
+            },
+            {
+                "group": "Help",
+                "pages": [
+                    "shipwide/faq"
                 ]
             }
         ]

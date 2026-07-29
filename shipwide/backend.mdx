@@ -4,11 +4,11 @@ description: "shipwide_api — Fastify + Drizzle + PostgreSQL + Redis. Modules, 
 ---
 
 The backend half of the kit — Fastify + Drizzle + PostgreSQL + Redis. Single-app: one
-deployment serves one product. The code is the source of truth.
+deployment serves one product.
 
 ## Module architecture
 
-Three layers per feature — keep all complete:
+Each feature is organized into three layers:
 
 ```
 src/modules/<feature>/
@@ -23,10 +23,9 @@ migrate, seed), `src/plugins` (cors, rate-limit, auth, swagger, error handler), 
 (errors, crypto, uuidv7, username rules, email, serializers), `src/jobs`.
 
 <Note>
-  Every exported service function, handler, schema and type is a **ready-to-use building
-  block**. An exported handler that no default route mounts is **not** dead code — wire it up
-  when you need it. Remove something only if it's broken, a true duplicate, or an architecture
-  violation.
+  Every service function, handler, schema and type is exported and ready to use — including
+  handlers that no default route mounts yet, so you can wire them into your own routes as you
+  build.
 </Note>
 
 ## Auth model — passwordless only
@@ -43,9 +42,10 @@ reset, no separate email verification.
 - Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
   `sessions` row; live-session check cached in Redis with a DB fallback.
 
-<Warning>
-  Don't reintroduce a password flow — passwordless is a deliberate product decision.
-</Warning>
+<Note>
+  Authentication is passwordless by design — there is intentionally no password, no reset,
+  and no separate email-verification step.
+</Note>
 
 **Test / review accounts:** `TEST_ACCOUNTS=email:6digits,…` — a fixed code for App Store /
 Google Play review and CI. Verifies only against a pre-seeded `is_test` account, so a fixed

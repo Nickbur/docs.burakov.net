@@ -41,16 +41,13 @@ refresh), each bound to a `sessions` row so a revoked session dies immediately. 
 panel uses the same model, staff-scoped, with optional TOTP. Full detail in
 [Backend](/shipwide/backend).
 
-## Building blocks, not a finished app
+## What you're starting from
 
-- **Every exported piece is a ready-to-use building block** — a handler, a composable, an
-  api-client function, a component. Something not wired up *right now* isn't dead code; it's
-  waiting for you to use it.
-- **The placeholder screens are intentional** — the app's account / sessions / settings
-  screens are stubs on purpose. The kit gives you the plumbing; you build on top.
-- **Remove code only if** it's genuinely broken (references deleted tables / env / packages),
-  a true duplicate of logic that lives elsewhere, or an architecture violation — not merely
-  because "nothing calls it yet."
+- **The exported pieces are ready to use** — handlers, composables, api-client functions,
+  components. Some aren't wired into a screen yet; that's intentional, they're there for you
+  to build on.
+- **The account, sessions and settings screens are placeholders on purpose.** The kit gives
+  you the plumbing behind them; you build your product's screens on top.
 
 ## Where to go next
 

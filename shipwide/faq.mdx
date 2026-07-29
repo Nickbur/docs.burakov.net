@@ -110,9 +110,9 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
     are **not** in your shipped app: `npm audit --omit=dev` reports **0**. Nothing there bundles
     into the iOS / Android / web / desktop build.
   </Accordion>
-  <Accordion title="Is this dead code?">
-    No — the kit ships **building blocks**. An exported handler/composable/component with no current
-    consumer is intentional; you wire it up when you need it. Remove code only if it's genuinely
-    broken, a true duplicate, or an architecture violation.
+  <Accordion title="Why are some exports not used anywhere?">
+    That's intentional. The kit ships ready-to-use pieces — an exported
+    handler/composable/component with no current consumer is there for you to wire into your
+    product as you build it, not leftover dead code.
   </Accordion>
 </AccordionGroup>
