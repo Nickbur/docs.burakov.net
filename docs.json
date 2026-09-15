@@ -67,6 +67,31 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Lastward",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "lastward",
+                            "lastward/how-it-works"
+                        ]
+                    },
+                    {
+                        "group": "Privacy & trust",
+                        "pages": [
+                            "lastward/zero-knowledge",
+                            "lastward/self-hosting"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "lastward/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },

@@ -1,0 +1,55 @@
+---
+title: "Zero-knowledge"
+description: "How Lastward encrypts your content so only your recipient can read it — never us."
+---
+
+## What we can and can't see
+
+Lastward is honest about its privacy boundary:
+
+| We can see | We can never see |
+| --- | --- |
+| That a switch exists, and its title | The contents of an encrypted file, secret, or message |
+| When it's due and when it fires | The passphrase that unlocks it |
+| The recipient's address (we have to, to deliver) | The decryption key in usable form |
+
+The one-line version: **we can see *that* a switch exists and *when* it fires — never *what's
+inside*.**
+
+## How the encryption works
+
+Your files and secrets (and, if you choose, your messages) are **zero-knowledge**:
+
+<Steps>
+  <Step title="Encrypted on your device">
+    When you save an encrypted item, your device encrypts it with a strong modern cipher
+    (XChaCha20-Poly1305). The key is derived from a **passphrase you choose** (via Argon2id).
+    Only the ciphertext ever leaves your device.
+  </Step>
+  <Step title="Share the passphrase out-of-band">
+    You give the passphrase to your recipient **outside the app** — in a will, a sealed
+    envelope, or in person. We never see it, so we can't lose it or hand it over.
+  </Step>
+  <Step title="Your recipient decrypts in their browser">
+    When the switch fires, your recipient opens a link and enters the passphrase. Decryption
+    happens **entirely in their browser** — the passphrase is never sent to us.
+  </Step>
+</Steps>
+
+<Warning>
+  Because it's truly zero-knowledge, **if the passphrase is lost, the content cannot be
+  recovered** — not even by us. That's the point. Record it somewhere durable (the same place
+  you'd keep a will) and make sure your recipient will have it.
+</Warning>
+
+## Readable messages
+
+Not everything has to be encrypted. For a plain, low-stakes message you can choose **readable
+delivery** — a normal email your recipient just reads, no passphrase needed. It's clearly
+labelled as not encrypted when you choose it. Files and secrets are always zero-knowledge.
+
+## Your own account
+
+Your account is always recoverable by email, independently of any switch passphrase. So
+forgetting a passphrase never locks you out of *managing* your switches — only out of reading
+that one old encrypted payload.

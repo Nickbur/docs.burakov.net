@@ -1,0 +1,57 @@
+---
+title: "How it works"
+description: "Check-ins, the grace window, warnings, actions, and how a switch fires."
+---
+
+## The check-in loop
+
+A switch is **armed** as long as you keep checking in. Each check-in is a deliberate action —
+you confirm it with a PIN (or your device biometrics) so a check-in is never an accidental tap.
+Checking in resets the deadline to the full interval.
+
+You pick the rhythm with a **safety preset**, or set your own:
+
+| Preset | Check in every | Grace before firing |
+| --- | --- | --- |
+| **Paranoid** | 1 week | 3 days |
+| **Balanced** | 30 days | 14 days |
+| **Legacy** | 90 days | 30 days |
+
+## The grace window
+
+If a deadline passes, the switch does **not** fire immediately. It enters a **grace window**
+and starts warning you — across push, email, and (on Pro) SMS. Every warning has a one-tap
+**"I'm here"** that instantly re-arms the switch.
+
+Only when the grace window fully elapses — after all the warnings — does the switch fire.
+
+<Note>
+  There is a hard safety floor: a switch can never fire less than **48 hours** after its
+  deadline, and it must always warn you on at least two channels first. No custom setting can
+  lower that.
+</Note>
+
+## Actions
+
+A switch fires one or more **actions**, delivered to the recipients you chose:
+
+<CardGroup cols={1}>
+  <Card title="Message" icon="envelope">
+    A text message or farewell letter. Send it end-to-end encrypted, or — if it's low-stakes —
+    as a normal readable email. Your choice, clearly labelled.
+  </Card>
+  <Card title="Encrypted file or secret" icon="file-lock">
+    Release a file, a set of credentials, or instructions. Always zero-knowledge — encrypted on
+    your device, opened only by your recipient with the passphrase you shared out-of-band.
+  </Card>
+  <Card title="Private page" icon="link">
+    A hosted page that opens for your chosen recipients via a private link. Same encryption
+    options as a message.
+  </Card>
+</CardGroup>
+
+## What fires a switch
+
+In this version, a switch fires on **inactivity only** — a missed check-in plus the elapsed
+grace period. That already covers what matters: if you're gone, you stop checking in. There is
+no way for anyone else to trigger your switch early.
