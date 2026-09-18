@@ -203,6 +203,32 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Lexiline",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "lexiline",
+                            "lexiline/how-it-works"
+                        ]
+                    },
+                    {
+                        "group": "Using Lexiline",
+                        "pages": [
+                            "lexiline/following-topics",
+                            "lexiline/digests-and-alerts"
+                        ]
+                    },
+                    {
+                        "group": "Privacy & help",
+                        "pages": [
+                            "lexiline/privacy",
+                            "lexiline/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },
