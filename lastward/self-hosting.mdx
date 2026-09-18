@@ -23,7 +23,13 @@ run it yourself, and keep it running on your own terms.
 
 <Steps>
   <Step title="Get the core">
-    Clone the repository and copy `.env.example` to `.env`.
+    Clone [the repository](https://github.com/Nickbur/lastward_core) and copy `.env.example` to `.env`:
+
+    ```bash
+    git clone https://github.com/Nickbur/lastward_core.git
+    cd lastward_core
+    cp .env.example .env
+    ```
   </Step>
   <Step title="Set your owner token">
     Generate a strong token (`openssl rand -hex 32`) and set `OWNER_TOKEN` — it's how your app
