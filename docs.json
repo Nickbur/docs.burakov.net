@@ -124,6 +124,46 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Bastion",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "bastion",
+                            "bastion/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "Using Bastion",
+                        "pages": [
+                            "bastion/chat",
+                            "bastion/calls",
+                            "bastion/security"
+                        ]
+                    },
+                    {
+                        "group": "Running your own",
+                        "pages": [
+                            "bastion/self-hosting",
+                            "bastion/administration"
+                        ]
+                    },
+                    {
+                        "group": "Accounts & pricing",
+                        "pages": [
+                            "bastion/accounts-and-privacy",
+                            "bastion/pricing"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "bastion/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },

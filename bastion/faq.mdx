@@ -1,0 +1,28 @@
+---
+title: "FAQ"
+description: "Platforms, encryption, self-hosting, pricing and the honest limits of Bastion."
+---
+
+<AccordionGroup>
+  <Accordion title="What platforms does Bastion run on?">
+    Web (in the browser), desktop for Windows, macOS and Linux, and native apps for iOS and Android. One account works across all of them, and calls ring natively on your phone.
+  </Accordion>
+  <Accordion title="Is it really end-to-end encrypted?">
+    Yes. Messages, files and calls are sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — only ever handles ciphertext. You can verify a contact with their [safety number](/bastion/security).
+  </Accordion>
+  <Accordion title="What can the server operator see?">
+    Not your content. The control plane brokers identity, push and licensing, so it sees sign-in and delivery metadata and which plan an organization is on — never message text or call media. See [Accounts & privacy](/bastion/accounts-and-privacy).
+  </Accordion>
+  <Accordion title="Do I have to self-host?">
+    No. You can run your own node, or use the managed option — the same stack, operated for you, one organization per instance. See [Pricing](/bastion/pricing).
+  </Accordion>
+  <Accordion title="How is it priced?">
+    Flat per server, not per seat — unlimited members. Self-hosted is $99/month, managed from $249/month, optional modules +$29/month each, and annual billing saves two months. There is no free tier.
+  </Accordion>
+  <Accordion title="What's in the base product, and what's coming?">
+    The base module is chat and calls. Bastion is modular, so more capabilities can be enabled over time. On the roadmap: an independent review of the cryptography, broader data-subject tooling (export/erase) and the first optional modules.
+  </Accordion>
+  <Accordion title="Can I lose access to my messages?">
+    Your key lives on your device and can be backed up with a passphrase. If you lose both the passphrase and every signed-in device, that key can't be recovered — the server never had it. Keep your backup safe.
+  </Accordion>
+</AccordionGroup>

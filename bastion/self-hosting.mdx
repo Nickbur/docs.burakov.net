@@ -1,0 +1,63 @@
+---
+title: "Self-hosting"
+description: "Run your own Bastion node — requirements, what's in the stack, TLS, and how it stays secure by default."
+---
+
+Self-hosting puts your organization's chat and calls on a server **you** control. One organization runs on one node.
+
+## What you need
+
+- A Linux host with **Docker** and Docker Compose.
+- A **domain name** pointing at the host (with subdomains for the media server and file storage).
+- Open ports for the web app and for real-time media (calls use UDP).
+
+## What's in the stack
+
+A single `docker compose` setup brings up everything the platform needs, so you're not wiring services together by hand:
+
+<CardGroup cols={2}>
+  <Card title="Bastion node" icon="server">
+    The API and real-time layer for chat, calls, keys and uploads.
+  </Card>
+  <Card title="Database & cache" icon="database">
+    PostgreSQL for durable data, Redis for presence and real-time fan-out.
+  </Card>
+  <Card title="File storage" icon="box-archive">
+    S3-compatible object storage for encrypted attachments (bundled, or bring your own).
+  </Card>
+  <Card title="Media server" icon="video">
+    Carries encrypted call audio, video and screen share — on your infrastructure.
+  </Card>
+</CardGroup>
+
+## Bring it up
+
+<Steps>
+  <Step title="Generate config and secrets">
+    ```bash
+    npm run setup      # strong, unique secrets + your domains, written into the environment
+    ```
+  </Step>
+  <Step title="Start the stack">
+    ```bash
+    docker compose --profile prod up -d
+    ```
+  </Step>
+  <Step title="Register your organization">
+    Create the organization once, then invite members from the [admin panel](/bastion/administration).
+  </Step>
+</Steps>
+
+## Secure by default
+
+- **HTTPS** is issued and renewed automatically by the bundled reverse proxy.
+- The **database and file storage bind to localhost** — never exposed to the open internet. Only the web app and media server are reachable from outside.
+- **Fail-closed secrets:** if a required secret is missing, the stack refuses to start rather than booting with a weak default.
+
+## What still depends on the control plane
+
+Identity (passwordless sign-in), push notifications and licensing are brokered by the shared control plane, so accounts work across every app and across devices. Your **content** — messages, files and calls — never leaves your node; only that identity and licensing traffic goes to the control plane. See [Accounts & privacy](/bastion/accounts-and-privacy).
+
+<Note>
+  Don't want to run any of this? The **managed** option is the exact same stack, operated for you. See [Pricing](/bastion/pricing).
+</Note>

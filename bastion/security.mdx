@@ -1,0 +1,46 @@
+---
+title: "Security & encryption"
+description: "How Bastion's end-to-end encryption works — verifying contacts with safety numbers, backing up your key, and what the server can and can't see."
+---
+
+Bastion is **end-to-end encrypted by default**. There's no toggle to forget: every message, file and call is sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — only ever handles ciphertext.
+
+## The building blocks
+
+Bastion's encryption is built on **vetted, widely-audited cryptography** (X25519 key exchange, XChaCha20-Poly1305 for content, Argon2id for your passphrase). You don't have to think about any of that day to day — it's the foundation the features below stand on.
+
+## Verify who you're talking to
+
+End-to-end encryption protects you from everyone except an attacker who can quietly swap keys in transit. To close that gap, every conversation has a **safety number** both sides can compare:
+
+<Steps>
+  <Step title="Open the chat info">
+    From a chat's header, open its info page and find a member's safety number.
+  </Step>
+  <Step title="Compare it">
+    Compare the number in person, over a call, or through another trusted channel.
+  </Step>
+  <Step title="You're verified">
+    If they match, no one is in the middle. If they don't, stop and investigate.
+  </Step>
+</Steps>
+
+## Your key, your backup
+
+Your identity key lives on **your device**. From the **Security** screen you can:
+
+- **Back it up** with a passphrase you choose, and download or copy the backup.
+- **Restore it** on a new phone, laptop or browser — same account, same history, across every device you use.
+
+<Warning>
+  The backup is protected by your passphrase and the server never has it. If you lose both the passphrase and every signed-in device, that key can't be recovered — by design. Keep the backup somewhere safe.
+</Warning>
+
+## What the server can and can't see
+
+- **Can't see:** your message text, file contents, or call media — all end-to-end encrypted.
+- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata. Identity and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy).
+
+## History that follows you
+
+Bastion deliberately keeps your history available to your new devices and to teammates you add — the way a team chat should work. That's a conscious trade-off in favor of a usable team tool, and it's why the key backup above matters.

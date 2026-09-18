@@ -1,0 +1,51 @@
+---
+title: "Chat"
+description: "Encrypted messaging in Bastion — direct and group chats, threads, replies, reactions, pinned messages and file attachments."
+---
+
+Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your device and only opened on the recipients'. The server only ever relays ciphertext. See [Security](/bastion/security) for how that works.
+
+## Direct and group chats
+
+Start a **one-to-one** chat with a teammate or create a **group** with several members. Open **New chat**, pick who to include, and start typing. New members you add later receive the shared history they're meant to see.
+
+## Working with a message
+
+Long-press (or right-click) a message for its actions:
+
+<CardGroup cols={2}>
+  <Card title="Reply" icon="reply">
+    Quote a message inline so the context travels with your answer.
+  </Card>
+  <Card title="Reply in thread" icon="comments">
+    Branch a focused side-conversation off any message without derailing the main chat.
+  </Card>
+  <Card title="React" icon="face-smile">
+    Add an emoji reaction from the picker; tap again to remove yours.
+  </Card>
+  <Card title="Edit & delete" icon="pen">
+    Fix or remove something you sent — edits are marked, deletes remove it for everyone.
+  </Card>
+  <Card title="Pin" icon="thumbtack">
+    Pin key messages to the top bar so the whole chat can find them.
+  </Card>
+  <Card title="Attach files" icon="paperclip">
+    Send images and files — encrypted the same way as messages.
+  </Card>
+</CardGroup>
+
+## Attachments
+
+Use the paperclip in the composer to send an image or a file. It's encrypted on your device before it leaves, stored as ciphertext, and decrypted only for the people in the chat. Images preview inline; other files appear as a download chip.
+
+## Search
+
+Because the server only holds ciphertext, search runs **on your device**: Bastion decrypts your recent messages locally and searches those. Open search from the chats list, type a term, and jump straight to a hit.
+
+## Managing a chat
+
+Open a chat's **info** page (from the header) to see its members, add people, and check per-member **safety numbers** to confirm no one has been impersonated — see [Security](/bastion/security).
+
+<Note>
+  Adding a member seals the chat's current key to them so they can read the history the group shares. Only owners and admins can add members to a chat.
+</Note>

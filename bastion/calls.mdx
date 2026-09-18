@@ -1,0 +1,38 @@
+---
+title: "Calls"
+description: "Encrypted audio and video calls in Bastion — one-to-one and group, with screen sharing and native incoming-call screens."
+---
+
+Bastion has **encrypted audio and video calls** built in — one-to-one or as a group, with screen sharing. The media runs through a server that lives inside your own node, so the call itself never travels through anyone else's cloud.
+
+## Starting a call
+
+Open a chat and tap the **call** button, or start one from the Calls tab. Choose audio or video; you can turn the camera on and off during the call, and share your screen.
+
+<Note>
+  If your microphone or camera isn't available, the call still connects — you join muted or with the camera off, rather than failing to connect at all.
+</Note>
+
+## Incoming calls that actually ring
+
+A call is only useful if you notice it. Bastion rings you like a real phone:
+
+<Steps>
+  <Step title="On your phone">
+    Incoming Bastion calls use the native system call screen on iOS and Android — they ring on the lock screen, before you've opened the app.
+  </Step>
+  <Step title="On web and desktop">
+    A full-screen ringer with accept and decline does the same job in the browser and the desktop app.
+  </Step>
+  <Step title="Answer or decline">
+    Accept to join the call; decline to send it away. If the caller cancels first, the ring dismisses itself.
+  </Step>
+</Steps>
+
+## What's encrypted
+
+Audio, video and screen sharing are encrypted end to end between participants. The media server that carries the streams runs on your node, so calls stay on infrastructure you control.
+
+<Note>
+  On a self-hosted node, calls need the bundled media server to be running and reachable — see [Self-hosting](/bastion/self-hosting).
+</Note>

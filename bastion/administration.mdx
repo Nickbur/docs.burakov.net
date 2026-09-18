@@ -1,0 +1,37 @@
+---
+title: "Administration"
+description: "Run your organization from the Bastion admin panel — members, roles, audit log, retention and modules."
+---
+
+Every Bastion node comes with a separate **admin panel** for the organization's owner and admins. It runs alongside the node and signs in with the same passwordless email flow.
+
+## Members and roles
+
+Invite people by email and manage who can do what:
+
+- **Owner** — full control of the organization.
+- **Admin** — manage members, chats and settings.
+- **Member** — use chat and calls.
+
+Adding or removing members, and changing roles, all happen here. Certain actions (like adding members to a chat) are limited to owners and admins.
+
+## Audit log
+
+Administrative and security-relevant events are recorded in an **audit log** you can review — who was invited, role changes, and similar actions — so there's an accountable record of what happened in the organization.
+
+## Retention
+
+Set a **retention policy** so old messages are automatically deleted after a chosen period. A background job sweeps expired content on a schedule, keeping the organization to the data it actually needs.
+
+## Modules
+
+Bastion is modular. The base module is **chat + calls**; the admin settings are where an organization's enabled capabilities are managed as more modules become available.
+
+<Note>
+  The admin panel is **content-blind** where it counts: because messages and calls are end-to-end encrypted, administration is about people, roles and policy — not reading conversations.
+</Note>
+
+## Platform vs. organization admin
+
+- **Organization admin** (this panel) — you, running your own node.
+- **Platform admin** — a separate, content-blind view used to manage organizations and licensing at the platform level. It can see that an organization exists and its plan, never its messages.

@@ -1,0 +1,30 @@
+---
+title: "Accounts & privacy"
+description: "One account across your devices, what stays on your server, and what the control plane can see."
+---
+
+## One account, every device
+
+Bastion uses **passwordless email sign-in**: enter your address, get a one-time code, and you're in. The same account carries your identity across web, desktop, iOS and Android — and it's the same unified account used across the wider family of apps, so there's no separate signup per app.
+
+## What stays on your server
+
+Your **content** — message text, file contents and call media — is end-to-end encrypted and, on a self-hosted node, lives on infrastructure you chose, in the region you chose. It never leaves your box in a readable form; the server only ever holds ciphertext.
+
+## What the control plane sees
+
+Identity, push and licensing are brokered by a shared control plane so accounts work everywhere. That means it handles:
+
+- **Sign-in** (verifying your email and issuing your session).
+- **Licensing** (which plan an organization is on).
+- **Delivery metadata** needed to route pushes and calls.
+
+It does **not** hold your message content or call media — those are encrypted end to end. We describe this honestly as **data residency**, not "no server in the middle": your content stays on your node, while identity is centrally brokered.
+
+## Retention and your data
+
+Organization admins can set a **retention policy** so content is auto-deleted after a chosen period (see [Administration](/bastion/administration)). Broader data-subject tooling (export and erase on request) and a data-processing agreement template are part of the compliance roadmap.
+
+## Verifying contacts
+
+Because encryption only helps if you're talking to the right person, every conversation has a **safety number** you can compare. See [Security](/bastion/security).
