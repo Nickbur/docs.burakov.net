@@ -1,0 +1,59 @@
+---
+title: "Commands & shells"
+description: "How Cronch runs your command — the shell, the working directory, environment variables, and what happens when a run overlaps the next."
+---
+
+A rule runs one command. Cronch's job is to run it the way you'd run it yourself, and to record what happened.
+
+## The command
+
+Type the command, or the path to a script, exactly as you would in a terminal. Cronch hands it to the shell you choose (below) to interpret — so pipes, redirects and arguments work as usual.
+
+## The shell
+
+When you create a rule, Cronch has already scanned your machine and listed the shells that are installed:
+
+- **Windows** — PowerShell, `pwsh`, `cmd`, Git Bash and WSL, when present.
+- **macOS** — `zsh`, `bash`, `sh` and `fish`, when present.
+
+You also get two special choices:
+
+- **Custom…** — point at any shell binary and give the argument template to use. The template must contain `{cmd}`, which Cronch replaces with your command (the default is `-c {cmd}`).
+- **Direct (no shell)** — run an executable straight, with no shell involved. The command line is split into program and arguments without shell interpretation — handy when you want to avoid a shell's quoting rules entirely.
+
+<Note>
+  If a rule names a shell that isn't installed on the current machine, Cronch marks it **shell missing** and does not run it, rather than failing in a confusing way. This makes rules portable: move them to another computer and you'll see at a glance what it can and can't run.
+</Note>
+
+## Working directory
+
+By default, jobs run from your home directory. Set a **Working directory** on the rule to run from somewhere specific — useful for scripts that expect to be run from their project folder.
+
+## Environment variables
+
+Jobs inherit your **real login environment**, so scheduled commands see the same `PATH` you'd have in a terminal, and tools like `node`, `python` and `git` are found. (This matters most on macOS, where jobs launched at login can otherwise get a stripped-down `PATH`.)
+
+You can add extra variables per rule — one `KEY=VALUE` per line — for anything a specific job needs, like an API token or a config flag.
+
+## Overlap: when a run isn't finished yet
+
+If a rule comes due while its previous run is still going, its **overlap policy** decides what happens:
+
+| Policy | What it does | Good for |
+| --- | --- | --- |
+| **Skip** *(default)* | Don't start a second run; leave the current one alone. | Backups, anything that must not run twice at once. |
+| **Queue** | Wait for the current run to finish, then run the pending one. | Jobs where every occurrence should eventually run, in order. |
+| **Parallel** | Start the new run immediately, alongside the current one. | Short, independent tasks that are safe to overlap. |
+
+Set it per rule, so each job gets the behaviour that fits it.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="History & logs" icon="clock-rotate-left" href="/cronch/history">
+    See the output and exit code of every run.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/cronch/troubleshooting">
+    "It runs in my terminal but not on a schedule" and other fixes.
+  </Card>
+</CardGroup>

@@ -1,0 +1,47 @@
+---
+title: "Cronch"
+description: "A friendly desktop task scheduler for Windows and macOS — schedule commands and scripts from your system tray, with a full run history and nothing in the cloud."
+---
+
+Cronch is a small desktop app that runs commands and scripts on a schedule, from your **system tray**, on **Windows and macOS**. Add a rule, pick a schedule and a shell, flip it on — Cronch runs it in the background and keeps a full history of every run. There's no account and no cloud: everything stays on your machine.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/cronch/quickstart">
+    Install Cronch and create your first scheduled rule.
+  </Card>
+  <Card title="Schedules" icon="clock" href="/cronch/schedules">
+    Interval, cron and one-time runs — and catch-up for jobs missed while the machine was off.
+  </Card>
+  <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
+    Run any command in the shell of your choice, with the right environment and an overlap policy.
+  </Card>
+  <Card title="History & logs" icon="clock-rotate-left" href="/cronch/history">
+    Every run's output, exit code and status, with a retention window you control.
+  </Card>
+  <Card title="Settings & tray" icon="sliders" href="/cronch/settings">
+    Launch at login, pause everything, and import or export your rules.
+  </Card>
+  <Card title="Privacy" icon="lock" href="/cronch/privacy">
+    What Cronch stores, and why nothing ever leaves your computer.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/cronch/troubleshooting">
+    SmartScreen and Gatekeeper, missing shells, and PATH issues.
+  </Card>
+  <Card title="FAQ" icon="circle-question" href="/cronch/faq">
+    Short answers to common questions.
+  </Card>
+</CardGroup>
+
+## What Cronch is for
+
+Every operating system already has a scheduler, but they're built for machines, not people — Task Scheduler's XML, `launchd` plists, raw `cron`. Cronch is the friendly alternative: a clean window where you can see what's scheduled, what ran, and whether it worked, on both of your platforms in the same way.
+
+Typical jobs people give it: nightly backups, periodic sync or upload scripts, a "good morning" report, cleanup tasks, anything you'd otherwise wire into `cron` or Task Scheduler.
+
+<Note>
+  Cronch is a **tray-resident** app: your jobs fire while it's running. That's why it launches at login by default — so your schedules keep running across restarts. You can turn that off in [Settings](/cronch/settings).
+</Note>
+
+## Free and open source
+
+Cronch is free forever and open source, dual-licensed under MIT or Apache-2.0. It's made by [burakov](https://burakov.net).

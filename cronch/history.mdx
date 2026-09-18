@@ -1,0 +1,41 @@
+---
+title: "History & logs"
+description: "Cronch records every run — its output, exit code and status — so you can see what happened and when. Retention is yours to set."
+---
+
+A scheduler you can't inspect is a scheduler you can't trust. Cronch records **every run** and keeps it until you say otherwise.
+
+## What's recorded
+
+For each run of a rule, Cronch stores:
+
+- **When** it started and finished.
+- **Status** — Success, Failed, or Running (for one still in progress).
+- **Exit code** returned by the command.
+- **What triggered it** — the schedule, a manual **Run now**, or a catch-up.
+- **Captured output** — everything the job wrote to standard output and standard error.
+
+## The log viewer
+
+Open a rule's **Logs** to see its runs. The most recent are listed on the left; select one and its captured **stdout** and **stderr** appear on the right. When a command fails, this is where the reason usually is — the error the job printed is right there, long after 3 a.m. has passed.
+
+At a glance in the main list, each rule also shows its **last** result and **next** scheduled time, so you can see the whole picture without opening anything.
+
+## Retention
+
+History is kept for a number of days you choose in [Settings](/cronch/settings) — **Keep run history for _N_ days**. Older runs are pruned automatically. Set it to **0** to keep everything forever.
+
+<Tip>
+  If a job is noisy (lots of output, running often), a shorter retention window keeps the history tidy and the database small. For a rare, important job, keep it long — or forever.
+</Tip>
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Settings & tray" icon="sliders" href="/cronch/settings">
+    Set retention, launch at login, and import or export rules.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/cronch/troubleshooting">
+    When a run failed and you're not sure why.
+  </Card>
+</CardGroup>

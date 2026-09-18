@@ -1,0 +1,42 @@
+---
+title: "Troubleshooting"
+description: "Fixes for the common snags — SmartScreen and Gatekeeper warnings, missing shells, PATH problems, and build errors."
+---
+
+## "Windows protected your PC" (SmartScreen)
+
+An app that runs commands on a schedule and starts at login looks, to Windows, a lot like malware — so an unsigned build can trigger SmartScreen. If you trust the source (or built it yourself), click **More info → Run anyway**. To avoid this on machines you distribute to, sign the binary with a code-signing certificate.
+
+## macOS: "cannot be opened because the developer cannot be verified" (Gatekeeper)
+
+This appears for apps downloaded from the internet. Clear it by **right-clicking the app → Open** (confirm once), or from a terminal:
+
+```bash
+xattr -dr com.apple.quarantine /path/to/Cronch.app
+```
+
+A copy you build yourself and run locally is not quarantined, so Gatekeeper doesn't block it.
+
+## A rule shows "shell missing"
+
+The rule names a shell that isn't installed on this machine, so Cronch won't run it. Either install that shell, or edit the rule to use one Cronch detected (or **Direct**). This commonly happens after importing rules created on a different computer — see [Commands & shells](/cronch/commands-and-shells).
+
+## "It runs in my terminal, but not on a schedule"
+
+Almost always an **environment** issue: the scheduled job can't find a tool that's on your `PATH` in a terminal. Cronch already resolves your login environment to avoid this, but if a job still can't find something:
+
+- Use the **full path** to the program in the command, or
+- Set the needed variable on the rule (the **Environment variables** field), or
+- Set the rule's **Working directory** if the script expects to run from a specific folder.
+
+## A job didn't run while the machine was asleep or off
+
+That's expected — a tray app can't run while it isn't running. When Cronch next starts, a rule with **Catch up if missed** enabled runs once to make up for it. If it didn't, check that catch-up is on for that rule. See [Schedules](/cronch/schedules).
+
+## Build errors (building from source)
+
+- **Windows: `error: linker 'link.exe' not found`** — install the Visual Studio 2022 Build Tools with the **Desktop development with C++** workload.
+- **Windows: linker errors from Git Bash / MSYS** — build from **PowerShell** or the Developer Command Prompt; Git Bash's own `link.exe` can shadow MSVC's.
+- **macOS: `xcrun: error: invalid active developer path`** — run `xcode-select --install`.
+
+The complete build guide, including toolchain setup, is in `BUILD.md` in the repository.

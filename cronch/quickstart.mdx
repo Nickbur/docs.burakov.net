@@ -1,0 +1,74 @@
+---
+title: "Quickstart"
+description: "Get Cronch running and create your first scheduled rule."
+---
+
+There are two ways to get Cronch. Download a ready-made build, or build it from source.
+
+## Option A — Download
+
+<Steps>
+  <Step title="Get the app">
+    Download the build for your system from the [Cronch download page](https://burakov.net/projects/cronch/download) — a `.exe` for Windows, a `.dmg` for macOS (Apple Silicon or Intel).
+  </Step>
+  <Step title="Open it">
+    Run the app. A window opens and a clock icon appears in your system tray (Windows) or menu bar (macOS).
+    <Warning>
+      Because Cronch runs commands on a schedule and starts at login, an unsigned build can trip Windows SmartScreen or macOS Gatekeeper. See [Troubleshooting](/cronch/troubleshooting) for the one-time click that gets you past it.
+    </Warning>
+  </Step>
+</Steps>
+
+## Option B — Build from source
+
+Cronch is open source. If you'd rather build it yourself (or you're on a platform without a prebuilt binary), you need the Rust toolchain and a system linker.
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/Nickbur/cronch.git
+    cd cronch
+    ```
+  </Step>
+  <Step title="Build the release binary">
+    ```bash
+    cargo build --release
+    ```
+    The binary lands at `target/release/cronch` (or `cronch.exe` on Windows). The full step-by-step, including how to install the toolchain, is in `BUILD.md` in the repository.
+  </Step>
+</Steps>
+
+## Create your first rule
+
+<Steps>
+  <Step title="Add a rule">
+    Click **+ Add rule**. Give it a name you'll recognise later, like "Nightly backup".
+  </Step>
+  <Step title="Enter the command">
+    Type the command or the path to a script — exactly as you'd type it in a terminal.
+  </Step>
+  <Step title="Pick a shell">
+    Choose one of the shells Cronch detected on your machine, a custom shell binary, or **Direct** to run an executable with no shell. See [Commands & shells](/cronch/commands-and-shells).
+  </Step>
+  <Step title="Choose a schedule">
+    Pick **Interval**, **Cron**, or **Once**, and fill in the timing. See [Schedules](/cronch/schedules).
+  </Step>
+  <Step title="Save and switch it on">
+    Save the rule and make sure its toggle is **on**. Cronch takes it from there.
+  </Step>
+</Steps>
+
+<Tip>
+  Want to check it works right away? Select the rule and click **Run now**, then open its **Logs** to see the captured output. A manual run doesn't affect the schedule.
+</Tip>
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Schedules" icon="clock" href="/cronch/schedules">
+    Interval, cron and one-time runs, and what happens to missed jobs.
+  </Card>
+  <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
+    Shells, working directory, environment variables and overlap.
+  </Card>
+</CardGroup>

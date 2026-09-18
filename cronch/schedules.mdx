@@ -1,0 +1,49 @@
+---
+title: "Schedules"
+description: "The three ways to schedule a job in Cronch — interval, cron and once — and how catch-up handles runs missed while your machine was off."
+---
+
+Every rule has one schedule, chosen from three modes. Pick the mode that matches how you think about the job.
+
+## Interval
+
+Run every *N* seconds, minutes, hours or days. The simplest option — "every 15 minutes", "every 6 hours" — with no cron syntax to remember. Set the number and the unit, and Cronch counts from when the rule starts.
+
+## Cron
+
+For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month" — use a cron expression.
+
+- **5 fields** (`minute hour day-of-month month day-of-week`) is standard cron; seconds are assumed to be `0`. Example: `0 9 * * *` runs at 09:00 every day.
+- **6 fields** adds a leading seconds field for finer timing.
+
+<Tip>
+  New to cron? Start from the example in the field (`0 9 * * *`) and change one part at a time. Interval mode is often easier for "every so often" jobs; cron shines for "at this clock time".
+</Tip>
+
+## Once
+
+Run a single time at a specific date and time — `YYYY-MM-DD HH:MM`, in your local time. Useful for a one-off reminder script or a delayed task. After it runs, the rule is done.
+
+## Catch-up: jobs missed while the machine was off
+
+Computers sleep and shut down, so a scheduled time can pass while Cronch isn't running. Each rule has a **Catch up if missed** option (on by default) that decides what happens next:
+
+- **On** — when Cronch next starts, a rule that came due while it was away runs **once**, right away. Multiple missed occurrences are **coalesced** into that single catch-up run, so a weekend of hourly jobs doesn't fire dozens of times at once.
+- **Off** — the missed occurrences are skipped; the rule simply waits for its next scheduled time.
+
+A **Once** schedule that was missed always runs on the next start — that's the whole reason you set it.
+
+<Note>
+  Cronch re-checks its schedule continuously, so clock changes and sleep/wake are handled without relying on operating-system power events. You don't need to configure anything for this.
+</Note>
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
+    What actually runs, in which shell, and what to do about overlap.
+  </Card>
+  <Card title="History & logs" icon="clock-rotate-left" href="/cronch/history">
+    Confirm a schedule is firing by checking its run history.
+  </Card>
+</CardGroup>

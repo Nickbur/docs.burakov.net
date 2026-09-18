@@ -1,0 +1,29 @@
+---
+title: "Privacy"
+description: "Cronch has no account and no cloud. Your rules and run history live in a local database on your machine, and nothing is sent anywhere."
+---
+
+Cronch is built to be trustworthy with the one thing a scheduler needs: the ability to run commands on your machine. So it collects nothing and sends nothing.
+
+## No account, no cloud, no telemetry
+
+- There is **no sign-up** and no account — you just open the app.
+- Cronch makes **no network calls of its own**. It doesn't phone home, check for anything, or report usage.
+- There is **no analytics or telemetry**.
+
+## Where your data lives
+
+Everything Cronch knows — your rules, their settings, and the full run history with captured output — is stored in a single local **SQLite database** on your computer:
+
+- **Windows** — under `%APPDATA%\burakov\Cronch`.
+- **macOS** — under `~/Library/Application Support/net.burakov.Cronch`.
+
+Nothing in there is copied off the machine. Exporting your rules writes a JSON file exactly where you choose, and importing reads one you point at — those are ordinary local files.
+
+## What runs is up to you
+
+Cronch runs the commands **you** create. If one of your jobs uploads a backup or calls an API, that job talks to the network — because you told it to. Cronch itself is just the thing that starts it on time and records the result.
+
+<Note>
+  Because Cronch collects no personal data and has no account, there's nothing to delete server-side and no data-deletion request to make — removing the app and its data folder removes everything.
+</Note>

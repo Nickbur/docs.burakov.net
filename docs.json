@@ -164,6 +164,45 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Cronch",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "cronch",
+                            "cronch/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "Scheduling",
+                        "pages": [
+                            "cronch/schedules",
+                            "cronch/commands-and-shells"
+                        ]
+                    },
+                    {
+                        "group": "Running & history",
+                        "pages": [
+                            "cronch/history",
+                            "cronch/settings"
+                        ]
+                    },
+                    {
+                        "group": "Trust",
+                        "pages": [
+                            "cronch/privacy"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "cronch/troubleshooting",
+                            "cronch/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },

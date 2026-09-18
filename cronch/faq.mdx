@@ -1,0 +1,31 @@
+---
+title: "FAQ"
+description: "Short answers to common questions about Cronch."
+---
+
+<AccordionGroup>
+  <Accordion title="Is Cronch free?">
+    Yes — free forever and open source, dual-licensed under MIT or Apache-2.0. There's no paid tier and no monetization.
+  </Accordion>
+  <Accordion title="Do my jobs run if Cronch is closed?">
+    Cronch has to be running for jobs to fire — it's a tray app, not a background OS service. Closing the window only hides it to the tray; it keeps running there. It also launches at login by default so your schedules survive reboots. Fully quitting it (from the tray menu) stops all scheduling until you open it again.
+  </Accordion>
+  <Accordion title="What happens to jobs I missed while my computer was off?">
+    When Cronch starts, any rule that came due while it was away runs once, if **Catch up if missed** is on for that rule. Multiple missed occurrences are collapsed into a single catch-up run — you won't get a flood. A missed one-time (**Once**) job always runs on the next start.
+  </Accordion>
+  <Accordion title="Does Cronch work on Linux?">
+    No — Cronch targets Windows and macOS only, by design. Linux already has strong scheduling options and isn't in scope.
+  </Accordion>
+  <Accordion title="Where is my data stored? Does anything leave my machine?">
+    Everything lives in a local SQLite database on your computer (`%APPDATA%\burakov\Cronch` on Windows, `~/Library/Application Support/net.burakov.Cronch` on macOS). Cronch has no account, no cloud and no telemetry, and makes no network calls of its own. See [Privacy](/cronch/privacy).
+  </Accordion>
+  <Accordion title="Can I move my rules to another computer?">
+    Yes. Export your rules to a JSON file in [Settings](/cronch/settings), then import that file on the other machine. If a rule uses a shell that isn't installed there, Cronch flags it as *shell missing* until you adjust it.
+  </Accordion>
+  <Accordion title="Why does it start at login by default?">
+    Because jobs only fire while Cronch is running, launching at login keeps your schedules alive across restarts. Cronch tells you the first time it does this, and you can turn it off in Settings.
+  </Accordion>
+  <Accordion title="Can I run a command without any shell?">
+    Yes — choose **Direct (no shell)** on the rule. Cronch runs the executable straight, without a shell interpreting quotes or special characters. You can also point at a **custom shell** binary if you need a specific one.
+  </Accordion>
+</AccordionGroup>

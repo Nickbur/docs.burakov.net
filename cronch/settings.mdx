@@ -1,0 +1,52 @@
+---
+title: "Settings & tray"
+description: "Launch at login, history retention, importing and exporting your rules, and everything you can do from the Cronch tray menu."
+---
+
+## Settings
+
+Open **Settings** from the header. It holds a small, deliberate set of options:
+
+- **Launch Cronch at login** — on by default, because jobs only fire while Cronch is running (see below). Turn it off if you'd rather start Cronch yourself.
+- **Keep run history for _N_ days** — how long to keep run records; `0` means forever. See [History & logs](/cronch/history).
+- **Export rules…** / **Import rules…** — save your rules to a JSON file, or load them back.
+
+Click **Save settings** to apply.
+
+## Import & export
+
+Your rules export to a single **JSON** file. That file is useful for:
+
+- **Moving to another computer** — export on one machine, import on the other.
+- **Backing up** your setup, or keeping it in version control.
+- **Sharing** a set of rules with someone else.
+
+Importing adds the rules from the file to Cronch.
+
+## Launch at login, explained
+
+Cronch is a **tray-resident** app: it runs your jobs itself, so it has to be running for them to fire. On the first run it enables launch-at-login (via the OS mechanism — a Run entry on Windows, a LaunchAgent on macOS) and shows you a one-time banner about it. This keeps your schedules alive across reboots. You can switch it off any time in Settings.
+
+## The tray menu
+
+Cronch lives in the system tray (Windows) or menu bar (macOS). Right-click its icon for:
+
+- **Add rule…** — jump straight to creating a rule.
+- **Open Cronch** — bring the main window forward.
+- **Pause all / Resume all** — stop every rule from firing, then resume. Handy during maintenance or a noisy deploy. (The same toggle is in the app header.)
+- **Quit** — actually exit Cronch. Remember: while it's quit, nothing is scheduled.
+
+<Note>
+  **Closing the window does not quit Cronch** — it hides it to the tray, where it keeps running. Use **Quit** from the tray menu when you really want to stop it.
+</Note>
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Privacy" icon="lock" href="/cronch/privacy">
+    Where your rules and history are stored, and what never leaves.
+  </Card>
+  <Card title="FAQ" icon="circle-question" href="/cronch/faq">
+    Quick answers about login, offline behaviour and more.
+  </Card>
+</CardGroup>
