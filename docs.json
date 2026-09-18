@@ -23,6 +23,38 @@
                 ]
             },
             {
+                "tab": "Finity",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "finity",
+                            "finity/countdowns"
+                        ]
+                    },
+                    {
+                        "group": "Reflection",
+                        "pages": [
+                            "finity/life-in-weeks",
+                            "finity/journal-and-character"
+                        ]
+                    },
+                    {
+                        "group": "Accounts & pricing",
+                        "pages": [
+                            "finity/accounts-and-privacy",
+                            "finity/pricing"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "finity/faq"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Shipwide",
                 "groups": [
                     {
