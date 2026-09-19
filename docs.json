@@ -55,6 +55,44 @@
                 ]
             },
             {
+                "tab": "Tidybook",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "tidybook",
+                            "tidybook/importing"
+                        ]
+                    },
+                    {
+                        "group": "Tidying up",
+                        "pages": [
+                            "tidybook/deduplication",
+                            "tidybook/cleanup-and-editing"
+                        ]
+                    },
+                    {
+                        "group": "Sync & privacy",
+                        "pages": [
+                            "tidybook/sync-and-encryption",
+                            "tidybook/accounts-and-privacy"
+                        ]
+                    },
+                    {
+                        "group": "Pricing",
+                        "pages": [
+                            "tidybook/pricing"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "tidybook/faq"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Shipwide",
                 "groups": [
                     {

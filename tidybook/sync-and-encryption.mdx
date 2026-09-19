@@ -1,0 +1,46 @@
+---
+title: "Sync & encryption"
+description: "How Tidybook keeps one address book identical across your devices, why the server stays blind, and the difference between the default and the zero-knowledge passphrase lock."
+---
+
+Sync is the point of Tidybook: one tidy book, everywhere, private. It's part of the **Sync** plan.
+
+## Multi-device, offline-first
+
+Your book lives on each device, so every screen is instant and works with no connection. When you're
+online, Tidybook reconciles your devices in the background.
+
+Edits **fold together at the level of individual fields**, so two devices editing the same person
+don't fight — the changes combine. Tidybook is deliberately cautious about removals: if one device
+adds a phone number while another removes it, it **keeps** the number. With contacts, quietly losing
+a number is the worst outcome, so ties go to keeping your data. You'll never see a "which version
+wins?" dialog.
+
+## The server is blind
+
+Encryption happens on your device **before anything leaves it**. What reaches the server is
+**ciphertext** — a sealed blob it cannot open. It relays that blob to your other devices and never
+sees a name, number or note. Running the service, I only ever see encrypted data.
+
+## Default mode vs. the passphrase lock
+
+Tidybook offers two honest levels of protection:
+
+- **Default (convenient).** Tidybook manages your encryption key so you can recover your book simply
+  by signing in on a new device. Your data is encrypted in transit and at rest — but because the key
+  is recoverable through your account, this is **not** zero-knowledge.
+- **Passphrase lock (zero-knowledge).** Set a passphrase and your key is derived from something only
+  you know. After that, **not even Tidybook can decrypt your contacts**. New devices need the
+  passphrase (or your one-time recovery code).
+
+## Recovery — read this before locking
+
+The trade with the passphrase lock is real and stated plainly: if you lose both the passphrase and
+the recovery code, **no one can recover your book** — that's what zero-knowledge means. Always keep a
+[vCard / CSV export](/tidybook/cleanup-and-editing) as an independent cold backup before you enable
+the lock.
+
+<Note>
+  Whichever mode you choose, a vCard / CSV export is your key-independent safety net. Make one before
+  changing your encryption settings.
+</Note>

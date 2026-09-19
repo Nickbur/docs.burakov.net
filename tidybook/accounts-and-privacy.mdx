@@ -1,0 +1,44 @@
+---
+title: "Accounts & privacy"
+description: "How Tidybook accounts work, what stays on your device, what reaches the cloud (and in what form), and the permissions the app asks for."
+---
+
+Tidybook is **offline-first and private by default**. Here's exactly what that means for your data.
+
+## One account, passwordless
+
+Tidybook uses the shared burakov account: sign in with your email and a one-time code — **no
+password**. The same account works across every burakov app, but each app's data is separate; signing
+in to Tidybook only ever touches your contacts.
+
+You don't need an account to start: import, deduplicate and edit all work anonymously, and the book
+you build is adopted into your account if and when you sign in.
+
+## What stays on your device
+
+Your canonical address book lives in local storage on each device and is the source of truth for
+everything you see. Without the Sync plan, **nothing leaves your device** — Tidybook is a fully usable
+single-device app.
+
+## What reaches the cloud — and how
+
+With **Sync** on, Tidybook uploads your contacts so your other devices can see them — but only as
+**ciphertext**. The server stores and relays sealed data it cannot read; it never sees a name, number
+or note. See [Sync & encryption](/tidybook/sync-and-encryption) for the two protection levels.
+
+## Permissions
+
+- **Contacts** — so Tidybook can import your device address book. Tidybook reads your phone's
+  contacts to import them; it does **not** modify your phone's own address book.
+
+Tidybook asks for a permission only when a feature needs it, and explains why at the moment it asks.
+
+## Getting your data out
+
+Export to vCard or CSV at any time (see [Cleanup, editing & your card](/tidybook/cleanup-and-editing)).
+Your contacts are never locked inside Tidybook — the export is a plain file that belongs to you.
+
+<Note>
+  Deleting your account removes your data from the server. Your local book and any exports you've made
+  stay on your own devices until you remove them.
+</Note>

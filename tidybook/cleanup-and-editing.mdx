@@ -1,0 +1,49 @@
+---
+title: "Cleanup, editing & your card"
+description: "Tidybook's automatic cleanup rules, the full contact editor and its field model, and how to share your own details as a scannable QR card."
+---
+
+Beyond merging duplicates, Tidybook keeps each contact **clean and complete**, and lets you share
+your own details without handing over your whole book.
+
+## Automatic cleanup
+
+Tidybook tidies as you go:
+
+- **Phone numbers** are normalized to international (E.164) format, using your region for local
+  numbers, so the same number always looks — and matches — the same way.
+- **Empty and degenerate entries** (no name and no reachable field) are flagged for removal.
+- **Incomplete records** (for example, a name with no contact method) are surfaced for your review
+  rather than deleted automatically.
+
+Cleanup never deletes anything on its own — it flags, and you decide.
+
+## The contact editor
+
+Every contact is fully editable, with a high-fidelity model:
+
+- **Name** — prefix, given, additional, family, suffix, plus a display name and nickname.
+- **Organization** — company, department and title.
+- **Phones, emails, addresses, websites** — as many as you like, each with its own label
+  (mobile / home / work / …). Addresses are structured (street, city, region, postal code, country).
+- **Birthday, notes** and other dates.
+
+When a contact came from a source with fields Tidybook doesn't model, those are **kept alongside**
+and re-emitted on export, so nothing is lost on a round-trip.
+
+## Export & backup
+
+Export your whole book to **vCard** or **CSV** at any time. It's a plain, portable file that opens
+anywhere and belongs entirely to you — a cold backup that doesn't depend on Tidybook, the cloud, or
+any account still existing.
+
+## Your own QR card
+
+Build a card from **your own** chosen details — name, phones, emails, organization, websites — and
+Tidybook renders it as a **QR code** anyone can scan with their camera to save you as a contact. No
+app required on their end, and no server involved: you're simply sharing your own data.
+
+<Note>
+  The QR card only ever contains the fields you choose to include. It shares your own details — never
+  anyone else's contacts.
+</Note>
