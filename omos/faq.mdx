@@ -1,0 +1,31 @@
+---
+title: "FAQ"
+description: "Short answers to common questions about OMOS."
+---
+
+<AccordionGroup>
+  <Accordion title="Can I use OMOS as my everyday operating system?">
+    Not yet. OMOS is in early development. Today it boots and runs a solid foundation on three kinds of processor, but it doesn't have a graphical desktop, networking, or app support yet — those are on the [roadmap](/omos/roadmap). For now it's for the curious, best explored in a virtual machine.
+  </Accordion>
+  <Accordion title="What does “many machines, one system” actually mean?">
+    It's the goal OMOS is built toward: the computers you own — laptop, desktop, a spare machine — pooling their processing, memory and storage so they act as a single private computer, with work running wherever there's room. The foundation for it exists today; the pooling layer itself is [ahead on the roadmap](/omos/roadmap), and these docs won't pretend otherwise.
+  </Accordion>
+  <Accordion title="Which machines does it run on?">
+    Three families of processor: **x86_64** (most Intel/AMD computers), **ARM64** (many ARM machines and boards), and **RISC-V**. It behaves the same on all three. It needs UEFI firmware; legacy BIOS isn't supported. See [Platform support](/omos/platform-support).
+  </Accordion>
+  <Accordion title="How do I try it without risking my computer?">
+    Boot an image in a virtual machine with QEMU — it runs in a window and changes nothing on your real machine. The [Quickstart](/omos/quickstart) walks through it. Writing an image to a real disk is only for a spare machine you don't mind dedicating.
+  </Accordion>
+  <Accordion title="Is it free?">
+    Yes for almost everyone: personal, education, non-profit, and commercial use under $1M in annual revenue are all free, with nothing to buy. Only commercial use at $1M+ owes a royalty, on revenue above that line. See [Licensing](/omos/licensing).
+  </Accordion>
+  <Accordion title="Is OMOS open source?">
+    No. The compiled system is distributed free under the OMOS EULA, but the source code is closed and isn't licensed for use or modification. Contributions are by invitation only.
+  </Accordion>
+  <Accordion title="Does it collect any data about me?">
+    No. There's no account, no telemetry and no ads, and OMOS doesn't phone home. It answers only to you. See [Privacy](/omos/privacy).
+  </Accordion>
+  <Accordion title="Why build a whole new operating system?">
+    Because the idea of your own machines acting as one private computer — with security you don't have to think about and no company in the loop — didn't exist, and it's worth building. OMOS is an independent project, built in the open by [burakov](https://burakov.net).
+  </Accordion>
+</AccordionGroup>

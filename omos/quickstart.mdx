@@ -1,0 +1,58 @@
+---
+title: "Quickstart"
+description: "Download an OMOS image for your machine's chip and boot it — in a virtual machine for a quick look, or on real hardware."
+---
+
+The easiest way to try OMOS is to download a ready-made image and boot it. There's no installer to run and no account to create — an image boots straight into the system.
+
+<Note>
+  OMOS is an early preview. Booting it in a **virtual machine** is the safest way to look around and costs you nothing. Writing it to a real disk is for a spare machine you don't mind dedicating.
+</Note>
+
+## 1. Download the image for your chip
+
+<Steps>
+  <Step title="Pick your architecture">
+    On the [OMOS page](https://burakov.net/projects/omos), choose the image that matches your machine's processor: **x86_64** (most Intel/AMD laptops and desktops), **ARM64** (many single-board computers and ARM machines), or **RISC-V**.
+  </Step>
+  <Step title="Download and unpack it">
+    You'll get a compressed disk image. Unpack it to get the raw image file for the next step.
+  </Step>
+</Steps>
+
+## 2a. Boot it in a virtual machine
+
+The quickest look. With [QEMU](https://www.qemu.org/) installed, boot the image in a window — no changes to your real machine. OMOS starts on the screen and also prints to the serial console, so you can watch it come up.
+
+<Tip>
+  A virtual machine is disposable: close it and nothing on your computer changed. It's the recommended way to explore this early preview.
+</Tip>
+
+## 2b. Or boot it on real hardware
+
+<Steps>
+  <Step title="Write the image to a disk">
+    Write the unpacked image to a USB stick or drive with an imaging tool you trust. This **erases** the target disk — pick the right device.
+    <Warning>
+      Writing an image overwrites everything on the chosen disk. Double-check you've selected the USB stick or spare drive, not your main disk.
+    </Warning>
+  </Step>
+  <Step title="Boot from it">
+    Boot the machine from that disk (OMOS uses UEFI). It comes up the same way it does in a virtual machine.
+  </Step>
+</Steps>
+
+## What you'll see
+
+This early build boots into a system console rather than a desktop — the graphical shell is on the [roadmap](/omos/roadmap). What you're looking at is a real operating system coming up on your hardware: bringing up the processor's cores, its memory, and its protected user space. It's the foundation everything else is being built on.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Platform support" icon="microchip" href="/omos/platform-support">
+    What works on each architecture today.
+  </Card>
+  <Card title="Architecture" icon="layer-group" href="/omos/architecture">
+    How the system is put together.
+  </Card>
+</CardGroup>

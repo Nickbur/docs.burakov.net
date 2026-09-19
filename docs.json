@@ -398,6 +398,45 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "OMOS",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "omos",
+                            "omos/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "How it works",
+                        "pages": [
+                            "omos/architecture",
+                            "omos/security",
+                            "omos/platform-support"
+                        ]
+                    },
+                    {
+                        "group": "Where it's going",
+                        "pages": [
+                            "omos/roadmap"
+                        ]
+                    },
+                    {
+                        "group": "Trust & licensing",
+                        "pages": [
+                            "omos/privacy",
+                            "omos/licensing"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "omos/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },

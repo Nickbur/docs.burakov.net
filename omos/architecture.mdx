@@ -1,0 +1,36 @@
+---
+title: "Architecture"
+description: "How OMOS is put together — a small trusted core, with drivers, services and apps running around it in protected user space."
+---
+
+OMOS is built around a simple principle: keep the trusted core small, and push everything else out into protected space around it. The less code that has to be fully trusted, the fewer places a problem can start.
+
+## The layers
+
+<Steps>
+  <Step title="The core">
+    A small, trusted core handles the essentials: scheduling work across your processor, managing memory, letting parts of the system talk to each other, and enforcing who is allowed to do what.
+  </Step>
+  <Step title="Drivers and services">
+    The parts that talk to hardware — disks, input, and more — and system services run **outside** the trusted core, in protected user space. Each gets only the narrow access it needs.
+  </Step>
+  <Step title="Applications">
+    Your programs run further out still, each in its own protected space, able to touch only what you've granted them.
+  </Step>
+</Steps>
+
+## Why the core stays small
+
+When a driver or service runs outside the trusted core, a fault in it stays contained — it can be stopped and restarted without bringing the whole system down. On many traditional systems a single driver runs with full trust, so one bad one can take everything with it. OMOS is deliberately built the other way.
+
+## Everything talks through controlled channels
+
+Parts of the system don't reach into each other directly. They communicate over controlled channels, and a part can only send a message to something it has been given a handle to. That's the same idea as the [security model](/omos/security) — access is something you hold and can pass on, never something that's simply assumed.
+
+## The same shape everywhere
+
+This structure is identical on every supported chip. The details of talking to an Intel processor, an ARM one, or a RISC-V one differ underneath, but the shape of the system above that — the core, the protected drivers and services, your apps — is the same. See [Platform support](/omos/platform-support) for what that covers today.
+
+<Note>
+  Higher layers described in the vision — a graphical shell, networking, a distributed layer that pools machines — build on this foundation and are on the [roadmap](/omos/roadmap).
+</Note>

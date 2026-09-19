@@ -1,0 +1,34 @@
+---
+title: "Security"
+description: "OMOS uses capability-based security: every program starts with nothing and can only touch what you explicitly hand it."
+---
+
+Most systems work on the assumption that a program you run can reach almost everything *you* can — your files, your devices, your saved logins. OMOS is built on the opposite assumption.
+
+## Start with nothing
+
+On OMOS, a program begins with **no access at all** — no files, no devices, no network, no view of the rest of the system. It can only touch something once you hand it a specific key, called a *capability*, for that one thing. Open a document and the program gets *that document*, not your whole disk.
+
+## Keys only ever narrow
+
+A capability can be passed along — a program can give part of what it holds to something it trusts — but it can never be widened:
+
+- A program can't hand out more access than it was given.
+- It can't invent access it was never granted.
+- Trust flows outward and shrinks; it never quietly grows.
+
+This is enforced by the trusted core for every program and every driver, uniformly.
+
+## What it means for you
+
+- **A mistake stays small.** Something handed one folder can't rummage through the rest of your data, because it never held the keys.
+- **Drivers are contained.** The parts that talk to your hardware get only the narrow access they need, so one stumbling doesn't put everything at risk. (See [Architecture](/omos/architecture).)
+- **Least privilege by default.** Nothing runs with broad access just because it's installed. Access is granted, not assumed.
+
+## Built in, not bolted on
+
+Capability-based security isn't a setting you switch on — it's how the system is built, running underneath everything else from the first boot. The goal is security you don't have to think about: you grant access the ordinary way, by opening a file or picking a folder, and the system makes sure that's *all* a program got.
+
+<Note>
+  This model is implemented in OMOS today. The friendly, visible ways you'll grant and review access arrive with the graphical shell on the [roadmap](/omos/roadmap).
+</Note>

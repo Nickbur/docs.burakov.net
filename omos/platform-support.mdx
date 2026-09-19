@@ -1,0 +1,37 @@
+---
+title: "Platform support"
+description: "OMOS boots and runs on x86_64, ARM64 and RISC-V today, and behaves the same on all three."
+---
+
+One of the core ideas behind OMOS is that it shouldn't care what chip is under the hood. Today it boots and runs on three families of processor, and behaves the same way on each.
+
+## Supported architectures
+
+| Architecture | Typical hardware | Status |
+|---|---|:---:|
+| **x86_64** | Most Intel and AMD laptops and desktops | ✅ Boots & runs |
+| **ARM64** | Many ARM machines and single-board computers | ✅ Boots & runs |
+| **RISC-V (64-bit)** | RISC-V development boards and machines | ✅ Boots & runs |
+
+## What runs today
+
+On every one of the three, the current build:
+
+- Boots on real UEFI firmware and in a virtual machine.
+- Brings up all of the processor's cores and shares work across them, aware of performance and efficiency cores where a chip has both.
+- Runs programs in a protected user space, isolated from the trusted core.
+- Enforces [capability-based security](/omos/security) for every program and driver.
+- Talks to the machine over its serial console and draws text to the screen.
+
+## What's the same, and what differs
+
+The *shape* of the system is identical everywhere — the same core, the same protected drivers and services, the same security model. What differs is only the low-level detail of speaking to each kind of chip, which lives in the core and stays out of your way.
+
+<Note>
+  Building the whole system for all three architectures is a single command in the source tree. Producing per-architecture disk images for download is part of getting to a public release; see the [OMOS page](https://burakov.net/projects/omos) for what's currently available.
+</Note>
+
+## Requirements
+
+- A machine (or virtual machine) with **UEFI** firmware. Legacy BIOS boot isn't supported.
+- For a no-risk look, any host that can run [QEMU](https://www.qemu.org/) — see the [Quickstart](/omos/quickstart).

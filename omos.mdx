@@ -1,0 +1,45 @@
+---
+title: "OMOS"
+description: "A privacy-first operating system that aims to make the machines you already own act as one. Boots on x86_64, ARM64 and RISC-V, with capability-based security throughout — offline, with no telemetry and no ads."
+---
+
+OMOS (codename Sirius) is an operating system with one goal: to make the computers you already own behave like a single, private system. Capability-based security governs everything, faults stay contained, and the same system runs on Intel/AMD, ARM and RISC-V hardware. It's private by default — no account, no telemetry, no ads.
+
+<Note>
+  OMOS is in **early development**. What runs today is the foundation: it boots on all three CPU architectures, runs programs in a protected user space, and enforces capability-based security from the first boot. The layer that pools many machines into one is on the [roadmap](/omos/roadmap), not finished — these docs are clear about what exists now versus what's ahead.
+</Note>
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/omos/quickstart">
+    Download an image for your machine and boot OMOS in a virtual machine or on real hardware.
+  </Card>
+  <Card title="Architecture" icon="layer-group" href="/omos/architecture">
+    How OMOS is put together — a small trusted core with drivers and services around it.
+  </Card>
+  <Card title="Security" icon="lock" href="/omos/security">
+    Capability-based security: every program starts with nothing and gets only what you grant.
+  </Card>
+  <Card title="Platform support" icon="microchip" href="/omos/platform-support">
+    What runs on x86_64, ARM64 and RISC-V today.
+  </Card>
+  <Card title="Roadmap" icon="road" href="/omos/roadmap">
+    Where OMOS is going — the distributed system, storage, graphics and more.
+  </Card>
+  <Card title="Privacy" icon="shield-halved" href="/omos/privacy">
+    No account, no telemetry, no ads — what that means in practice.
+  </Card>
+  <Card title="Licensing" icon="scale-balanced" href="/omos/licensing">
+    Free for personal, education and non-profit use; free for smaller commercial use.
+  </Card>
+  <Card title="FAQ" icon="circle-question" href="/omos/faq">
+    Short answers to common questions.
+  </Card>
+</CardGroup>
+
+## Who it's for right now
+
+Today OMOS is for the curious — people who want to boot an early, independent operating system and watch it grow. You can run it in a virtual machine in a minute, or write an image to a disk and boot a spare machine with it. It's not yet a daily driver, and it doesn't pretend to be.
+
+## Made by burakov
+
+OMOS is built and published by [burakov](https://burakov.net). It's proprietary software: the compiled system is distributed to end users under the [OMOS EULA](/omos/licensing), and it's free for personal, education, non-profit and smaller commercial use.
