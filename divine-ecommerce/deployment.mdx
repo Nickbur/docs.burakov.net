@@ -1,0 +1,46 @@
+---
+title: "Deployment"
+description: "Take the store to production and keep it healthy."
+---
+
+The same Docker stack that runs locally runs in production, with a production Compose override and a production `.env`.
+
+## Before you deploy
+
+<Steps>
+  <Step title="Configure the production environment">
+    Base a production `.env` on `.env.prod`. Set `APP_ENV=prod` and **`APP_DEBUG=false`**, a real `APP_URL`, strong database and Redis credentials, and your SMTP settings for outgoing mail.
+  </Step>
+  <Step title="Build assets for production">
+    ```bash
+    make npm-build
+    ```
+    This type-checks and builds the front-end bundles. The development profiler is excluded from production builds automatically.
+  </Step>
+  <Step title="Start the production stack">
+    ```bash
+    make prod-build
+    make prod-up
+    ```
+    `make prod-logs` follows the logs; `make prod-down` stops it.
+  </Step>
+  <Step title="Migrate and seed">
+    Run the migrations against the production database. Seed only the data you actually want live — the demo seeders are for development.
+  </Step>
+</Steps>
+
+## Checklist
+
+- `APP_DEBUG=false` — no verbose errors or profiler in production.
+- Change the demo administrator password (or don't seed the demo admin at all).
+- Put the store behind HTTPS (a reverse proxy such as Caddy or nginx with TLS).
+- Set up backups of the PostgreSQL volume.
+- Configure real SMTP so order and account emails are delivered.
+
+## Scheduled jobs
+
+A lightweight worker container runs the recurring jobs — sending scheduled newsletter campaigns and expiring loyalty points. It starts with the stack, so there's no separate cron to configure.
+
+<Warning>
+  Keep production secrets in the deployment's `.env` only. Never commit them to a public repository.
+</Warning>

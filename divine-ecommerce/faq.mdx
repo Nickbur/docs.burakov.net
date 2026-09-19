@@ -1,0 +1,28 @@
+---
+title: "FAQ"
+description: "Short answers to common questions about Divine eCommerce."
+---
+
+<AccordionGroup>
+  <Accordion title="Is Divine eCommerce free?">
+    Yes — it's open source under the MIT license and free to use, including commercially. You host it yourself, so there's no subscription and no per-order fee.
+  </Accordion>
+  <Accordion title="Is it a fork of OpenCart or another platform?">
+    No. It's a from-the-ground-up engine on its own modular PHP framework. It draws on the experience of running real shops, but it doesn't inherit another platform's code or structure.
+  </Accordion>
+  <Accordion title="What do I need to run it?">
+    Docker and Docker Compose. PHP, PostgreSQL and Redis all run in containers — see the [Quickstart](/divine-ecommerce/quickstart).
+  </Accordion>
+  <Accordion title="Which database does it use?">
+    PostgreSQL. Search and the safe-write layer are built around it, so Postgres is the supported database.
+  </Accordion>
+  <Accordion title="How do customers pay?">
+    Checkout ships with cash on delivery and store pickup. An online card gateway (LiqPay) is included and can be enabled with your keys — see [Configuration](/divine-ecommerce/configuration).
+  </Accordion>
+  <Accordion title="Can I add features without forking?">
+    Yes. The [plugin system](/divine-ecommerce/plugins) lets a feature bring its own routes, views, migrations and assets, so you can extend the store without editing the core and keep updating cleanly.
+  </Accordion>
+  <Accordion title="Where's the source code?">
+    On [GitHub](https://github.com/Nickbur/divine-ecommerce). Issues and contributions are welcome.
+  </Accordion>
+</AccordionGroup>

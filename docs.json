@@ -319,6 +319,40 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Divine eCommerce",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "divine-ecommerce",
+                            "divine-ecommerce/quickstart",
+                            "divine-ecommerce/configuration"
+                        ]
+                    },
+                    {
+                        "group": "Building on it",
+                        "pages": [
+                            "divine-ecommerce/architecture",
+                            "divine-ecommerce/plugins"
+                        ]
+                    },
+                    {
+                        "group": "Using the store",
+                        "pages": [
+                            "divine-ecommerce/storefront",
+                            "divine-ecommerce/admin"
+                        ]
+                    },
+                    {
+                        "group": "Deploy & help",
+                        "pages": [
+                            "divine-ecommerce/deployment",
+                            "divine-ecommerce/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },

@@ -1,0 +1,36 @@
+---
+title: "Admin panel"
+description: "Manage products, orders, customers, loyalty rules and store settings."
+---
+
+The admin panel lives at `/admin` and is protected by role-based access control — you need an administrator or manager account to reach it. The seed data creates a demo administrator (see [Quickstart](/divine-ecommerce/quickstart)).
+
+## Catalog management
+
+- **Products** — full CRUD with options, cross-variants, images, specifications and per-product SEO.
+- **Categories & brands** — organize the catalog and give each a page.
+- **Specifications & option types** — reusable attribute libraries you attach to products; these also feed the storefront filters.
+- **Product sets** — assemble bundles and set their discount.
+- **Filters** — choose which attributes become facets, and rebuild the filter index.
+
+## Orders & customers
+
+- **Orders** — review orders, move them through their lifecycle, and handle **returns**.
+- **Unfinished orders** — see carts that didn't convert and send a reminder.
+- **Customers** — accounts, roles and history.
+
+## Marketing
+
+- **Loyalty rules** — set how points are earned and redeemed.
+- **Coupons & gift certificates** — create and limit discount codes.
+- **Newsletter** — manage subscribers and build **campaigns** targeted by segment, sent now or scheduled.
+
+## Content & settings
+
+- **Blog & pages** — write articles (and attach products), edit CMS pages.
+- **Sliders & banners** — the home-page slideshow and the promo banner.
+- **Settings** — store name and branding, contact details, currency, tax, checkout options and SEO defaults, grouped into tabs.
+
+## Roles
+
+Access is keyed off a simple role hierarchy — `guest < customer < manager < admin`. RBAC middleware guards `/admin` (managers and admins) and `/account` (signed-in customers), so unauthorized requests never reach a controller.

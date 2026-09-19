@@ -1,0 +1,48 @@
+---
+title: "Configuration"
+description: "Environment variables for the app, database, cache and mail."
+---
+
+All configuration lives in a single `.env` file at the project root. Copy `.env.example` to `.env` and edit it. When running in Docker, host names like `DB_HOST` and `REDIS_HOST` match the Compose service names (`postgres`, `redis`).
+
+## Application
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `APP_ENV` | `dev` | Environment: `local`, `dev` or `prod`. |
+| `APP_DEBUG` | `true` | Verbose errors and the Clockwork profiler toolbar. **Set to `false` in production.** |
+| `APP_PORT` | `8080` | Host port nginx is published on. |
+| `APP_URL` | — | Public base URL, used to build absolute links (e.g. payment callbacks). |
+
+## Database
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `DB_DRIVER` | `pdo_pgsql` | Doctrine DBAL driver. |
+| `DB_HOST` | `postgres` | Database host (the Compose service name in Docker). |
+| `DB_NAME` | `divine` | Database name. |
+| `DB_USER` / `DB_PASS` | `divine` | Credentials. |
+| `DB_PORT` | `5432` | Database port inside the network. |
+| `DB_EXTERNAL_PORT` | `5432` | Port mapped to your host machine. |
+
+<Note>
+  Divine eCommerce targets **PostgreSQL** — full-text search and the boolean-safe write layer are built around it.
+</Note>
+
+## Cache & mail
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `REDIS_HOST` | `redis` | Redis host (cache, sessions, throttling). |
+| `REDIS_EXTERNAL_PORT` | `6379` | Redis port mapped to your host. |
+| `MAIL_FROM_ADDRESS` | — | The address transactional email is sent from. |
+| `MAIL_FROM_NAME` | `Divine eCommerce` | The sender name shown to customers. |
+| `SMTP_HOST` / `SMTP_PORT` … | — | SMTP server for outgoing mail (see `.env.prod`). |
+
+## Payments (optional)
+
+A LiqPay payment gateway is included but off by default — checkout ships with **cash on delivery** and **store pickup**. To enable online payment you need to provide `LIQPAY_*` keys and add a `payment_methods` row with `code='liqpay'`.
+
+<Warning>
+  Never commit real secrets to a public repository. Keep production keys in your deployment's `.env`, which is not tracked.
+</Warning>

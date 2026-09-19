@@ -1,0 +1,54 @@
+---
+title: "Plugins"
+description: "Add features, routes, views and migrations without touching the core."
+---
+
+When you need something the store doesn't do out of the box, write a plugin instead of editing the core. Plugins are auto-discovered from the `plugins/` directory, and each one can register services, routes, views, migrations and front-end assets.
+
+## Anatomy of a plugin
+
+```text
+plugins/my-plugin/
+  plugin.json        Manifest (id, name, version, class, autoload)
+  src/Plugin.php     Main class implementing PluginInterface
+  src/Controllers/   Optional controllers
+  Views/             Optional Twig templates
+  migrations/        Optional database migrations
+  Assets/main.ts     Optional front-end entry (auto-compiled by Vite)
+```
+
+## The manifest
+
+```json
+{
+    "id": "my/plugin",
+    "name": "My Plugin",
+    "version": "1.0.0",
+    "description": "Does something useful",
+    "author": "Your Name",
+    "class": "My\\Plugin\\Plugin",
+    "autoload": { "psr-4": { "My\\Plugin\\": "src/" } }
+}
+```
+
+## The plugin class
+
+Your `Plugin.php` implements `PluginInterface`. Each hook is optional — implement only what you need:
+
+| Method | When it runs |
+| --- | --- |
+| `id()`, `name()`, `version()` | Identity, mirrored from the manifest. |
+| `requires()` | Other plugin ids this one depends on. |
+| `register($container)` | Bind services into the DI container. |
+| `boot($events)` | Subscribe to events once everything is loaded. |
+| `routes($router)` | Add storefront or admin routes. |
+| `migrations()` | Path to the plugin's Phinx migrations. |
+| `viewsPath()` | Path to the plugin's Twig templates. |
+
+## Enabling a plugin
+
+Active plugins are tracked in a generated `state.json` (git-ignored and environment-specific). A working sample, **`example-hello`**, ships in the repo — copy it as a starting point for your own.
+
+<Note>
+  Because a plugin can bring its own routes, views and migrations, most features can live entirely inside `plugins/` — which keeps your store easy to update as the core moves forward.
+</Note>

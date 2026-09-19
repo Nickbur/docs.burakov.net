@@ -1,0 +1,54 @@
+---
+title: "Architecture"
+description: "How the engine is put together — core, modules, middleware and templates."
+---
+
+Divine eCommerce is its own modular PHP framework, not a fork of an existing shop. If you're going to extend it, this is the shape of the thing.
+
+## The stack
+
+- **PHP 8.5** on a custom framework built from PSR components: Laminas Diactoros (PSR-7), League Route, PHP-DI (PSR-11), Twig, Doctrine DBAL, Monolog and Phinx for migrations.
+- **PostgreSQL** for data, **Redis** for cache, sessions and throttling.
+- **Front end**: Vite + TypeScript, UIkit, htmx and Alpine.js — progressive enhancement over server-rendered HTML.
+
+## Layout
+
+```text
+src/
+  Core/         Framework: bootstrap, DI container, middleware,
+                module loader, plugin system, Twig extensions
+  App/          Application shell — routes and the Frontend views (Twig + SCSS)
+  Modules/      The store, split into focused domain modules
+  Database/     Phinx migrations and seeders
+public/         Web root (index.php front controller + built assets)
+plugins/        Drop-in plugins (see the Plugins page)
+```
+
+## Modules
+
+Each area of the store is a module under `src/Modules/`, and each module carries its own routes, controllers and models:
+
+<CardGroup cols={2}>
+  <Card title="Storefront & Catalog" icon="bag-shopping">
+    Home, product and category pages, brands, search and filtering.
+  </Card>
+  <Card title="Cart & Order" icon="cart-shopping">
+    Cart, checkout, order lifecycle, returns and payment gateways.
+  </Card>
+  <Card title="Customer & Pricing" icon="user">
+    Accounts, the customer cabinet, loyalty points and coupons.
+  </Card>
+  <Card title="Content & Media" icon="newspaper">
+    Blog, CMS pages, sliders, uploads and settings.
+  </Card>
+</CardGroup>
+
+## Requests and safety
+
+Every request flows through a **PSR-15 middleware** pipeline — including CSRF protection, authentication and role-based access control (RBAC), which guards the `/admin` and `/account` areas.
+
+Database writes go through a small repository layer (`BaseRepository`) with boolean-safe helpers, and a build-time guard (`make lint-writes`, also run in CI) fails the build if a model bypasses them. It's a guardrail that keeps Postgres from choking on the little type mismatches that usually surface only in production.
+
+## Templates
+
+Views are Twig templates under `src/App/Frontend/views`, styled with SCSS compiled by Vite. Modules and plugins can register their own view paths, so a feature can ship its own templates without editing the shell.

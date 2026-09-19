@@ -1,0 +1,74 @@
+---
+title: "Quickstart"
+description: "Get Divine eCommerce running locally with Docker in a few commands."
+---
+
+Divine eCommerce runs in Docker — nginx, PHP-FPM, PostgreSQL and Redis — orchestrated by a `Makefile`. You need **Docker** and **Docker Compose**; everything else lives in the containers.
+
+## Requirements
+
+- Docker and Docker Compose
+- Git
+- That's it — PHP, PostgreSQL and Redis all run in containers.
+
+## Install
+
+<Steps>
+  <Step title="Clone and configure">
+    ```bash
+    git clone https://github.com/Nickbur/divine-ecommerce.git
+    cd divine-ecommerce
+    cp .env.example .env             # edit DB / app settings if you like
+    cp phinx.php.example phinx.php   # migration config (reads DB_* from .env)
+    ```
+  </Step>
+  <Step title="Start the stack">
+    ```bash
+    make up
+    ```
+    This starts PHP-FPM, PostgreSQL and Redis, with nginx serving the app on [http://localhost:8080](http://localhost:8080). Run `make help` to see every target.
+  </Step>
+  <Step title="Install dependencies and build assets">
+    ```bash
+    make composer-install
+    make npm-install && make npm-build
+    ```
+  </Step>
+  <Step title="Create the database">
+    ```bash
+    make migrate && make seed
+    ```
+    `make migrate` runs the Phinx migrations; `make seed` fills the store with demo data (products, categories, brands, a demo admin and sample orders).
+  </Step>
+  <Step title="Open the store">
+    Visit [http://localhost:8080](http://localhost:8080) for the storefront and [http://localhost:8080/admin](http://localhost:8080/admin) for the admin panel.
+  </Step>
+</Steps>
+
+## Demo login
+
+The seed data creates a demo administrator:
+
+| Field | Value |
+| --- | --- |
+| Login | `admin` (or `admin@divine-ecommerce.top`) |
+| Password | `divine2026` |
+
+<Warning>
+  These are demo credentials for local development only. Change them (and reseed with your own data) before putting a store in front of real customers.
+</Warning>
+
+## Everyday commands
+
+```bash
+make up            # start the stack
+make down          # stop it
+make migrate-fresh # rebuild the database from scratch and reseed
+make npm-dev       # watch and rebuild front-end assets
+make check         # run the quality gates (DB-write guard + PHPStan + tests)
+make cache-clear   # clear compiled templates and caches
+```
+
+<Note>
+  `make up-all` also starts Adminer (a database GUI, on port 8888 by default) and the asset watcher — handy while developing.
+</Note>
