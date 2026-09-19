@@ -229,6 +229,33 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Proofday",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "proofday",
+                            "proofday/getting-started"
+                        ]
+                    },
+                    {
+                        "group": "Using Proofday",
+                        "pages": [
+                            "proofday/close-the-day",
+                            "proofday/streaks-and-momentum",
+                            "proofday/ai-proof"
+                        ]
+                    },
+                    {
+                        "group": "Privacy & help",
+                        "pages": [
+                            "proofday/privacy",
+                            "proofday/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },
