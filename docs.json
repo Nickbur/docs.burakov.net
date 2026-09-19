@@ -294,6 +294,31 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Sidedrop",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "sidedrop",
+                            "sidedrop/how-it-works"
+                        ]
+                    },
+                    {
+                        "group": "Receiving",
+                        "pages": [
+                            "sidedrop/saving-files"
+                        ]
+                    },
+                    {
+                        "group": "Privacy & help",
+                        "pages": [
+                            "sidedrop/privacy",
+                            "sidedrop/faq"
+                        ]
+                    }
+                ]
             }
         ]
     },

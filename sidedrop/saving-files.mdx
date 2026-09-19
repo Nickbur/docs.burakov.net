@@ -1,0 +1,47 @@
+---
+title: "Saving what you receive"
+description: "Large files, folders, text, and how saving differs across browsers."
+---
+
+Sidedrop is built to handle real transfers — including multi-gigabyte files — and to save them
+with a single click at the end. Exactly how the save works depends on the browser you're
+receiving in.
+
+## Big files stream to disk, not memory
+
+As a file arrives, Sidedrop streams it to on-disk scratch storage in your browser rather than
+holding it all in memory. That's what lets it receive large files without the tab running out of
+room, and it's why you see live progress instead of a long silent wait.
+
+## Saving at the end
+
+When an item finishes, it gets a **Save** action:
+
+<CardGroup cols={2}>
+  <Card title="Chromium (Chrome, Edge)" icon="folder-open">
+    You get a native "save as" dialog and choose exactly where the file lands. A batch or a whole
+    folder can be saved to one location, with the folder structure recreated.
+  </Card>
+  <Card title="Firefox, Safari, mobile" icon="download">
+    There's no system save picker, so the file downloads to your browser's Downloads folder
+    instead — one file at a time, or a zip for a folder or batch.
+  </Card>
+</CardGroup>
+
+## Folders and text
+
+Whole folders keep their structure: the sender flattens the tree and the receiver rebuilds it on
+save. Text and clipboard snippets arrive as a copyable block you can also save as a `.txt` file —
+handy for shooting a link, a code, or a paragraph between your own devices.
+
+## Receiving big files on a phone
+
+The weak corner, told honestly: **receiving** a very large file **on a phone** (especially on
+iOS) can be limited by the browser, which may buffer it in memory and cap the size. Sending from a
+phone is solid, and all the desktop paths handle big files well. If you're moving something large,
+make the phone the **sender** and a computer the receiver.
+
+<Note>
+  Sidedrop shows a soft inline note when it detects a browser that can't stream-save or is
+  size-limited, so you know before you start rather than after.
+</Note>

@@ -1,0 +1,38 @@
+---
+title: "Privacy"
+description: "Why there's nothing to store, what the server sees, and the honest bit about relays."
+---
+
+Sidedrop's privacy isn't a policy bolted onto a normal file-transfer service — it's a consequence
+of how the tool is built. There's simply nowhere for your files to be kept.
+
+## Nothing is uploaded or stored
+
+Your files stream **directly between the two browsers** over an encrypted connection. There's no
+storage bucket, no processing queue, and no copy left behind. When you close the tabs, there's
+nothing to delete because nothing was ever saved — not on a server, and not by me.
+
+## No account, no tracking
+
+There's no sign-up and no login, so there's nothing about you to store in the first place. Your
+transfers don't carry analytics, and there's no advertising profile riding along. The private
+behaviour is the only behaviour.
+
+## What the signaling server sees
+
+One small server does exactly one job: it helps the two devices find each other when a room is
+opened, then gets out of the way. It relays the connection-setup messages between the two sides —
+it does **not** see your files, and it doesn't store them. Think of it as pointing two people to
+the same table, not carrying the envelope.
+
+## The honest bit about relays
+
+Some strict networks won't allow two devices to connect directly. When that happens, the traffic
+has to pass through a **relay** to get through at all. Even then, the relay only forwards the
+encrypted stream — it can't read what's inside. Most transfers are fully direct; the relay is a
+fallback for the networks that force one, and it's still a pipe, not a reader.
+
+<Note>
+  In short: the connection is end-to-end encrypted, the server only makes introductions, and
+  nothing you send is ever stored anywhere.
+</Note>

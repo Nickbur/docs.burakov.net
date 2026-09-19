@@ -1,0 +1,49 @@
+---
+title: "How it works"
+description: "Pairing a room, dropping files, and what actually travels between the two devices."
+---
+
+Sidedrop connects exactly two browsers and streams your files directly between them. Here's what
+happens from opening the site to a finished transfer.
+
+## One room, three ways to pair
+
+When you open Sidedrop, it creates a private **room** and shows it three ways at once:
+
+- a **share link** you can send through any messenger,
+- a **short code** you can read out or type,
+- a **QR code** to scan with a phone.
+
+All three point at the same room. Whoever opens it becomes the second device, and the two are
+paired. A room holds exactly two — if someone else tries to join a full room, they're told it's
+busy rather than silently joining your transfer.
+
+## Symmetric by design
+
+There's no fixed "sender" and "receiver." Once two devices are paired, **either** side can drop
+files, and both can send at the same time. That's why the same flow works phone-to-computer,
+computer-to-computer, or when you're handing something to another person.
+
+## No accept step
+
+Transfers start the moment you drop something — there's no "accept this file?" prompt on the
+other side. The room code is the consent: whoever you shared it with is who you meant to send to.
+
+## What travels between the devices
+
+Once paired, the two browsers open a **direct, encrypted channel** and the file's bytes flow
+across it in order, with the receiver confirming what it has as it goes. A live table shows each
+item with its progress, speed, ETA, and status. Files, whole folders (the structure is recreated
+on the other side), and plain text can all ride the same channel.
+
+<Note>
+  The direct channel is end-to-end encrypted. A small signaling server helps the two devices find
+  each other at the start, but never carries your files — see [Privacy](/sidedrop/privacy).
+</Note>
+
+## When the network wobbles
+
+If the connection drops for a moment or your phone switches from Wi-Fi to cellular mid-transfer,
+Sidedrop pauses and re-establishes the path, then continues **from where it stopped** rather than
+restarting. This works as long as both tabs stay open; fully closing or reloading a tab ends that
+session.

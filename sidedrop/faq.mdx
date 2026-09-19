@@ -1,0 +1,39 @@
+---
+title: "FAQ"
+description: "Limits, browsers, phones, and where the edges are."
+---
+
+<AccordionGroup>
+  <Accordion title="Do I need an account or an app?">
+    Neither. Sidedrop is a website — open it on both devices, pair them, and drop files. There's
+    nothing to install and no sign-up, so there's also nothing about you to store.
+  </Accordion>
+  <Accordion title="Is there a file size limit?">
+    There's no artificial cap. Received files stream to on-disk storage in your browser rather than
+    memory, so large files (multi-gigabyte) work — bounded in practice only by free disk space. The
+    exception is receiving a very large file on a phone, which some mobile browsers limit.
+  </Accordion>
+  <Accordion title="Does it only work on the same Wi-Fi?">
+    No. Sidedrop works across different networks — your phone on cellular to your laptop on Wi-Fi,
+    or to someone across the world. It uses a direct peer-to-peer connection, with a relay fallback
+    for networks that won't allow a direct one.
+  </Accordion>
+  <Accordion title="Can I send to another person, not just my own devices?">
+    Yes. Share the room link through any messenger; when they open it, the two of you are paired and
+    you can send. The transfer is still direct and encrypted between your two browsers.
+  </Accordion>
+  <Accordion title="What happens if my connection drops mid-transfer?">
+    It pauses and picks up where it left off once the path is re-established — only the missing
+    pieces are resent, not the whole file. This holds while both tabs stay open. Fully closing or
+    reloading a tab ends that session; Sidedrop isn't cloud storage, so there's no "resume later."
+  </Accordion>
+  <Accordion title="Which browsers work best?">
+    Chrome and Edge on desktop have the smoothest experience, including a native "save as" dialog and
+    folder saving. Firefox and Safari work too, saving via ordinary downloads (a zip for folders and
+    batches). Sending works everywhere, including phones.
+  </Accordion>
+  <Accordion title="What does it cost?">
+    Nothing. Sidedrop is free and open source, with no paid tier and no ads. It's a showcase project
+    and a small thank-you, not a business — an optional GitHub Sponsors link is the only ask.
+  </Accordion>
+</AccordionGroup>
