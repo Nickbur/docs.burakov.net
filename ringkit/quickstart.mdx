@@ -1,0 +1,108 @@
+---
+title: "Quickstart"
+description: "Install RingKit and present your first native incoming call."
+---
+
+RingKit requires **Capacitor 8** (iOS 14+, Android 8+). This page gets the plugin wired; the
+platform pages cover the push setup that wakes a killed app: [iOS](/ringkit/ios),
+[Android](/ringkit/android).
+
+## 1. Install
+
+```bash
+npm install @nickbur/ringkit
+npx cap sync
+```
+
+## 2. Configure
+
+RingKit reads **static** config from `capacitor.config` under `plugins.RingKit` (it must be
+static — on a killed app the JS layer isn't alive to configure the call):
+
+```json
+{
+  "plugins": {
+    "RingKit": {
+      "appName": "Acme",
+      "supportsVideo": true,
+      "payloadPreset": "raw"
+    }
+  }
+}
+```
+
+Every key is documented in [Configuration](/ringkit/configuration).
+
+## 3. Wire the call lifecycle
+
+<Warning>
+  Attach listeners **before** `register()`. The iOS VoIP token and an Android cold-start
+  answer can fire the moment `register()` runs.
+</Warning>
+
+```ts
+import { RingKit } from '@nickbur/ringkit';
+
+async function setupCalls() {
+  if (!(await RingKit.isAvailable()).available) return; // web/desktop → in-app ringing
+
+  await RingKit.addListener('registration', ({ token, platform, apsEnvironment }) => {
+    // Register `token` with your push provider so it can wake this device.
+    // iOS: `apsEnvironment` ('development' | 'production') tells you which APNs
+    // gateway / OneSignal test_type to route the VoIP token through.
+  });
+
+  await RingKit.addListener('callAnswered', async ({ callId, chatId, hasVideo }) => {
+    await joinYourCall(callId, chatId, hasVideo);   // your media/SFU join
+    await RingKit.reportCallConnected({ callId });
+  });
+
+  await RingKit.addListener('callEnded', ({ callId }) => {
+    teardownYourCall(callId);
+  });
+
+  await RingKit.register();
+}
+```
+
+## 4. Present a call
+
+From a foreground/background push handler, present the native screen yourself. From a **killed**
+app RingKit presents it for you (iOS PushKit delegate / Android FCM service — see the platform
+pages).
+
+```ts
+await RingKit.reportIncomingCall({ callId, handle: 'Ada Lovelace', hasVideo: false, chatId });
+
+// End it (remote hang-up / cancel):
+await RingKit.endCall({ callId });
+```
+
+## 5. Try it without a push server
+
+Clone the plugin's `example/` app and tap **Simulate incoming call** — it exercises
+`reportIncomingCall` → native UI → `callAnswered`/`callEnded` on both platforms with no push
+infrastructure. For the killed-app path, use the ready-made test-push senders in
+`example/scripts/`.
+
+<Note>
+  Gating your media start on the audio session is what prevents the iOS dead-microphone bug —
+  see [In-call audio](/ringkit/audio).
+</Note>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="iOS setup" icon="apple" href="/ringkit/ios">
+    Capabilities, Info.plist, and the VoIP push.
+  </Card>
+  <Card title="Android setup" icon="android" href="/ringkit/android">
+    The wake push and runtime permissions.
+  </Card>
+  <Card title="Configuration" icon="gear" href="/ringkit/configuration">
+    Every config key and payload mapping.
+  </Card>
+  <Card title="API reference" icon="code" href="/ringkit/api">
+    Methods and events.
+  </Card>
+</CardGroup>

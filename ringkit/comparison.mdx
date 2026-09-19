@@ -1,0 +1,40 @@
+---
+title: "How RingKit compares"
+description: "An honest look at the Capacitor incoming-call plugins — pick the right tool, not necessarily RingKit."
+---
+
+The Capacitor incoming-call landscape is a handful of small plugins. Here is what each actually
+does, so you can pick the right tool.
+
+| | **RingKit** | `@capgo/…incoming-call-kit` | `…incoming-call-kit` (community) | `@capgo/…callkit-voip` |
+|---|---|---|---|---|
+| **Status** | Maintained (Capacitor 8) | Maintained | New, solo, 1★ | Abandoned (~3 yrs) |
+| **Platforms** | iOS + Android | iOS + Android | iOS + Android | iOS only |
+| **Wake from a killed app** | ✅ owns the whole cycle | ❌ you wire push + wake | ⚠️ you wire the push transport | ⚠️ iOS PushKit, unmaintained |
+| **iOS PushKit + CallKit** | ✅ own PushKit delegate | ⚠️ CallKit UI only | ✅ token + CallKit | ✅ (old) |
+| **Android** | ✅ Telecom + fallback + watchdog | ⚠️ full-screen notification | ⚠️ custom full-screen intent | ❌ |
+| **OEM reliability helpers** | ✅ | ❌ | ❌ | ❌ |
+| **Provider-agnostic payload** | ✅ | ❌ | ❌ | ❌ |
+| **License** | Source-available, $99/yr/app | MPL-2.0 (free) | MIT (free) | MIT (free) |
+
+## When to choose which
+
+- **`@capgo/capacitor-incoming-call-kit`** — if you already run your own reliable push + wake
+  pipeline and only need a native incoming-call *screen* on both platforms. A good, maintained,
+  presentation-only plugin — and free.
+- **The community `capacitor-incoming-call-kit`** — the most feature-rich *free* option (a broad
+  call-UI API on both platforms). Choose it if you want that surface for free **and** are willing
+  to own the push transport, the killed-app reliability across the Android OEM zoo, and the
+  long-term maintenance yourself.
+- **`@capgo/capacitor-callkit-voip` and its forks** — iOS-only and effectively unmaintained.
+  Fine for a quick iOS-only prototype, not for shipping on both platforms.
+- **RingKit** — if you want the **whole cycle handled and maintained** on both platforms: the
+  VoIP token, the push→wake-from-killed path, the Android OEM reliability layer, provider-agnostic
+  payload mapping, and someone keeping it working as iOS/Android change each year.
+
+The honest line: the hard, perishable part of VoIP calling on mobile isn't the call screen —
+plenty of plugins draw one. It's making the phone *ring reliably from a killed app across the
+Android OEM zoo, year after year*. That's what RingKit is for.
+
+Coming from another plugin? The plugin's `docs/MIGRATION.md` maps the common concepts and the
+migration steps.

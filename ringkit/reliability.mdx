@@ -1,0 +1,99 @@
+---
+title: "Android reliability"
+description: "Ringing from a killed app across the Android OEM zoo — the silent-failure watchdog, per-OEM expectations, the helpers you wire, and non-GMS (Huawei) via HMS Push."
+---
+
+Ringing on Android from a killed app crosses four layers, each of which an OEM can break
+independently. This is what breaks, how RingKit mitigates it, and what you still have to do.
+
+## The four layers
+
+| # | Layer | Failure mode | RingKit mitigation |
+|---|-------|--------------|--------------------|
+| 1 | **Push delivery** | Doze / App Standby / OEM "app killers" delay or drop the wake-up | Require a **high-priority `data`** FCM message — the OS grants a short background + foreground-service window for these |
+| 2 | **Presentation** | Self-managed Telecom is rejected — loudly, or **silently** (accepted, never shown) | Fall back to the full-screen UI on explicit failure, **plus a watchdog** that catches the silent case |
+| 3 | **Foreground-service start** | Android 12+ blocks starting an FGS from the background | The service starts inside the high-priority-FCM window (allowed); type `phoneCall` |
+| 4 | **Activity launch on answer** | Android 10/12/14 restrict background Activity starts | The full-screen intent is exempt; cold-start answers are persisted and flushed on `register()` |
+
+### The silent Telecom failure
+
+The nastiest OEM bug: handing the call to the system returns success, no error callback fires,
+and no call UI appears. A naive hybrid assumes success and never falls back → **no ring at all.**
+
+RingKit doesn't trust "accepted." After the system takes a call, it arms a watchdog; if the
+real call screen hasn't materialized shortly after and the call is still live, RingKit claims
+the call for its full-screen fallback and rings there. A late system screen for a claimed call
+is turned away, so the OEM can't pop a second, empty call window.
+
+## Per-OEM expectations
+
+| OEM / skin | Telecom self-managed UI | Recommendation |
+|------------|-------------------------|----------------|
+| **Pixel / AOSP** | Reliable | Default hybrid is ideal |
+| **Samsung / One UI** | Mostly reliable | Ask users to exclude the app from "Put unused apps to sleep" |
+| **Xiaomi / MIUI, HyperOS** | Frequently silent-fails | The watchdog covers ringing; consider `androidForceFullScreen: true`. Autostart + "No battery restrictions" must be enabled by the user |
+| **Huawei / EMUI (no GMS)** | Unreliable; often no FCM | Needs HMS Push (below); on GMS builds, treat like MIUI |
+| **Oppo / Vivo / Realme** | Unreliable | Same as MIUI; lean on the full-screen fallback |
+| **Nothing / Motorola / stock-ish** | Reliable | Default hybrid |
+
+Prefer the behavioural watchdog over manufacturer sniffing — skins and versions drift, the
+watchdog does not.
+
+## Config recipes
+
+```json
+// Native-first (default): true OS call screen where it works, fallback where it doesn't.
+{ "RingKit": { "androidFullScreenFallback": true } }
+
+// Reliability-max: skip Telecom entirely, always ring via the full-screen UI.
+{ "RingKit": { "androidForceFullScreen": true } }
+```
+
+## What your app still does
+
+RingKit ships the plumbing; a couple of levers are the user's to pull and can't be toggled in
+code:
+
+- **Request `POST_NOTIFICATIONS`** (Android 13+) — the fallback is a notification.
+- **Prompt for battery-optimization exemption** — Google allows this for calling apps; it
+  materially improves push delivery.
+- **Guide users to OEM autostart settings** on MIUI/EMUI/ColorOS. RingKit gives you
+  `getReliabilityInfo()` (manufacturer + battery-exemption + whether an autostart screen is
+  likely) and the actions `openBatteryOptimizationSettings()` / `openAutoStartSettings()` to
+  take the user straight there. Show a one-time hint when `!ignoringBatteryOptimizations ||
+  autoStartAvailable`.
+
+## Honest limits
+
+- A device with FCM fully starved (aggressive OEM killer + user never opened the app) can still
+  miss a call — no library beats an OS that refuses to deliver the push. Battery-exemption and
+  autostart guidance is the real lever.
+- The full-screen fallback is a very good call screen, but it isn't the system call UI: it
+  doesn't appear in the OS call log or integrate with car kits the way a Telecom call does.
+  That's the trade-off for ringing everywhere.
+
+## Non-GMS (Huawei) via HMS Push
+
+RingKit is **push-transport-agnostic**, so HMS plugs into the same native entry point — no
+RingKit changes, and the Huawei SDK never touches your GMS builds. Add HMS to *your app*, then
+hand the wake message to RingKit:
+
+```kotlin
+class AppHmsMessagingService : HmsMessageService() {
+    override fun onMessageReceived(message: RemoteMessage) {
+        val data = message.dataOfMap ?: return
+        val config = RingKitConfig.load(applicationContext)
+        val callIdKey = config.payloadKeys["callId"] ?: "callId"
+        if (data[callIdKey].isNullOrEmpty()) return          // not a call push
+        val info = RingKitPayload.extract(data, config)
+        RingKitIncomingCall.present(applicationContext, info, config)
+    }
+    override fun onNewToken(token: String) {
+        // Register this HMS token with your VoIP control-plane to wake the device.
+    }
+}
+```
+
+Send an HMS Push **data** message carrying the same call fields as FCM (`callId`, `handle`,
+`hasVideo`, `chatId`). Everything downstream — Telecom, the fallback, the watchdog, answer
+routing — is identical to the GMS path. The plugin's `docs/HMS.md` has the full Gradle wiring.

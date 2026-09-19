@@ -1,0 +1,78 @@
+---
+title: "API reference"
+description: "Every RingKit method and event, with payloads."
+---
+
+Import the plugin and call its methods; attach event listeners **before** `register()`.
+
+```ts
+import { RingKit } from '@nickbur/ringkit';
+```
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `register()` | Register for VoIP; emits `registration`. |
+| `reportIncomingCall(opts)` | Present a native incoming call. `{ callId, handle, hasVideo?, chatId?, avatarUrl? }` |
+| `startCall(opts)` | Start an **outgoing** call (native UI, call log, audio). `{ callId, handle, hasVideo?, chatId? }` |
+| `reportCallConnected({ callId })` | Mark the call connected (required for outgoing). |
+| `endCall({ callId })` | Dismiss the call UI. |
+| `setMuted({ callId, muted })` | Reflect mute on the call UI. |
+| `setSpeakerphone({ enabled, callId? })` | Loudspeaker ⇄ earpiece (in-call audio module). |
+| `setProximityMonitoring({ enabled })` | Screen blackout near the ear. |
+| `getAudioDevices()` | `{ devices: AudioDevice[]; selectedId: string \| null }` |
+| `setAudioDevice({ deviceId })` | Select earpiece/speaker/Bluetooth/headset. |
+| `getActiveCalls()` | `{ calls: ActiveCall[] }` — currently tracked calls. |
+| `isAvailable()` | `{ available: boolean }` — `false` on web/desktop. |
+| `getReliabilityInfo()` | Android delivery signals (manufacturer, battery exemption, autostart). |
+| `openBatteryOptimizationSettings()` | Take the user to exempt the app (Android). |
+| `openAutoStartSettings()` | `{ opened: boolean }` — open the OEM autostart screen (Android). |
+| `removeAllListeners()` | Detach all listeners. |
+
+## Events
+
+| Event | Payload | Fires when |
+|-------|---------|------------|
+| `registration` | `{ token, platform, apsEnvironment? }` | VoIP token is ready — register it with your push provider. |
+| `callAnswered` | `{ callId, chatId?, hasVideo? }` | User answered on the native UI → join the call. |
+| `callEnded` | `{ callId, chatId?, hasVideo? }` | User declined/ended, or the call ended remotely. |
+| `callStarted` | `{ callId, chatId?, hasVideo? }` | An outgoing `startCall` was accepted by the OS. |
+| `callMuted` | `{ callId, muted }` | Native mute toggled. |
+| `audioSessionActivated` | `{ callId }` | Safe to start media (`getUserMedia`/SFU connect). |
+| `audioSessionDeactivated` | `{ callId }` | Session deactivated — stop media. |
+| `audioSessionError` | `{ callId, context, error }` | Configuring/activating/routing the session failed (non-fatal). |
+| `callHeld` | `{ callId, chatId? }` | OS/user put the call on hold — mute outgoing media. |
+| `callUnheld` | `{ callId, chatId? }` | Call taken off hold — restore media. |
+| `audioRouteChanged` | `{ callId, route }` | Active route changed (Bluetooth connected, speaker toggled). `route`: `earpiece`\|`speaker`\|`bluetooth`\|`headset`\|`unknown` |
+
+## Key types
+
+```ts
+interface ActiveCall {
+  callId: string;
+  handle: string;
+  hasVideo: boolean;
+  chatId?: string;
+  answered?: boolean;
+  muted?: boolean;
+}
+
+interface ReliabilityInfo {
+  platform: 'ios' | 'android' | 'web';
+  manufacturer: string;               // Build.MANUFACTURER on Android; '' elsewhere
+  ignoringBatteryOptimizations: boolean;
+  autoStartAvailable: boolean;
+}
+
+interface AudioDevice {
+  id: string;                         // opaque, pass to setAudioDevice
+  kind: 'earpiece' | 'speaker' | 'bluetooth' | 'headset' | 'unknown';
+  label: string;
+}
+```
+
+<Note>
+  Full type definitions live in the plugin's `src/definitions.ts`. `RingKitConfig` is documented
+  on the [Configuration](/ringkit/configuration) page.
+</Note>

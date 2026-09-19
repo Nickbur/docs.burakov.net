@@ -1,0 +1,58 @@
+---
+title: "RingKit"
+description: "The full native VoIP incoming-call cycle for Capacitor — a VoIP push wakes the device even from a killed app, shows the real native call screen, and routes the answer back into your app."
+---
+
+RingKit is a **Capacitor plugin** that owns the whole incoming-call cycle, not just the call
+screen:
+
+**VoIP push → wake from a killed app → native call UI → answer routed back into your app.**
+
+| Platform | What RingKit does |
+|----------|-------------------|
+| **iOS** | PushKit (VoIP token) + CallKit, reported from the plugin's own PushKit delegate — rings while the app is terminated |
+| **Android** | A high-priority FCM data message → self-managed Telecom `ConnectionService`, with a full-screen-intent fallback for OEMs where Telecom is unreliable |
+| **Web / desktop** | A safe no-op (`isAvailable()` is `false`) — fall back to in-app ringing |
+
+It works with the push you already send (raw FCM/APNs, OneSignal, or SIP), owns the in-call
+audio session so calls "just work", and ships an Android reliability layer for the strict-OEM
+long tail.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/ringkit/quickstart">
+    Install, register, and present your first call in a few minutes.
+  </Card>
+  <Card title="iOS setup" icon="apple" href="/ringkit/ios">
+    Capabilities, Info.plist, and sending the VoIP push.
+  </Card>
+  <Card title="Android setup" icon="android" href="/ringkit/android">
+    Deliver the wake push — RingKit's FCM service or your own handler.
+  </Card>
+  <Card title="Android reliability" icon="signal" href="/ringkit/reliability">
+    Ringing across the OEM zoo — the watchdog and the helpers you wire.
+  </Card>
+  <Card title="In-call audio" icon="microphone" href="/ringkit/audio">
+    The one rule that fixes the WKWebView dead-microphone bug.
+  </Card>
+  <Card title="API reference" icon="code" href="/ringkit/api">
+    Every method and event, with payloads.
+  </Card>
+</CardGroup>
+
+## What you get
+
+- **The killed-app path, owned end to end** — the VoIP token, the push→wake, the native
+  screen, and the answer surviving a cold start. Not just a call UI.
+- **Reliability across Android OEMs** — a hybrid Telecom + full-screen presentation with a
+  silent-failure watchdog, plus battery/autostart helpers to guide users on MIUI/EMUI/ColorOS.
+- **Provider-agnostic** — `raw` and `onesignal` payload presets plus dot-path key overrides,
+  so no backend rewrite is required.
+- **In-call audio handled** — routing, proximity, hold, and the dead-microphone fix, or an
+  `observe` mode when your media SDK owns the session.
+
+## License
+
+RingKit is **source-available** under the Burakov Source License — you may read and evaluate
+the source. **Production / commercial use requires a subscription: $99/yr per app.** See the
+[FAQ](/ringkit/faq) for what a subscription covers, or buy at
+[burakov.net/projects/ringkit](https://burakov.net/projects/ringkit).

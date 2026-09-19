@@ -1,0 +1,84 @@
+---
+title: "iOS setup"
+description: "Capabilities, Info.plist, and sending the VoIP push that wakes a killed app on iOS."
+---
+
+On iOS, RingKit registers its own `PKPushRegistry` for VoIP pushes and reports the call to
+CallKit synchronously from its PushKit delegate — so the native call screen appears even when
+the app is terminated. No AppDelegate wiring is required.
+
+## 1. Capabilities
+
+In Xcode → **Signing & Capabilities**, add:
+
+- **Push Notifications**
+- **Background Modes** → **Voice over IP** and **Audio, AirPlay, and Picture in Picture**
+
+## 2. Info.plist
+
+```xml
+<key>UIBackgroundModes</key>
+<array>
+  <string>voip</string>
+  <string>audio</string>
+</array>
+<key>NSMicrophoneUsageDescription</key>
+<string>Microphone access is used for calls.</string>
+```
+
+<Note>
+  The microphone usage string is required because the in-call audio module uses
+  `.playAndRecord`. A ring-only app that never captures audio can set `manageCallAudio: false`
+  or `callAudioMode: 'observe'` — see [In-call audio](/ringkit/audio).
+</Note>
+
+## 3. Send the VoIP push
+
+RingKit emits the VoIP token via the `registration` event. Send VoIP pushes with a **VoIP
+Services** APNs authentication key (`.p8`) or certificate:
+
+| Field | Value |
+|-------|-------|
+| **APNs topic** | `<your.bundle.id>.voip` |
+| **apns-push-type** | `voip` |
+| **Priority** | `10` |
+
+Payload (default `payloadPreset: "raw"`):
+
+```json
+{
+  "callId": "a1b2c3",
+  "handle": "Ada Lovelace",
+  "hasVideo": false,
+  "chatId": "room-42"
+}
+```
+
+iOS wakes the app and RingKit reports the call to CallKit synchronously (required — otherwise
+iOS terminates the app), so the call screen shows from a killed state.
+
+### apsEnvironment routing
+
+The `registration` event carries `apsEnvironment` (`development` | `production`), read from the
+embedded provisioning profile. Use it to route the VoIP token through the matching APNs gateway
+(or the right OneSignal `test_type`) — **a sandbox token routed as production never rings.**
+
+### OneSignal
+
+Set `payloadPreset: "onesignal"` and RingKit unwraps OneSignal's `custom.a` envelope. Register
+the emitted VoIP token with your OneSignal VoIP app.
+
+## Notes
+
+- **PushKit VoIP pushes do not fire on the iOS Simulator** — test the wake path on a real
+  device. The CallKit UI itself can be exercised in the simulator via `reportIncomingCall(...)`.
+- CallKit needs no special entitlement beyond Push Notifications.
+- The provider name on the CallKit screen is the app's own display name — iOS does not allow
+  overriding it at runtime, so the `appName` config applies to Android only.
+
+## Testing
+
+Read the VoIP token from `registration`, then run the ready-made
+`example/scripts/send-voip-ios.mjs` sender with your `.p8` key (topic `<bundle>.voip`,
+`apns-push-type: voip`). The call screen must appear with the app terminated. See the
+plugin's `docs/TESTING.md` for the full device matrix.

@@ -1,0 +1,85 @@
+---
+title: "Configuration"
+description: "Every RingKit config key, plus provider-agnostic payload mapping and remote cancel."
+---
+
+RingKit is configured **statically** under `plugins.RingKit` in `capacitor.config`. It must be
+static: on a killed app the JS layer isn't alive when the VoIP push arrives, so the native side
+reads this config to brand and present the call.
+
+```json
+{
+  "plugins": {
+    "RingKit": {
+      "appName": "Acme",
+      "supportsVideo": true,
+      "ringtoneName": "ringtone.caf",
+      "payloadPreset": "raw"
+    }
+  }
+}
+```
+
+## Config keys
+
+| Key | Type | Default | Notes |
+|-----|------|---------|-------|
+| `appName` | string | app display name | Android `PhoneAccount` label. iOS uses the app's own name (OS constraint) |
+| `supportsVideo` | boolean | `true` | Advertise video support |
+| `maximumCalls` | number | `1` | Max simultaneous calls per group |
+| `handleType` | `generic` \| `phoneNumber` \| `emailAddress` | `generic` | CallKit handle type |
+| `ringtoneName` | string | system default | iOS: a bundled sound file. Android: a `raw` resource name (fallback path) |
+| `iconName` | string | — | iOS: template image asset. Android: notification small-icon drawable |
+| `accentColorHex` | string | — | Android full-screen UI accent |
+| `androidFullScreenFallback` | boolean | `true` | Ring via full-screen intent when Telecom is unavailable |
+| `androidForceFullScreen` | boolean | `false` | Always use the full-screen path (skip Telecom) |
+| `androidChannelName` | string | `Incoming calls` | Notification channel name |
+| `androidPendingActionTtlMs` | number | `60000` | Max age (ms) of a cold-start answer/decline flushed on `register()`; older actions are dropped. `0` disables |
+| `manageCallAudio` | boolean | `true` | Own the in-call audio session (fixes the WKWebView dead-mic bug) — see [In-call audio](/ringkit/audio) |
+| `callAudioMode` | `manage` \| `observe` | `manage` | `observe` emits the audio events but leaves the session to your media SDK |
+| `payloadPreset` | `raw` \| `onesignal` | `raw` | `onesignal` unwraps the `custom.a` envelope |
+| `payloadKeys` | object | — | Dot-path overrides for `callId`/`handle`/`hasVideo`/`chatId`/`avatarUrl`/`type` |
+| `cancelType` | string | `cancel` | A push whose `type` equals this dismisses a ringing call (see below) |
+
+## Payload mapping
+
+RingKit doesn't own your push transport — your backend/provider sends the push, RingKit consumes
+it. It reads the call fields out of whatever shape you send:
+
+- **`payloadPreset: "raw"`** (default) — read the fields from the payload directly (top-level
+  unless overridden by `payloadKeys`).
+- **`payloadPreset: "onesignal"`** — first unwrap OneSignal's `custom.a` envelope, then apply
+  `payloadKeys`.
+
+If your fields live under different names or nested paths, remap them with dot-paths:
+
+```json
+{
+  "plugins": {
+    "RingKit": {
+      "payloadPreset": "raw",
+      "payloadKeys": {
+        "callId": "call.id",
+        "handle": "call.from.name",
+        "hasVideo": "call.video",
+        "chatId": "call.room"
+      }
+    }
+  }
+}
+```
+
+The defaults are `callId`, `handle`, `hasVideo`, `chatId`, `avatarUrl`, `type`. No backend change
+is required beyond matching one of these shapes.
+
+## Remote cancel
+
+If the caller hangs up before the callee answers, send the callee another push with the **same
+`callId`** and `type` equal to `cancelType` (default `"cancel"`). RingKit dismisses the ring —
+even on a killed device:
+
+- **iOS** — CallKit requires *every* VoIP push to report a call, so the cancel reports a brief,
+  self-ending placeholder (a momentary missed-call entry) and ends the real ring. This flash is
+  unavoidable per Apple's rule.
+- **Android** — the FCM service tears the call surface down silently. Custom handlers branch on
+  `RingKitPayload.isCancel(dataMap, config)` → `RingKitIncomingCall.dismiss(context, callId)`.

@@ -1,0 +1,73 @@
+---
+title: "In-call audio"
+description: "RingKit owns the native call audio session so calls just work — including the WKWebView dead-microphone bug — with routing, proximity, and hold."
+---
+
+RingKit owns the native call audio session by default (`manageCallAudio: true`) so calls "just
+work" on both platforms — including the notorious iOS **WKWebView dead-microphone bug**.
+
+## The one rule
+
+The system activates the call's audio session when a call is answered or started. If your
+WebView starts capturing (`getUserMedia`) **before** that activation, the capture binds to a
+session the system then re-hands-over, and it records silence — "the remote side can't hear me
+until I toggle the mic."
+
+RingKit removes the guesswork: **start your media only when RingKit says the session is active.**
+
+```ts
+RingKit.addListener('audioSessionActivated', async ({ callId }) => {
+  await startYourMedia(callId);   // getUserMedia / SFU connect ONLY here
+});
+RingKit.addListener('audioSessionDeactivated', ({ callId }) => {
+  stopYourMedia(callId);
+});
+```
+
+This is the same cross-platform contract on iOS and Android. Follow those two events and the
+dead microphone simply doesn't happen.
+
+## Routing, proximity, hold, devices
+
+```ts
+await RingKit.setSpeakerphone({ enabled: true });        // loudspeaker ⇄ earpiece
+await RingKit.setProximityMonitoring({ enabled: true });  // screen blackout near the ear
+const { devices, selectedId } = await RingKit.getAudioDevices();
+await RingKit.setAudioDevice({ deviceId });               // earpiece/speaker/Bluetooth/headset
+
+RingKit.addListener('audioRouteChanged', ({ route }) => updateUi(route));
+RingKit.addListener('callHeld',   ({ callId }) => muteYourMic(callId));   // OS hold
+RingKit.addListener('callUnheld', ({ callId }) => restoreYourMic(callId));
+```
+
+- **iOS** sets the category (`.playAndRecord`, mode `.voiceChat`/`.videoChat`) before the call
+  is answered and re-asserts your chosen route after WebKit's mid-call session churn.
+- **Android** takes audio focus, sets `MODE_IN_COMMUNICATION`, and releases focus on **every**
+  teardown path (guarded so it can't leak and leave the user's music muted). Proximity blackout
+  is handled natively while on the earpiece, so `setProximityMonitoring` is a successful no-op
+  there.
+
+## Outgoing calls
+
+```ts
+await RingKit.startCall({ callId, handle: 'Ada', hasVideo: false });
+// join your media on `audioSessionActivated`, then:
+await RingKit.reportCallConnected({ callId });
+```
+
+`startCall` reports the call to CallKit / self-managed Telecom, so the OS shows the in-call UI,
+writes a call-log entry, and RingKit owns the audio session. It emits `callStarted` when the OS
+accepts the call.
+
+## When to turn it off
+
+If a **native media SDK already owns the audio session** (a native LiveKit/Agora/Twilio/Vonage
+bridge — not the WebView), two managers would fight. Two options:
+
+- **`callAudioMode: 'observe'`** — RingKit still emits `audioSessionActivated`/`Deactivated`,
+  `callHeld`/`Unheld` and `audioRouteChanged` (so you keep the "safe to start" gate) but does
+  **not** touch the category or route.
+- **`manageCallAudio: false`** — the module is fully off.
+
+Also use `observe`/`false` for a **ring-only** app that never captures audio, so `.playAndRecord`
+doesn't trigger a needless microphone prompt on iOS.

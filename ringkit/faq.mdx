@@ -1,0 +1,70 @@
+---
+title: "FAQ"
+description: "Licensing, pricing, platforms, and common integration questions for RingKit."
+---
+
+## Licensing & pricing
+
+<AccordionGroup>
+  <Accordion title="What does a subscription cover?">
+    RingKit is **source-available**: you may read and evaluate the source freely. **Production /
+    commercial use requires a subscription — $99/yr per app.** One subscription covers one
+    published application (its store listing / bundle id + Android application-id family; build
+    flavours and platform variants of the *same* product count as one). Buy at
+    [burakov.net/projects/ringkit](https://burakov.net/projects/ringkit).
+  </Accordion>
+  <Accordion title="Can I evaluate it before buying?">
+    Yes — install it, read the source, and run the `example/` app and the whole call cycle in
+    development. The subscription is required to ship to production.
+  </Accordion>
+  <Accordion title="What support is included?">
+    Support is via **GitHub issues** (best-effort, no SLA). Security reports go to
+    `security@burakov.net` — see the plugin's `SECURITY.md`.
+  </Accordion>
+</AccordionGroup>
+
+## Platforms & requirements
+
+<AccordionGroup>
+  <Accordion title="Which versions does RingKit support?">
+    **Capacitor 8**, iOS 14+, and Android 8+ (API 26). Web and desktop are a safe no-op —
+    `isAvailable()` returns `false`, so you fall back to in-app ringing there.
+  </Accordion>
+  <Accordion title="Do I need Firebase / a specific push provider?">
+    No. RingKit produces the VoIP token and consumes the push, but your backend sends it. On iOS
+    that's APNs VoIP; on Android a high-priority FCM data message (or HMS Push on non-GMS
+    Huawei). It's provider-agnostic — `raw`, `onesignal`, or your own key mapping.
+  </Accordion>
+  <Accordion title="Does it work with LiveKit / Agora / Twilio / a SIP stack?">
+    Yes — RingKit handles the call *signalling and presentation*, not the media. Your media SDK
+    joins the call on `callAnswered`; call `reportCallConnected` once media flows. If a native
+    media SDK owns the audio session, set `callAudioMode: 'observe'` so the two don't fight.
+  </Accordion>
+</AccordionGroup>
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="The call doesn't ring on a Xiaomi / Huawei device">
+    Strict OEMs throttle background wake-ups. Ensure you send a **high-priority `data`** push,
+    prompt the user for battery-optimization exemption, and guide them to the autostart screen —
+    RingKit ships `getReliabilityInfo()` and the settings shortcuts for exactly this. See
+    [Android reliability](/ringkit/reliability).
+  </Accordion>
+  <Accordion title="The call connects but the other side can't hear me (iOS)">
+    Start your media on the `audioSessionActivated` event, not before — starting `getUserMedia`
+    too early causes the WKWebView dead-microphone bug. RingKit's default audio module fixes
+    this once you follow that one rule. See [In-call audio](/ringkit/audio).
+  </Accordion>
+  <Accordion title="My VoIP push never arrives on iOS">
+    Check the APNs environment: a sandbox (development) token routed as production never rings.
+    The `registration` event carries `apsEnvironment` so you can route the token correctly. Also
+    confirm the topic is `<bundle>.voip` with `apns-push-type: voip`. PushKit pushes don't fire
+    on the Simulator — test on a device.
+  </Accordion>
+  <Accordion title="Two call screens appear on Android">
+    That's the late-Telecom double, which RingKit already guards against by declining a late
+    system connection for a call it has claimed for the fallback. If you see it, make sure you're
+    on the current version and calling `present(...)` once per `callId`.
+  </Accordion>
+</AccordionGroup>

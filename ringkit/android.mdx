@@ -1,0 +1,104 @@
+---
+title: "Android setup"
+description: "Deliver the wake push and request the runtime permissions — RingKit's opt-in FCM service, or your own push handler."
+---
+
+RingKit's permissions and components merge into your app automatically. You provide an FCM
+project (`google-services.json`) and a way to deliver a **high-priority data message** that
+wakes the device.
+
+## What merges in automatically
+
+From the plugin manifest: the Telecom `ConnectionService`, the foreground ring service, the
+full-screen call Activity, the notification action receiver, and the permissions
+`MANAGE_OWN_CALLS`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_PHONE_CALL`, `POST_NOTIFICATIONS`,
+`USE_FULL_SCREEN_INTENT`, `VIBRATE`, `WAKE_LOCK`, `MODIFY_AUDIO_SETTINGS`.
+
+## Runtime permissions
+
+- **Android 13+** — request `POST_NOTIFICATIONS` before calls arrive. The full-screen fallback
+  is a notification; without the permission it cannot show. (The Telecom path does not need it.)
+- **Android 14+** — `USE_FULL_SCREEN_INTENT` is auto-granted to apps whose notifications use
+  `CATEGORY_CALL` (RingKit's do). No manual grant needed for a calling app.
+- **Bluetooth selection** — enumerating/selecting a specific Bluetooth device on Android 12+
+  needs the runtime `BLUETOOTH_CONNECT` permission. Without it, RingKit still routes to
+  earpiece/speaker.
+
+## Delivering the wake push
+
+### Option A — RingKit owns the FCM service
+
+If your app has no other FCM service, declare the opt-in service in your app manifest:
+
+```xml
+<service
+    android:name="net.burakov.ringkit.RingKitMessagingService"
+    android:exported="false">
+  <intent-filter>
+    <action android:name="com.google.firebase.MESSAGING_EVENT" />
+  </intent-filter>
+</service>
+```
+
+Send a **high-priority `data` message** (at minimum `callId`):
+
+```json
+{
+  "message": {
+    "token": "<device-fcm-token>",
+    "android": { "priority": "HIGH" },
+    "data": { "callId": "a1b2c3", "handle": "Ada Lovelace", "hasVideo": "false", "chatId": "room-42" }
+  }
+}
+```
+
+`RingKitMessagingService` treats any data message carrying `callId` as a call; override
+`onNonCallMessage(message)` in a subclass to handle your other pushes.
+
+### Option B — you already have a push service
+
+If you already run a push service (OneSignal, your own `FirebaseMessagingService`, SIP), do
+**not** declare RingKit's service — it would collide. From your existing handler, call:
+
+```kotlin
+val config = RingKitConfig.load(context)
+val info = RingKitPayload.extract(dataMap, config)
+RingKitIncomingCall.present(context, info, config)
+```
+
+For a **cancel** push (`type == cancelType`), call `RingKitIncomingCall.dismiss(context, callId)`
+instead — branch on `RingKitPayload.isCancel(dataMap, config)`. For OneSignal, set
+`payloadPreset: "onesignal"` and hand OneSignal's data map to `RingKitPayload.extract`.
+
+<Warning>
+  Send the call fields as **`data`** (not `notification`) with `android.priority = "HIGH"`, or
+  the OS won't grant the background wake window and the call may never ring.
+</Warning>
+
+## Hybrid presentation
+
+`present()` first tries a self-managed Telecom `ConnectionService` — the true native call
+screen. If Telecom is unavailable or the OEM rejects it, RingKit falls back to a
+full-screen-intent Activity backed by a foreground ring service, so the call still rings from a
+killed app. Control it with `androidFullScreenFallback` / `androidForceFullScreen`. The
+strict-OEM story is on the [Reliability](/ringkit/reliability) page.
+
+## Localizing the full-screen call UI
+
+The fallback screen ships English strings. App resources override library resources, so define
+the same names in your app's `res/values-<lang>/strings.xml`:
+
+```xml
+<string name="ringkit_incoming_call">Appel entrant</string>
+<string name="ringkit_incoming_video_call">Appel vidéo entrant</string>
+<string name="ringkit_answer">Répondre</string>
+<string name="ringkit_decline">Refuser</string>
+```
+
+The native Telecom call screen is localized by the OS and needs nothing.
+
+<Note>
+  Huawei / non-GMS devices can't receive FCM. RingKit is push-agnostic — deliver the wake
+  message with HMS Push and call the same `present(...)` entry point. See the HMS section on
+  the [Reliability](/ringkit/reliability) page.
+</Note>

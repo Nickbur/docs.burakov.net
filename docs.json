@@ -139,6 +139,51 @@
                 ]
             },
             {
+                "tab": "RingKit",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "ringkit",
+                            "ringkit/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "Platform setup",
+                        "pages": [
+                            "ringkit/ios",
+                            "ringkit/android"
+                        ]
+                    },
+                    {
+                        "group": "Guides",
+                        "pages": [
+                            "ringkit/reliability",
+                            "ringkit/audio",
+                            "ringkit/configuration"
+                        ]
+                    },
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "ringkit/api"
+                        ]
+                    },
+                    {
+                        "group": "Choosing RingKit",
+                        "pages": [
+                            "ringkit/comparison"
+                        ]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": [
+                            "ringkit/faq"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Lastward",
                 "groups": [
                     {
