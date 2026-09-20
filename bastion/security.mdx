@@ -39,7 +39,7 @@ Your identity key lives on **your device**. From the **Security** screen you can
 ## What the server can and can't see
 
 - **Can't see:** your message text, file contents, or call media — all end-to-end encrypted.
-- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata. Identity and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy).
+- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata (the "envelope", not the content). Message sizes are padded so even encrypted length reveals little. Identity and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy) for the full picture of what metadata is visible and how **metadata-minimal mode** narrows it further.
 
 ## History that follows you
 

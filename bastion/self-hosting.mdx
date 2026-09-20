@@ -28,6 +28,9 @@ A single `docker compose` setup brings up everything the platform needs, so you'
   <Card title="Media server" icon="video">
     Carries encrypted call audio, video and screen share — on your infrastructure.
   </Card>
+  <Card title="Background worker" icon="gears">
+    A separate worker process delivers notifications and fans messages out to large channels, so it never competes with the API for responsiveness.
+  </Card>
 </CardGroup>
 
 ## Bring it up
@@ -47,6 +50,16 @@ A single `docker compose` setup brings up everything the platform needs, so you'
     Create the organization once, then invite members from the [admin panel](/bastion/administration).
   </Step>
 </Steps>
+
+## Configuration worth knowing
+
+A few environment settings shape privacy and limits (sensible defaults ship out of the box):
+
+- **`MESSAGE_PUSH_HIDE_METADATA`** — keep notifications generic (no sender/chat identity in the push). **On by default**; set `false` for richer named notifications.
+- **`MAX_ATTACHMENT_BYTES`** — hard cap on a single attachment (default 100 MiB), enforced both up front and against the stored object.
+- **`FANOUT_MODE`** — `dedicated` (default in the prod stack) runs the separate worker container above; `inline` folds that work into the API for a minimal single-container deploy.
+
+Organization-level privacy (metadata-minimal mode) is toggled from the [admin panel](/bastion/administration), not the environment.
 
 ## Secure by default
 

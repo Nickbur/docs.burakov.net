@@ -23,6 +23,14 @@ Administrative and security-relevant events are recorded in an **audit log** you
 
 Set a **retention policy** so old messages are automatically deleted after a chosen period. A background job sweeps expired content on a schedule, keeping the organization to the data it actually needs.
 
+## Privacy controls
+
+Turn on **metadata-minimal mode** to minimize the metadata the node emits: it switches off typing indicators and delivery/read receipts, and forces notifications to their most generic form. It's enforced on the server for everyone in the organization — see [Accounts & privacy](/bastion/accounts-and-privacy).
+
+## Channels
+
+A **channel** is a persistent room. By default any member can post; an owner or admin can switch a channel to **admins-only posting** (announcements) — members can still reply in comment threads. The toggle lives on the channel's info page.
+
 ## Modules
 
 Bastion is modular. The base module is **chat + calls**; the admin settings are where an organization's enabled capabilities are managed as more modules become available.

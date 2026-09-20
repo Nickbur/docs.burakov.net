@@ -21,6 +21,21 @@ Identity, push and licensing are brokered by a shared control plane so accounts 
 
 It does **not** hold your message content or call media — those are encrypted end to end. We describe this honestly as **data residency**, not "no server in the middle": your content stays on your node, while identity is centrally brokered.
 
+## What metadata is visible
+
+End-to-end encryption protects **what** you say — not the fact that a conversation is happening. Being honest about that:
+
+- Your **node** (your own server, or your managed instance) can see the "envelope": who is talking to whom, group membership, and timestamps. That's inherent to delivering messages — and on a self-hosted node it's *your* server.
+- **Message sizes are padded** into fixed buckets before encryption, so an observer of encrypted traffic learns much less from length.
+- Bastion has **no link-preview/unfurl** feature and **no phone-contact sync** — two common ways other apps quietly leak the URLs you share and your social graph.
+- **Notifications are private by default:** a push tells your device a message arrived, carrying only an opaque reference — **not** who sent it or which chat — and the app fills in the details after it opens. Call pushes ring without revealing the caller to the notification service. An organization can opt into richer (named) notifications if it prefers.
+
+The principle: **data that isn't collected can't be handed over or lost.**
+
+## Metadata-minimal mode
+
+For organizations with a stricter threat model, an admin can turn on **metadata-minimal mode** (see [Administration](/bastion/administration)). When it's on, the node stops emitting peer-visible metadata: **no typing indicators**, **no delivery or read receipts**, and notifications are forced to their most generic form. It's enforced on the server, not just hidden in the app.
+
 ## Retention and your data
 
 Organization admins can set a **retention policy** so content is auto-deleted after a chosen period (see [Administration](/bastion/administration)). Broader data-subject tooling (export and erase on request) and a data-processing agreement template are part of the compliance roadmap.

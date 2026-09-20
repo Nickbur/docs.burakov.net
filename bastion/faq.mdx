@@ -13,6 +13,9 @@ description: "Platforms, encryption, self-hosting, pricing and the honest limits
   <Accordion title="What can the server operator see?">
     Not your content. The control plane brokers identity, push and licensing, so it sees sign-in and delivery metadata and which plan an organization is on — never message text or call media. See [Accounts & privacy](/bastion/accounts-and-privacy).
   </Accordion>
+  <Accordion title="Can people see who I talk to and when?">
+    Encryption hides *what* you say, not that a conversation happens: your node can see the "envelope" — who's talking to whom and when — which is inherent to delivering messages (and on a self-hosted node, it's your own server). Bastion narrows the rest: message sizes are padded, notifications are generic by default, there's no link-preview or contact-sync leak, and an admin can enable **metadata-minimal mode** to switch off typing and receipts too. See [Accounts & privacy](/bastion/accounts-and-privacy).
+  </Accordion>
   <Accordion title="Do I have to self-host?">
     No. You can run your own node, or use the managed option — the same stack, operated for you, one organization per instance. See [Pricing](/bastion/pricing).
   </Accordion>

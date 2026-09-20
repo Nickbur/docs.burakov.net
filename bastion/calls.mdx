@@ -31,7 +31,7 @@ A call is only useful if you notice it. Bastion rings you like a real phone:
 
 ## What's encrypted
 
-Audio, video and screen sharing are encrypted end to end between participants. The media server that carries the streams runs on your node, so calls stay on infrastructure you control.
+Audio, video and screen sharing are encrypted end to end between participants, with a call key derived from the chat's own encryption. The media server that carries the streams runs on your node, so calls stay on infrastructure you control — and if a device can't establish end-to-end encryption for the call, Bastion **won't connect it** rather than fall back to unencrypted media.
 
 <Note>
   On a self-hosted node, calls need the bundled media server to be running and reachable — see [Self-hosting](/bastion/self-hosting).
