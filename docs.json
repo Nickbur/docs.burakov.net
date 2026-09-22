@@ -172,7 +172,8 @@
                     {
                         "group": "Choosing RingKit",
                         "pages": [
-                            "ringkit/comparison"
+                            "ringkit/comparison",
+                            "ringkit/license"
                         ]
                     },
                     {

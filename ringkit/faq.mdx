@@ -7,19 +7,27 @@ description: "Licensing, pricing, platforms, and common integration questions fo
 
 <AccordionGroup>
   <Accordion title="What does a subscription cover?">
-    RingKit is **source-available**: you may read and evaluate the source freely. **Production /
-    commercial use requires a subscription — $99/yr per app.** One subscription covers one
-    published application (its store listing / bundle id + Android application-id family; build
-    flavours and platform variants of the *same* product count as one). Buy at
-    [burakov.net/projects/ringkit](https://burakov.net/projects/ringkit).
+    RingKit is **closed source**, and the subscription is what gives you the code: read access to
+    the private repository, plus the right to ship the plugin in **one application** — $99/yr per
+    app. An application is one published product (its store listing / bundle id + Android
+    application-id family; build flavours and platform variants of the *same* product count as
+    one). Full terms: [License](/ringkit/license). Buy at [ringkit.dev](https://ringkit.dev).
   </Accordion>
   <Accordion title="Can I evaluate it before buying?">
-    Yes — install it, read the source, and run the `example/` app and the whole call cycle in
-    development. The subscription is required to ship to production.
+    Not by reading the source — the repository is private. These docs are written to be the
+    evaluation instead: the [API reference](/ringkit/api), both platform setups, the
+    [reliability deep-dive](/ringkit/reliability), the [audio contract](/ringkit/audio) and an
+    [honest comparison](/ringkit/comparison) that says when a free plugin is the better buy. If
+    something you need in order to decide isn't covered, ask at `support@burakov.net`.
+  </Accordion>
+  <Accordion title="How do I get the code after buying?">
+    You are given read access to the private repository and install straight from it:
+    `npm i github:Nickbur/ringkit#v1.0.0`. Updates land there for as long as the subscription
+    runs; if it lapses you may keep shipping the versions you already built.
   </Accordion>
   <Accordion title="What support is included?">
-    Support is via **GitHub issues** (best-effort, no SLA). Security reports go to
-    `security@burakov.net` — see the plugin's `SECURITY.md`.
+    Support is via the **private repository's issue tracker** (best-effort, no SLA). Security
+    reports go to `security@burakov.net` — see the plugin's `SECURITY.md`.
   </Accordion>
 </AccordionGroup>
 
