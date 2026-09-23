@@ -1,0 +1,54 @@
+---
+title: "Privacy"
+description: "What Semble processes, who processes it, and how long it's kept."
+---
+
+Semble is private by default: the AI is off until the host turns it on, nothing is recorded
+unless the host starts a recording, and everything a meeting produces can be deleted.
+
+## Guests stay anonymous
+
+Guests join from a link with a display name only — no account, no email. Hosts sign in with a
+one-time email code.
+
+## Your media stays on our servers
+
+Audio and video travel through Semble's own media servers. Recordings, when a host makes one, are
+stored on Semble's own storage — not a third-party cloud. The in-room chat goes straight to the
+people in the meeting and is never stored.
+
+## When the AI is on
+
+To power Kai, meeting audio and text go to these processors — and only while Kai is on:
+
+| Processor | What it does |
+|---|---|
+| Deepgram | Speech-to-text — transcribes what people say |
+| OpenAI | Text-to-speech — gives Kai its voice |
+| OpenRouter → Anthropic (Claude) | Writes Kai's answers and the summary |
+
+Payments for credits go through **Paddle**; Semble never sees card details. We never sell your
+data, and we never use meeting content to train models.
+
+## What's kept, and for how long
+
+<CardGroup cols={2}>
+  <Card title="Meeting content" icon="folder-open">
+    Transcript, summary, and documents are kept with the meeting so you can come back to them —
+    until the host deletes the meeting.
+  </Card>
+  <Card title="Recordings" icon="circle-dot">
+    Kept until the host deletes the recording or the meeting.
+  </Card>
+  <Card title="Credits" icon="coins">
+    Wallet and purchase history are kept while your account exists, for billing and refunds.
+  </Card>
+  <Card title="Your account" icon="user-xmark">
+    Deleting your account removes your meetings and everything in them.
+  </Card>
+</CardGroup>
+
+<Note>
+  **Delete meeting** on a meeting's page removes it permanently — transcript, summary, documents,
+  and recordings included — and closes the room if it's still open.
+</Note>

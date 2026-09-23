@@ -367,6 +367,36 @@
                 ]
             },
             {
+                "tab": "Semble",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "semble",
+                            "semble/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "Using Semble",
+                        "pages": [
+                            "semble/talking-to-kai",
+                            "semble/documents",
+                            "semble/transcript-and-summary",
+                            "semble/recording",
+                            "semble/hosting"
+                        ]
+                    },
+                    {
+                        "group": "Billing, privacy & help",
+                        "pages": [
+                            "semble/credits",
+                            "semble/privacy",
+                            "semble/faq"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Divine eCommerce",
                 "groups": [
                     {
