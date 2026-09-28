@@ -1,0 +1,44 @@
+---
+title: "Speed cameras"
+description: "How WhySoSlow's ~30-second, direction-aware automatic-camera warnings work."
+---
+
+WhySoSlow warns you before **automatic-enforcement** speed cameras — the ones that actually issue
+speeding fines — so they never take you by surprise.
+
+## How a warning works
+
+<Steps>
+  <Step title="~30 seconds out">
+    As you approach a camera, you get one **short, distinct** alert about 30 seconds before it —
+    enough time to ease off calmly, never a last-second slam.
+  </Step>
+  <Step title="Only in the enforced direction">
+    The alert fires **only when you're driving into the direction the camera enforces**. Passing it
+    the other way stays silent.
+  </Step>
+  <Step title="At the camera's own limit">
+    The limit roundel switches to the **camera's enforced speed**, which often differs from the
+    road's posted limit. If you're already over the camera's fineable threshold as you approach, the
+    alert is stronger.
+  </Step>
+</Steps>
+
+<Note>
+  Camera alerts use a **different sound** from the overspeed alert, so you always know which one
+  you're hearing without looking at the screen.
+</Note>
+
+## Where the camera data comes from
+
+WhySoSlow layers three sources so coverage is as complete as possible:
+
+1. **Ukraine's official open dataset** (`data.gov.ua`) — the base, including camera type, direction,
+   and, where published, the enforced speed.
+2. **OpenStreetMap** — fills in cameras and directions the official set misses.
+3. **Your own markers** — anything still missing, you can add yourself (see
+   [Your limits & markers](/whysoslow/your-markers-and-limits)).
+
+If a camera's direction isn't known from any source, WhySoSlow warns you **both ways** to stay safe.
+The camera list refreshes automatically whenever you're online (see
+[Offline maps](/whysoslow/offline-maps)).

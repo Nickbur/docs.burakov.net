@@ -1,0 +1,42 @@
+---
+title: "AI sign advisor"
+description: "Optional: let your mounted phone read roadside speed-limit signs and pre-fill limit suggestions for you to confirm."
+---
+
+The **AI sign advisor** is an **opt-in** helper that keeps your limits fresh without any typing. It
+never changes the map on its own — it only **suggests**, and you confirm.
+
+## How it works
+
+<Steps>
+  <Step title="Turn it on">
+    Enable the advisor in **Settings → Driving**. It uses your **camera** while the phone is mounted
+    and a session is running.
+  </Step>
+  <Step title="It watches for signs">
+    While you drive, the app quietly captures small camera frames and, along with your location and
+    heading, sends them to the AI to read any speed-limit signs.
+  </Step>
+  <Step title="You get a suggestion">
+    When it reads a sign, the advisor drops a **pre-filled limit suggestion** into the same
+    confirm-and-undo flow as your manual edits. Tap to accept, and it becomes a normal personal
+    override.
+  </Step>
+</Steps>
+
+<Warning>
+  The advisor **never edits the map by itself**. A suggestion is only applied when **you confirm it**
+  — the AI has no write access to your limits.
+</Warning>
+
+## Uploads and data use
+
+- Frames are uploaded in **batches**. By default WhySoSlow uploads over **Wi-Fi and mobile data**;
+  flip **"Upload on Wi-Fi only"** in settings if you'd rather wait for Wi-Fi, and use **"Upload
+  now"** to send on demand.
+- Once a batch uploads successfully, the app **deletes those frames from your device**.
+- The photos are **kept on the burakov server** so suggestions can be generated and reviewed.
+- Capture frequency and quality are tuned to keep the phone cool, and the advisor is **off unless you
+  enable it**.
+
+See [Account & privacy](/whysoslow/accounts-and-privacy) for exactly what's stored.

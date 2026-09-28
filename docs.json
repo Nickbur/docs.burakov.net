@@ -397,6 +397,40 @@
                 ]
             },
             {
+                "tab": "WhySoSlow",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "whysoslow",
+                            "whysoslow/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "On the road",
+                        "pages": [
+                            "whysoslow/the-drive-screen",
+                            "whysoslow/speed-cameras"
+                        ]
+                    },
+                    {
+                        "group": "Maps & your data",
+                        "pages": [
+                            "whysoslow/offline-maps",
+                            "whysoslow/your-markers-and-limits",
+                            "whysoslow/ai-sign-advisor"
+                        ]
+                    },
+                    {
+                        "group": "Account & help",
+                        "pages": [
+                            "whysoslow/accounts-and-privacy",
+                            "whysoslow/faq"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Divine eCommerce",
                 "groups": [
                     {
