@@ -1,0 +1,44 @@
+---
+title: "Painting roads"
+description: "How Fogline turns the roads you travel into painted map — passively, in the background, snapped to the real road network."
+---
+
+Fogline paints your map **passively**. You don't check in, start a trip, or log anything — the phone
+records where you travel in the background and turns it into painted roads on its own. This is the
+whole trick: the map fills itself in while you just live your life.
+
+## How a road gets painted
+
+<Steps>
+  <Step title="The phone records where you go">
+    In the background — app closed, screen off — Fogline notes where you travel, sampling as you move
+    and staying quiet when you're still.
+  </Step>
+  <Step title="Your path is matched to real roads">
+    Fogline snaps what it recorded onto the **actual road network** (from OpenStreetMap), so your
+    coverage follows real streets instead of a rough GPS scribble.
+  </Step>
+  <Step title="Each stretch lights up">
+    Roads are divided into short stretches of about **40 metres**. Travel one and it flips to painted
+    — permanently. Little by little, your city lights up.
+  </Step>
+</Steps>
+
+<Note>
+  A stretch counts after **one pass, in any direction, by any means** — driving, walking, cycling, or
+  riding along as a passenger. If you travelled it, it paints.
+</Note>
+
+## What counts (and what doesn't)
+
+- **Any travel mode paints** — car, on foot, bike, bus, passenger. Fogline doesn't care how you got
+  there, only that you did.
+- **Either direction paints** — one pass is enough; you don't have to cover a road both ways.
+- **Noise is filtered out** — GPS jitter and standing still don't paint anything, so your map
+  reflects where you actually travelled.
+
+## Where the road network comes from
+
+The roads Fogline paints onto come from **OpenStreetMap**, bundled into the region pack you download
+so matching works fully offline. Each pack shows a **"data as of"** date, and regenerated packs pick
+up new and changed roads over time (see [Offline maps](/fogline/offline-maps)).

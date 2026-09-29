@@ -431,6 +431,40 @@
                 ]
             },
             {
+                "tab": "Fogline",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": [
+                            "fogline",
+                            "fogline/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "On the map",
+                        "pages": [
+                            "fogline/the-map-screen",
+                            "fogline/painting-roads"
+                        ]
+                    },
+                    {
+                        "group": "Maps & your data",
+                        "pages": [
+                            "fogline/offline-maps",
+                            "fogline/coverage-and-stats",
+                            "fogline/sync-and-backup"
+                        ]
+                    },
+                    {
+                        "group": "Account & help",
+                        "pages": [
+                            "fogline/accounts-and-privacy",
+                            "fogline/faq"
+                        ]
+                    }
+                ]
+            },
+            {
                 "tab": "Divine eCommerce",
                 "groups": [
                     {
