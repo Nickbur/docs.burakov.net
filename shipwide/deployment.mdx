@@ -19,6 +19,10 @@ description: "Ship each part to production — keeping secrets on the server."
   on the sending domain — with passwordless auth, a code in spam means nobody can sign in.
 - **CORS**: `CORS_ORIGINS` = your exact web origin(s). Native schemes (`capacitor://localhost`,
   `tauri://localhost`) and the admin's `ADMIN_URL` are always allowed.
+- **Reverse proxy**: `TRUST_PROXY` = whose `X-Forwarded-For` the API trusts. The default
+  `loopback,uniquelocal` covers a proxy on the same host / private network (e.g. nginx → the
+  container); otherwise list your proxy's IPs/CIDRs. Never `true` on a publicly reachable API —
+  clients could spoof their IP and dodge per-IP rate limits.
 - **Secrets to set**: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET` (≥32), `SMTP_*`, `ADMIN_*`, and
   any `GOOGLE_/APPLE_/REVENUECAT/ONESIGNAL` integration you enable.
 

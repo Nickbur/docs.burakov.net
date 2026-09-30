@@ -104,3 +104,5 @@ RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
   with passwordless auth, a code in spam means nobody can sign in.
 - CORS: `CORS_ORIGINS` = exact web origin(s); native schemes and the admin's `ADMIN_URL` are
   always allowed.
+- Reverse proxy: `TRUST_PROXY` (default `loopback,uniquelocal`) = the proxy IPs/CIDRs whose
+  `X-Forwarded-For` is trusted; never `true` on a publicly reachable API.
