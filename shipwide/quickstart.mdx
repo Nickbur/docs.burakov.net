@@ -85,6 +85,21 @@ npm run serve                      # http://localhost:4321
 It's all placeholder content — see [Website](/shipwide/website) and
 [Customization](/shipwide/customization) to make it yours.
 
+## Code quality (all four parts)
+
+`npm install` also activates the git hooks (husky):
+
+- **pre-commit** — a guard rejects accidental files (stray names from a mistyped shell command, new
+    empty files without an extension, files over 2 MB unless listed in `.husky/large-files.txt`,
+    unresolved conflict markers), then `eslint --fix` and Prettier run on the staged files.
+- **commit-msg** — headers follow Conventional Commits: `type(scope): subject` (`feat`, `fix`,
+    `chore`, `docs`, `refactor`, `test`, …).
+
+By hand: `npm run lint` / `npm run lint:fix` and `npm run format` / `npm run format:check`. ESLint
+is type-aware (typescript-eslint): a promise you deliberately don't wait for is written
+`void doSomething()`. VS Code picks up the shared `.vscode/` settings (format and ESLint fixes on
+save).
+
 ## Next
 
 <CardGroup cols={2}>
