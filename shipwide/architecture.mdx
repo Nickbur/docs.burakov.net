@@ -10,27 +10,30 @@ product on — not a finished app.
 ## How the parts connect
 
 - **`shipwide_api` is the single backend.** Both the **app** and the **admin panel** talk to
-  it over HTTP; nothing else sits between them.
+    it over HTTP; nothing else sits between them.
 - **The app** (`VITE_BACKEND_URL`) and **the admin** (`VITE_API_URL`) are separate origins —
-  the admin reads everyone's data, so it's deployed and gated separately.
+    the admin reads everyone's data, so it's deployed and gated separately.
 - **The app resolves its API origin once**, through `getAvailableServer()`
-  (`src/helpers/systemUtils.ts`) — the single place every request gets its base URL. It reads
-  `VITE_BACKEND_URL`, upgrades a non-local origin to HTTPS, and caches the choice for the
-  session. Set `VITE_BACKEND_FALLBACK` too and it health-checks both and fails over to the
-  backup; leave it empty and a single backend is used directly with no probe.
+    (`src/helpers/systemUtils.ts`) — the single place every request gets its base URL. It reads
+    `VITE_BACKEND_URL`, upgrades a non-local origin to HTTPS, and caches the choice for the
+    session. Set `VITE_BACKEND_FALLBACK` too and it health-checks both and fails over to the
+    backup; leave it empty and a single backend is used directly with no probe.
 - **The website** is standalone marketing; its only optional tie-in is the support form,
-  which posts to the API when you set `PUBLIC_SUPPORT_ENDPOINT` (otherwise it runs in demo mode).
-- Each client sends a `client_id` (the app defaults to `app`, the admin uses `admin`) so the
-  API can label sessions. It's a claim, never authorization.
+    which posts to the API's public **`POST /v1/support`** when you set `PUBLIC_SUPPORT_ENDPOINT`
+    to that URL (otherwise it runs in demo mode). No account needed; the message is emailed to you.
+- Each client sends a `client_id` (the app's `VITE_CLIENT_ID`; the admin uses `admin`). The
+    API only lets in ids listed in `CLIENT_IDS` (plus `admin`), so another app can't use your API
+    as its backend; after sign-in the id labels the session. It ships in every build, so it's an
+    allowlist, not authentication.
 
 ## Shared wire contract
 
 App, API and admin all agree on:
 
 - One version prefix **`/v1/...`**; **camelCase** fields; **ISO-8601 UTC** timestamps;
-  **UUIDv7** ids.
+    **UUIDv7** ids.
 - Errors are flat `{ "code": "snake_case_reason", "message": "for logs" }` — clients switch on
-  `code`; `message` is never shown to end users.
+    `code`; `message` is never shown to end users.
 - Auth is **Bearer** (`Authorization: Bearer <access>`) — no cookies, no CSRF surface.
 
 ## Auth model — one model everywhere
@@ -44,24 +47,24 @@ panel uses the same model, staff-scoped, with optional TOTP. Full detail in
 ## What you're starting from
 
 - **The exported pieces are ready to use** — handlers, composables, api-client functions,
-  components. Some aren't wired into a screen yet; that's intentional, they're there for you
-  to build on.
+    components. Some aren't wired into a screen yet; that's intentional, they're there for you
+    to build on.
 - **The account, sessions and settings screens are placeholders on purpose.** The kit gives
-  you the plumbing behind them; you build your product's screens on top.
+    you the plumbing behind them; you build your product's screens on top.
 
 ## Where to go next
 
 <CardGroup cols={2}>
-  <Card title="Backend" icon="server" href="/shipwide/backend">
-    Modules, auth, routes, scripts, ops.
-  </Card>
-  <Card title="App" icon="mobile" href="/shipwide/app">
-    Layout, auth, encrypted storage, native builds.
-  </Card>
-  <Card title="Admin" icon="user-shield" href="/shipwide/admin">
-    Architecture, sign-in, i18n/RTL, deploy.
-  </Card>
-  <Card title="Website" icon="globe" href="/shipwide/website">
-    Content, rebranding, i18n, fonts.
-  </Card>
+    <Card title="Backend" icon="server" href="/shipwide/backend">
+        Modules, auth, routes, scripts, ops.
+    </Card>
+    <Card title="App" icon="mobile" href="/shipwide/app">
+        Layout, auth, encrypted storage, native builds.
+    </Card>
+    <Card title="Admin" icon="user-shield" href="/shipwide/admin">
+        Architecture, sign-in, i18n/RTL, deploy.
+    </Card>
+    <Card title="Website" icon="globe" href="/shipwide/website">
+        Content, rebranding, i18n, fonts.
+    </Card>
 </CardGroup>

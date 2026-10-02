@@ -126,8 +126,9 @@
                         "pages": [
                             "shipwide/billing",
                             "shipwide/push",
-                            "shipwide/gamification",
-                            "shipwide/progress-bar"
+                            "shipwide/progress-bar",
+                            "shipwide/offline-sync",
+                            "shipwide/self-host"
                         ]
                     },
                     {

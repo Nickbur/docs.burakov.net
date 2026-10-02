@@ -17,7 +17,8 @@ screens on top, and the kit supplies the plumbing behind them.
 
 ```
 src/
-├── composables/use<Feature>.ts   — reusable logic (upload, onesignal, brute-force, sentry…)
+├── composables/use<Feature>.ts   — reusable logic (upload, onesignal, brute-force, sentry, pro gate…)
+├── features/notes/               — the offline-first Notes example (deletable)
 ├── views/
 │   ├── pages/_base/              — Login, Logout, Splash
 │   ├── pages/onboarding/         — onboarding incl. username selection
@@ -25,16 +26,55 @@ src/
 │   └── components/               — ready-made components
 ├── services/
 │   ├── networkRequests/api/      — api client: core/ + auth, account, sessions, upload
-│   └── localStorage/             — encrypted storage layer + per-domain helpers
+│   ├── localStorage/             — encrypted storage layer + per-domain helpers
+│   └── offline/                  — offline-first SQLite + sync layer
 ├── stores/                       — Pinia (accountStore, systemStore, settingsStore…)
 ├── helpers/security/             — token management, JWT utils
 ├── router/, i18n/, types/, styles/
 ```
 
 <Warning>
-  **Layering rule:** pages/composables call the **api layer**; they never build request URLs or
-  reimplement requests. (Reimplementing a request is what once let the chunk upload drift onto a
-  stale prefix.)
+    **Layering rule:** pages/composables call the **api layer**; they never build request URLs or
+    reimplement requests. (Reimplementing a request is what once let the chunk upload drift onto a
+    stale prefix.)
+</Warning>
+
+## Shell & navigation
+
+The app shell is three coordinated pieces — **reskin** them, don't recreate them:
+
+- **Side menu** (`views/core/SideMenu.vue`) — the drawer: your nav items plus Settings, Privacy,
+    Terms and **Log out**. On desktop (≥1105px) it docks permanently via `ion-split-pane`.
+- **Bottom tab bar** (`views/core/BottomTabBar.vue`) — a **per-page `<ion-footer>`**: add
+    `<BottomTabBar />` inside each main/section page. It is intentionally NOT a global fixed
+    element — placing it per page lets Ionic manage safe-area, keyboard and the drawer backdrop
+    natively, and it rides page transitions correctly. It hides itself on desktop (the docked side
+    menu replaces it).
+- **Back button** (`views/components/BackButton.vue`) — put it in the header of every
+    **sub-page** (`<ion-buttons slot="start"><BackButton /></ion-buttons>`) instead of
+    `ion-back-button`. It routes through `composables/useGoBack.ts`: a cached native pop when there
+    is history, an instant `root`/`replace` swap when there is not — so the target page never
+    slide-animates in or re-creates. Main-section pages (bottom-bar destinations) carry no back
+    button.
+
+<Note>
+    **Desktop content width:** padded pages (`<ion-content class="ion-padding">`) cap their inner
+    content to a centered column above 768px so it doesn't stretch edge-to-edge; drop
+    `.ion-padding` (or override the rule in `styles/core/app.scss`) to go full-width.
+</Note>
+
+**System bars follow the app theme** (`helpers/systemBars.ts`, run on every theme apply):
+status/navigation bar icons match the **app's** theme on iOS and Android — not the OS one, since
+Settings can force Light/Dark. On Android the status bar is painted with the header colour
+(Ionic's `--ion-toolbar-background`, laid over the page if translucent — set
+`--sw-header-background` if your header is painted some other way) and the navigation bar with the
+tab bar's surface, `--sw-tab-bar-background` (defaults to `--sw-ffffff`; override it to reskin
+both); on the web the `theme-color` meta follows too.
+
+<Warning>
+    Android edge-to-edge is owned by `@capawesome/capacitor-android-edge-to-edge-support`, which
+    requires `SystemBars.insetsHandling: "disable"` in `capacitor.config.ts`. Keep it — otherwise
+    Capacitor pads the web view itself and the bars fall back to the OS window colour.
 </Warning>
 
 ## Session storage — encrypted, non-exportable key
@@ -42,13 +82,22 @@ src/
 `services/localStorage/core/secure_storage.ts` is a transparent **AES-GCM over IndexedDB** layer:
 
 - The key is a **random, non-exportable `CryptoKey`** — never derived from a device fingerprint,
-  never stored as raw bytes. WebCrypto (authenticated); no `crypto-js`.
+    never stored as raw bytes. WebCrypto (authenticated); no `crypto-js`.
 - A **canary** detects a key/data mismatch and resets the store once, cleanly (a reset = a
-  sign-out, since only the session lives here).
+    sign-out, since only the session lives here).
 - Works in the web build and in the Capacitor / Tauri WebViews.
 
 It keeps tokens out of plaintext at rest. It is **not** an XSS defence — real device-binding is
 the API's `sessions.device_id`.
+
+## Offline-first data & self-hosted instances
+
+- **Offline-first data** — `services/offline/` keeps a local SQLite database as the UI's source of
+    truth and syncs it with the API in the background. The **Notes** tab is the worked example.
+    See [Offline-first data](/shipwide/offline-sync).
+- **Self-hosted instance mode** — a user can point the app at another deployment of your backend
+    at runtime, with a URL + access token (sign-in screen → **Connect an instance**, or
+    Settings). See [Self-hosted instances](/shipwide/self-host).
 
 ## Quick start
 
@@ -65,9 +114,9 @@ to `src/vite-env.d.ts` too — `vite/client` has an index signature, so a typo i
 error, it just reads `undefined`.
 
 <Warning>
-  **WebView debugging is off by default.** Release builds from `npm run build:native` are **not**
-  inspectable via `chrome://inspect` / Safari Web Inspector. To debug on a device build with
-  `npm run build:native:debug` — and never ship a build made that way.
+    **WebView debugging is off by default.** Release builds from `npm run build:native` are **not**
+    inspectable via `chrome://inspect` / Safari Web Inspector. To debug on a device build with
+    `npm run build:native:debug` — and never ship a build made that way.
 </Warning>
 
 ## Environment
@@ -77,12 +126,18 @@ error, it just reads `undefined`.
 | `VITE_BACKEND_URL` | API base. **Required.** A non-local origin is auto-upgraded to HTTPS. |
 | `VITE_BACKEND_FALLBACK` | Optional backup API; health-checked and failed over to when set. |
 | `VITE_APP_NAME` | Namespace prefix for **everything local** (storage, settings, cache, deep-link scheme). Changing it orphans existing local data. |
+| `VITE_OFFLINE_DB_NAME` | Name of the offline SQLite database ([Offline-first data](/shipwide/offline-sync)). Empty → falls back to `VITE_APP_NAME`; the templates set `shipwide`. Changing it after launch orphans the local database, unsynced changes included. |
 | `VITE_APP_VERSION` | Reported to Sentry as the release. |
-| `VITE_CLIENT_ID` | Session label sent to the API (defaults to `app`). |
+| `VITE_APP_ENV` | `production` switches on `isProduction()` (logging, Sentry). |
+| `VITE_CLIENT_ID` | Which app this is, sent on every sign-in. Must be listed in the API's `CLIENT_IDS` (defaults to `app`). |
+| `VITE_ENABLE_ONBOARDING` | `'true'` routes a fresh sign-in through onboarding. |
 | `VITE_GOOGLE_CLIENT_ID` | Google sign-in. Optional. |
 | `VITE_SENTRY_DSN` | Error tracking. Optional — empty disables Sentry. |
 | `VITE_ONESIGNAL_APP_ID` | Push. Optional. (The REST **key** is a server secret — never a `VITE_*`.) |
+| `VITE_LEGAL_PRIVACY_URL` · `VITE_LEGAL_TERMS_URL` | Privacy / Terms links. Optional — placeholders if unset. |
 | `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Store links, per platform. |
+
+The `VITE_REVENUECAT_*` billing variables are covered in [Billing](/shipwide/billing).
 
 ## Native builds (Capacitor 8 / Tauri)
 

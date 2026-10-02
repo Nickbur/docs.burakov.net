@@ -32,24 +32,24 @@ npm run build           # astro-i18next generate + astro check + astro build →
 | `src/styles/` | The SCSS design system (tokens, base, components, utilities). |
 
 <Note>
-  **Rule of thumb:** language-neutral facts (URLs, prices, handles) live in `src/data/`; anything
-  a reader sees as words lives in `public/locales/`.
+    **Rule of thumb:** language-neutral facts (URLs, prices, handles) live in `src/data/`; anything
+    a reader sees as words lives in `public/locales/`.
 </Note>
 
 ## Rebranding (the short path)
 
 <Steps>
-  <Step title="Brand & product data">
-    Edit `src/data/site.ts` (`name`, emails, socials — the brand name in header/footer/titles is
-    driven entirely by `site.name`) and `src/data/product.ts` (download links, prices, features).
-  </Step>
-  <Step title="Assets">
-    Replace `public/favicon.svg` (optionally add `public/og-default.png`); drop your app
-    screenshots into `src/screenshots/` (`01-…`, `02-…`) and delete the demo images.
-  </Step>
-  <Step title="Domain & copy">
-    Set `PUBLIC_SITE_URL` in `env/env.prod`; swap the copy in `public/locales/en/*.json`.
-  </Step>
+    <Step title="Brand & product data">
+        Edit `src/data/site.ts` (`name`, emails, socials — the brand name in header/footer/titles is
+        driven entirely by `site.name`) and `src/data/product.ts` (download links, prices, features).
+    </Step>
+    <Step title="Assets">
+        Replace `public/favicon.svg` (optionally add `public/og-default.png`); drop your app
+        screenshots into `src/screenshots/` (`01-…`, `02-…`) and delete the demo images.
+    </Step>
+    <Step title="Domain & copy">
+        Set `PUBLIC_SITE_URL` in `env/env.prod`; swap the copy in `public/locales/en/*.json`.
+    </Step>
 </Steps>
 
 ## Design tokens & fonts
@@ -58,11 +58,11 @@ Colours, fonts, radii, spacing, elevation and motion are CSS custom properties i
 `src/styles/_variables.scss`, with light and dark themes:
 
 - **Accent** is a dusty-indigo ramp (`--accent-50…900`) — change `--accent-400` (dark) /
-  `--accent-600` (light) and it propagates everywhere.
+    `--accent-600` (light) and it propagates everywhere.
 - **Neutrals** are warm greys, not pure zinc.
 - **Fonts are a pairing:** a display face — **Golos Text**, self-hosted via
-  `@fontsource/golos-text` — on headings (`--font-display`), and the system stack for body/UI.
-  Any OFL font with Cyrillic works.
+    `@fontsource/golos-text` — on headings (`--font-display`), and the system stack for body/UI.
+    Any OFL font with Cyrillic works.
 
 ## Languages
 
@@ -72,14 +72,18 @@ Ships **English + Russian**; the switcher is in the header. Adding a third langu
 from the three lists and delete `public/locales/ru/`.
 
 <Warning>
-  `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit the
-  English source; the Russian tree regenerates.
+    `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit the
+    English source; the Russian tree regenerates.
 </Warning>
 
 ## Content, support form, monitoring
 
 - **Blog & changelog** are Astro content collections — add a Markdown file, it appears.
-- **Support form:** set `PUBLIC_SUPPORT_ENDPOINT` to your backend's endpoint to make it post.
-  Empty (default) = demo mode ("email us" notice), no posting.
+- **Support form:** set `PUBLIC_SUPPORT_ENDPOINT` to the full URL of your API's
+    **`POST /v1/support`** (e.g. `https://api.example.com/v1/support`) and add the site's origin to
+    the API's `CORS_ORIGINS`. It posts without an account; the API emails each message to its
+    `MAIL_REPLY_TO` (Reply-To = the sender, so you answer from your mail client), allows 5 messages
+    per IP per 10 minutes, and silently drops bots (a hidden honeypot field + a minimum fill time).
+    Empty (default) = demo mode ("email us" notice), no posting.
 - **Sentry** loads only when `PUBLIC_SENTRY_DSN` is set, cookies are accepted, and it's not
-  `localhost`.
+    `localhost`.

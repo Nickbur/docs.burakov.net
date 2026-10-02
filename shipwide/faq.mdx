@@ -9,110 +9,122 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
 ## Sign-in / email
 
 <AccordionGroup>
-  <Accordion title="No code arrives (dev)">
-    In dev, `EMAIL_DEV_MODE=true` prints the 6-digit code to the **API console** — it isn't
-    emailed. Read it there.
-  </Accordion>
-  <Accordion title="No code arrives (prod)">
-    Set `SMTP_*`, and set up **SPF, DKIM, DMARC** on the sending domain — without them, codes land
-    in spam and nobody can sign in.
-  </Accordion>
-  <Accordion title="There's no password field">
-    By design: auth is a six-digit email code; sign-in and sign-up are the same act. Don't add a
-    password flow.
-  </Accordion>
+    <Accordion title="No code arrives (dev)">
+        In dev, `EMAIL_DEV_MODE=true` prints the 6-digit code to the **API console** — it isn't
+        emailed. Read it there.
+    </Accordion>
+    <Accordion title="No code arrives (prod)">
+        Set `SMTP_*`, and set up **SPF, DKIM, DMARC** on the sending domain — without them, codes land
+        in spam and nobody can sign in.
+    </Accordion>
+    <Accordion title="There's no password field">
+        By design: auth is a six-digit email code; sign-in and sign-up are the same act. Don't add a
+        password flow.
+    </Accordion>
 </AccordionGroup>
 
 ## Admin panel
 
 <AccordionGroup>
-  <Accordion title="&quot;Broken&quot; / CORS error / login won't complete">
-    Set `ADMIN_URL` in the **API's** env to the admin's exact origin — the API adds it to CORS
-    automatically, and a mismatch reads as an auth bug.
-  </Accordion>
-  <Accordion title="Can't sign in">
-    Use `ADMIN_LOGIN` / `ADMIN_PASSWORD` from the API env, or an emailed staff code (printed to the
-    API console in dev). The first admin comes from `ADMIN_EMAILS`.
-  </Accordion>
-  <Accordion title="Build fails with a TypeScript error">
-    The admin is pinned to **TypeScript 6** (`vue-tsc` doesn't support the TS 7 native compiler yet)
-    — don't bump it to 7.
-  </Accordion>
+    <Accordion title="&quot;Broken&quot; / CORS error / login won't complete">
+        Set `ADMIN_URL` in the **API's** env to the admin's exact origin — the API adds it to CORS
+        automatically, and a mismatch reads as an auth bug.
+    </Accordion>
+    <Accordion title="Can't sign in">
+        Use `ADMIN_LOGIN` / `ADMIN_PASSWORD` from the API env, or an emailed staff code (printed to the
+        API console in dev). The first admin comes from `ADMIN_EMAILS`.
+    </Accordion>
+    <Accordion title="Build fails with a TypeScript error">
+        The admin is pinned to **TypeScript 6** (`vue-tsc` doesn't support the TS 7 native compiler yet)
+        — don't bump it to 7.
+    </Accordion>
 </AccordionGroup>
 
 ## App ↔ API
 
 <AccordionGroup>
-  <Accordion title="App can't reach the API">
-    Check `VITE_BACKEND_URL`. On non-localhost the client **enforces HTTPS**; and the API's
-    `CORS_ORIGINS` must list the app's web origin.
-  </Accordion>
-  <Accordion title="Changed a VITE_* / PUBLIC_* but nothing changed">
-    They're **inlined at build time** — rebuild (for the admin Docker image, rebuild with the right
-    `--build-arg`).
-  </Accordion>
-  <Accordion title="An env var reads as undefined">
-    Declare every `VITE_*` in `src/vite-env.d.ts` — a typo is not a type error, it just arrives
-    undefined.
-  </Accordion>
-  <Accordion title="Users lost their local data after an update">
-    You changed `VITE_APP_NAME` — it namespaces all local storage/settings/cache. Set it once,
-    before launch.
-  </Accordion>
+    <Accordion title="App can't reach the API">
+        Check `VITE_BACKEND_URL`. On non-localhost the client **enforces HTTPS**; and the API's
+        `CORS_ORIGINS` must list the app's web origin.
+    </Accordion>
+    <Accordion title="Sign-in says the app isn't allowed">
+        The API answered `unknown_client`: the app's `VITE_CLIENT_ID` isn't in the API's
+        `CLIENT_IDS`. Make them match (and rebuild the app if you changed `VITE_CLIENT_ID`).
+    </Accordion>
+    <Accordion title="Changed a VITE_* / PUBLIC_* but nothing changed">
+        They're **inlined at build time** — rebuild (for the admin Docker image, rebuild with the right
+        `--build-arg`).
+    </Accordion>
+    <Accordion title="An env var reads as undefined">
+        Declare every `VITE_*` in `src/vite-env.d.ts` — a typo is not a type error, it just arrives
+        undefined.
+    </Accordion>
+    <Accordion title="Users lost their local data after an update">
+        You changed `VITE_APP_NAME` — it namespaces all local storage/settings/cache. Set it once,
+        before launch.
+    </Accordion>
 </AccordionGroup>
 
 ## Push & subscriptions
 
 <AccordionGroup>
-  <Accordion title="Push isn't delivered">
-    It's **off until configured** — set `ONESIGNAL_APP_ID` + `ONESIGNAL_API_KEY` (server). See
-    [Push & VoIP](/shipwide/push).
-  </Accordion>
-  <Accordion title="Paywall is hidden / webhook 401s">
-    Billing is **off until configured** — set the RevenueCat keys (client) +
-    `REVENUECAT_WEBHOOK_AUTH` (server). To develop with no account, set `VITE_REVENUECAT_MOCK=true`.
-    See [Billing](/shipwide/billing).
-  </Accordion>
+    <Accordion title="Push isn't delivered">
+        It's **off until configured** — set `ONESIGNAL_APP_ID` + `ONESIGNAL_API_KEY` (server). See
+        [Push & VoIP](/shipwide/push).
+    </Accordion>
+    <Accordion title="Paywall is hidden / webhook 401s">
+        Billing is **off until configured** — set the RevenueCat keys (client) +
+        `REVENUECAT_WEBHOOK_AUTH` (server). To develop with no account, set `VITE_REVENUECAT_MOCK=true`.
+        See [Billing](/shipwide/billing).
+    </Accordion>
 </AccordionGroup>
 
 ## Native builds
 
 <AccordionGroup>
-  <Accordion title="Android build fails">
-    Use **JDK 21** (Android Studio's bundled JBR), SDK 36, and `npm run build:native` (it excludes
-    the pre-compressed web assets that break Android's packager).
-  </Accordion>
-  <Accordion title="iOS project has no .xcworkspace">
-    Correct — Capacitor 8 generates an **SPM**-based project. Needs Xcode 26+.
-  </Accordion>
-  <Accordion title="VoIP calls don't ring in the Simulator">
-    They can't — test CallKit / VoIP pushes on a **physical device**.
-  </Accordion>
-  <Accordion title="Can't inspect the WebView on a device">
-    By design — WebView debugging is **off by default** so release builds aren't inspectable. Build
-    that install with `npm run build:native:debug` to enable it, and never ship it.
-  </Accordion>
+    <Accordion title="Android build fails">
+        Use **JDK 21** (Android Studio's bundled JBR), SDK 36, and `npm run build:native` (it excludes
+        the pre-compressed web assets that break Android's packager).
+    </Accordion>
+    <Accordion title="iOS project has no .xcworkspace">
+        Correct — Capacitor 8 generates an **SPM**-based project. Needs Xcode 26+.
+    </Accordion>
+    <Accordion title="VoIP calls don't ring in the Simulator">
+        They can't — test CallKit / VoIP pushes on a **physical device**.
+    </Accordion>
+    <Accordion title="Can't inspect the WebView on a device">
+        By design — WebView debugging is **off by default** so release builds aren't inspectable. Build
+        that install with `npm run build:native:debug` to enable it, and never ship it.
+    </Accordion>
 </AccordionGroup>
 
 ## Other
 
 <AccordionGroup>
-  <Accordion title="Support form doesn't send">
-    Set `PUBLIC_SUPPORT_ENDPOINT` to your API's support endpoint; empty (default) = demo mode
-    ("email us" notice), no posting.
-  </Accordion>
-  <Accordion title="Edited a Russian page and it reverted">
-    `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit
-    the English source; RU regenerates.
-  </Accordion>
-  <Accordion title="npm audit reports vulnerabilities">
-    The advisories all come from **`@ionic/cli`** — the dev-only tool behind `npm run serve`. They
-    are **not** in your shipped app: `npm audit --omit=dev` reports **0**. Nothing there bundles
-    into the iOS / Android / web / desktop build.
-  </Accordion>
-  <Accordion title="Why are some exports not used anywhere?">
-    That's intentional. The kit ships ready-to-use pieces — an exported
-    handler/composable/component with no current consumer is there for you to wire into your
-    product as you build it, not leftover dead code.
-  </Accordion>
+    <Accordion title="Support form doesn't send">
+        Set `PUBLIC_SUPPORT_ENDPOINT` to the full URL of your API's **`POST /v1/support`** (e.g.
+        `https://api.example.com/v1/support`) and rebuild; empty (default) = demo mode ("email us"
+        notice), no posting. A CORS error in the browser console means the site's origin is missing
+        from the API's `CORS_ORIGINS`. A `429` is the per-IP limit (5 messages per 10 minutes).
+    </Accordion>
+    <Accordion title="The support form says &quot;sent&quot; but nothing arrives">
+        The API emails each message to its `MAIL_REPLY_TO` — in dev (`EMAIL_DEV_MODE=true`) it's
+        printed to the **API console** instead; in prod check `SMTP_*`. Submissions that fill the
+        hidden honeypot field or arrive within 3 seconds of the page loading are dropped silently as
+        bots.
+    </Accordion>
+    <Accordion title="Edited a Russian page and it reverted">
+        `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit
+        the English source; RU regenerates.
+    </Accordion>
+    <Accordion title="npm audit reports vulnerabilities">
+        The advisories all come from **`@ionic/cli`** — the dev-only tool behind `npm run serve`. They
+        are **not** in your shipped app: `npm audit --omit=dev` reports **0**. Nothing there bundles
+        into the iOS / Android / web / desktop build.
+    </Accordion>
+    <Accordion title="Why are some exports not used anywhere?">
+        That's intentional. The kit ships ready-to-use pieces — an exported
+        handler/composable/component with no current consumer is there for you to wire into your
+        product as you build it, not leftover dead code.
+    </Accordion>
 </AccordionGroup>

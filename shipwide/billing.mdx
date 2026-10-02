@@ -11,10 +11,10 @@ how to test it with **no RevenueCat account at all**.
 Two layers, one identity (`app_user_id` = the account's immutable `user.id`, the same id push uses):
 
 - **On device** — the RevenueCat SDK makes purchases and gives an instant, offline copy of the
-  user's entitlements (fast UI gating).
+    user's entitlements (fast UI gating).
 - **On the server** — RevenueCat posts a **webhook** for every purchase/renewal/cancellation. The
-  API stores the result in the `entitlements` table. This is what server-enforced features trust;
-  the device's copy is only ever a cache of it.
+    API stores the result in the `entitlements` table. This is what server-enforced features trust;
+    the device's copy is only ever a cache of it.
 
 ```
  device SDK ─purchase─▶ App Store / Play / Stripe ─▶ RevenueCat ─webhook─▶ API `entitlements`
@@ -23,8 +23,8 @@ Two layers, one identity (`app_user_id` = the account's immutable `user.id`, the
 ```
 
 <Note>
-  Everything is **off until configured**, exactly like OneSignal/Sentry: no keys ⇒ the webhook
-  401s, the paywall hides, `requireEntitlement` denies. The kit builds and runs unchanged.
+    Everything is **off until configured**, exactly like OneSignal/Sentry: no keys ⇒ the webhook
+    401s, the paywall hides, `requireEntitlement` denies. The kit builds and runs unchanged.
 </Note>
 
 Subscriptions **and** lifetime (non-consumable) unlocks both collapse to one `entitlements` row
@@ -55,24 +55,24 @@ ledger** — deliberately out of scope.
 Store IAP inherently needs dashboard setup. The kit's promise is **no code changes**, not "no setup".
 
 <Steps>
-  <Step title="RevenueCat">
-    Create a project; add an app per platform you sell on (Apple, Google, Web). Copy each public
-    SDK key → the three `VITE_` vars; a secret key → `REVENUECAT_SECRET_KEY`.
-  </Step>
-  <Step title="Stores">
-    App Store Connect + Google Play Console — create the subscription + one-time products,
-    agreements/banking, a subscription group, license testers.
-  </Step>
-  <Step title="Web billing engine">
-    For the web/Tauri build, connect a RevenueCat web engine: **Web Billing** (Stripe-backed) or
-    **Paddle** (a Merchant of Record handling global sales tax/VAT, available where Stripe isn't).
-    The client (`@revenuecat/purchases-js`) is the same either way — the engine is a dashboard choice.
-  </Step>
-  <Step title="Entitlement, offering, webhook">
-    Create an entitlement `pro` and an offering; attach the store products. Set the webhook URL to
-    `https://<your-api>/v1/subscriptions/webhook` with the Authorization value equal to
-    `REVENUECAT_WEBHOOK_AUTH`.
-  </Step>
+    <Step title="RevenueCat">
+        Create a project; add an app per platform you sell on (Apple, Google, Web). Copy each public
+        SDK key → the three `VITE_` vars; a secret key → `REVENUECAT_SECRET_KEY`.
+    </Step>
+    <Step title="Stores">
+        App Store Connect + Google Play Console — create the subscription + one-time products,
+        agreements/banking, a subscription group, license testers.
+    </Step>
+    <Step title="Web billing engine">
+        For the web/Tauri build, connect a RevenueCat web engine: **Web Billing** (Stripe-backed) or
+        **Paddle** (a Merchant of Record handling global sales tax/VAT, available where Stripe isn't).
+        The client (`@revenuecat/purchases-js`) is the same either way — the engine is a dashboard choice.
+    </Step>
+    <Step title="Entitlement, offering, webhook">
+        Create an entitlement `pro` and an offering; attach the store products. Set the webhook URL to
+        `https://<your-api>/v1/subscriptions/webhook` with the Authorization value equal to
+        `REVENUECAT_WEBHOOK_AUTH`.
+    </Step>
 </Steps>
 
 ## Server & client surface
@@ -88,12 +88,25 @@ On the client: `useRevenueCat()` (one wrapper, three providers — native / web-
 `useSubscriptionStore()` (`isPro`, `has(id)`), and `RevenueCatInitializer.vue` (configures on boot,
 mirrors auth). Reference UI: `Subscription.vue` (paywall + manage) and `PremiumExample.vue`.
 
+**Pro gate:** `useProGate()` (`composables/useProGate.ts`) gates any action in the UI. It offers
+two checks: `ensurePro()` for a Pro-only action and `ensureUnderLimit(count, limit)` for a
+free-tier cap. Each takes an optional `{ title, message }` and returns `true` to proceed.
+Otherwise it shows an upsell alert (**See plans** → `/subscription`) and returns `false`. There's
+an example in [Offline-first data](/shipwide/offline-sync#gate-it-behind-pro).
+
+<Note>
+    The gate **fails open**: until the subscription store has loaded, every user passes, so a
+    paying user is never blocked on a cold start. That includes the whole time billing is
+    unconfigured. It gates the UI only; enforce paid limits on the server with
+    `requireEntitlement`.
+</Note>
+
 ## Mock mode — develop with no account
 
 <Tip>
-  Set `VITE_REVENUECAT_MOCK=true` (also implicit in dev with no key). The mock provider serves fake
-  offerings and simulates purchase/restore, so the entire paywall → unlock → manage flow works
-  locally before any store/RevenueCat account exists. Nothing reaches a real store.
+    Set `VITE_REVENUECAT_MOCK=true` (also implicit in dev with no key). The mock provider serves fake
+    offerings and simulates purchase/restore, so the entire paywall → unlock → manage flow works
+    locally before any store/RevenueCat account exists. Nothing reaches a real store.
 </Tip>
 
 ## Compliance

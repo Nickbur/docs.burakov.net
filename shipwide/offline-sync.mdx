@@ -1,0 +1,305 @@
+---
+title: "Offline-first data"
+description: "A local SQLite source of truth with background sync to your API — plus the Notes example and how to remove it."
+---
+
+The app ships a generic **offline-first data layer**. Local **SQLite** is the UI's source of
+truth, so reads and writes never wait on the network. A background sync engine reconciles it with
+your API: **push, then pull, PUT-upsert by a client-minted id, last-write-wins**. A new synced
+entity is a small descriptor plus three REST endpoints, not another hand-written repository.
+
+The **Notes** tab is the worked example, wired end to end (app + API). Keep it as a template or
+[remove it](#remove-the-notes-example).
+
+## Storage per platform
+
+| Platform | Engine |
+|----------|--------|
+| iOS / Android | On-device SQLite via `@capacitor-community/sqlite`. |
+| Web / PWA / Tauri desktop | The same plugin on `sql.js` (WebAssembly) through the `<jeep-sqlite>` web component, persisted to IndexedDB. |
+
+Each app has one database. It opens on first use and runs its migrations then. Its name is
+`VITE_OFFLINE_DB_NAME`, falling back to `VITE_APP_NAME`.
+
+<Warning>
+    The env templates set `VITE_OFFLINE_DB_NAME` to `shipwide`. Rename it when you rebrand, and do
+    it before launch: renaming later orphans every user's local database, including changes not
+    yet synced.
+</Warning>
+
+## Files
+
+All paths are under `shipwide_app/src/`.
+
+| File | Role |
+|------|------|
+| `services/offline/types.ts` | `BaseEntity`, `OfflineEntitySpec`, `OfflineApiClient`, `PendingChange`, `NewEntity` / `EntityPatch`. |
+| `services/offline/sqlite.ts` | Opens the one database on first use and migrates it. `getDb()`, `persist()`. |
+| `services/offline/migrations.ts` | Runs each registered migration step once, in ascending order, tracked by `PRAGMA user_version`. |
+| `services/offline/registry.ts` | `registerOfflineEntity(spec, clearAll)` collects each entity's migrations and its sign-out teardown. |
+| `services/offline/createOfflineRepo.ts` | `createOfflineRepo(spec)`: CRUD, sync primitives, the last-write-wins merge, `clearAll()`. |
+| `services/offline/createListSync.ts` | `createListSync(repo, api)`: `sync()` · `scheduleSync()` · `initOnlineResync()`. |
+| `services/offline/teardown.ts` | `clearAllLocalData()` wipes every registered table. Called on Log out, and when a different account signs in. |
+| `services/offline/owner.ts` | `claimLocalData(userId)` tags the database with the account that owns it and wipes it first if another account does. `localDataBelongsTo(userId)` gates sync. |
+| `services/offline/register.ts` | **Yours to edit.** Imports each entity module so it registers before the database opens. One line per entity. |
+| `services/offline/writeQueue.ts` | `serializeWrite(op)`: the one queue every write goes through, so two writes never overlap on the shared connection. |
+| `services/offline/syncErrors.ts` | `isPermanentRejection(err)`, `isAlreadyGone(err)`, `httpStatus(err)`: tell a change the server rejected apart from a failure worth retrying. |
+| `services/offline/syncTargets.ts` | `registerSyncTarget(key, run)` and `syncAll()`: each store registers its sync-and-refresh function, and the app runs them all when it returns to the foreground and right after sign-in. |
+| `services/offline/index.ts` | Public surface. Import from here. |
+| `features/notes/` | The worked example: entity, API client, sync, store, page. |
+
+## How data moves
+
+```
+page ─► store.load() ─► repo.list() ─► SQLite (instant) ─► render
+                    └─► sync in the background (never blocks the UI)
+store.add / update / remove ─► repo write (row → sync_state='pending') ─► scheduleSync() (debounced)
+sync(): push pending (PUT upsert · DELETE tombstone) ─► pull the list (GET) ─► merge (last-write-wins)
+app resume · sign-in ─► syncAll() ─► every registered store syncs and refreshes its list
+```
+
+Two bookkeeping columns on every table drive this:
+
+- `sync_state` is `'pending'` for a local change not yet pushed and `'synced'` once it matches the
+    server.
+- `deleted_at` is a tombstone. The UI hides the row, and the row stays until the server confirms
+    the DELETE. Then it is removed.
+
+## Sync rules
+
+- **When it runs:** after the page's `store.load()` reads local data, after every local write
+    (debounced, 800 ms by default), on the browser's `online` event, when the app returns to the
+    foreground, right after sign-in, and on `syncNow()`.
+- **When it doesn't:** while signed out, while offline (`navigator.onLine === false`), or when
+    the signed-in account doesn't own the database. The cache is left alone.
+- **One run at a time:** a sync requested during a run is folded into a single follow-up run.
+- **Push first**, oldest change first. A live row goes out as `PUT /v1/<resource>/:id` and is then
+    marked synced. A tombstone goes out as `DELETE /v1/<resource>/:id` and is then removed
+    locally; a DELETE answered 404 or 410 counts as done. The first transient failure (network
+    error, timeout, 5xx, 429) ends the run: the remaining changes stay pending, nothing is
+    pulled, and the next trigger retries.
+- **A rejected change doesn't block the rest.** If the server refuses a change outright (a 4xx
+    other than 401, 408, 426 and 429, such as a validation error or a conflict), the change stays
+    pending and the push moves on to the next one, then pulls as usual. The rejection is reported
+    once per change and session as an `Error`: console in development, Sentry in production.
+    The change goes out again on later syncs, so an edit or a server fix can still push it.
+- **Then pull** the full list with `GET /v1/<resource>`. If the pull fails, nothing is applied,
+    so a network error can never empty the cache.
+- **Merge, last-write-wins by `updatedAt`:** a server row overwrites the local row, unless the
+    local row is still pending and at least as new. A tie keeps the local edit. A synced local
+    row that is missing from the server's list was deleted on another device, so it is removed.
+
+## Sign-out and session expiry
+
+The database holds one account's data at a time. It is tagged with the account that owns it
+(`systemStore.localDataOwnerId`), and only **Log out** wipes it on the spot.
+
+| Event | Tokens | Local database |
+|-------|--------|----------------|
+| **Log out** (side menu → `/out`) | Cleared | Wiped by `clearAllLocalData()`, **including changes not yet synced**. |
+| **Refresh can't reach the API** (offline, timeout, 5xx, 429) | Kept | Kept. The user stays in the app on local data. |
+| **Session rejected**: no refresh token, or the API refuses it (400/401/403) | Cleared; the app goes to `/login` | Kept, still tagged with its owner. |
+| **Sign-in, same account** | New | Kept. Its pending changes sync right away. |
+| **Sign-in, different account** | New | Wiped by `claimLocalData()` before any page reads or syncs it. The previous account's unsynced changes are lost. |
+| **Sign-in, untagged database** (first sign-in, or after Log out) | New | Adopted by that account. |
+| **Connect to a self-hosted instance** ([Self-hosting](/shipwide/self-host)) | Replaced by the instance token | Owned by the instance from now on. A hosted account's data is wiped first; the next hosted sign-in wipes the instance's data the same way. |
+
+A session is rejected when it was revoked (for example, by "sign out other devices"), when its
+account was deleted, or when its refresh token expired. Its pending changes can't be pushed:
+the API refuses that session's access token too. So they wait on the device until the same
+account signs back in. The trade-off: after a remote revoke, the data stays on that device
+until someone logs out there or another account signs in. Until then it sits behind the
+sign-in screen.
+
+`Login.vue` calls `claimLocalData()` in `runPostLogin()`, before it navigates into the app, and
+then `syncAll()`. Call both from any sign-in flow you add. If a flow skips it, the sync engine still refuses to push a
+database another account owns. Sync stays blocked, though, and the pages would show that
+account's data.
+
+<Note>
+    **Offline-first covers staying signed in.** Access tokens last 15 minutes. On each navigation
+    between signed-in pages, the route guard refreshes a token that is within 5 minutes of expiry.
+    If the refresh can't reach the API, the user stays in the app on local data, and the first
+    request once back online refreshes the token. Only a refresh the API refuses sends them to
+    sign in. A refresh token lasts 30 days from the last successful refresh
+    (`JWT_REFRESH_LIFETIME_DAYS`). After a longer spell offline, the user signs in again once
+    back online, and their pending changes sync then.
+</Note>
+
+## Add your own entity
+
+Copy `features/notes/` and rename it:
+
+<Steps>
+    <Step title="Entity">
+        In `<name>.entity.ts`, write an `interface X extends BaseEntity` and an
+        `OfflineEntitySpec<X>`. The spec has
+        `table`, `columns`, `migrations`, `rowToEntity`, `entityToValues` and an optional
+        `orderBy` (defaults to `updated_at`). `columns` must include `id`, `created_at` and
+        `updated_at`, and must leave out the two bookkeeping columns. Keep its order fixed;
+        `entityToValues` returns values in the same order. Then add
+        `export const xRepo = createOfflineRepo(spec)` and
+        `registerOfflineEntity(spec, xRepo.clearAll)`.
+
+        The `CREATE TABLE` step **must** declare
+        `sync_state TEXT NOT NULL DEFAULT 'pending', deleted_at TEXT`. Index `sync_state` too.
+        Ids default to a random UUID. For a deterministic key, such as one row per day or week,
+        set `newId` so the upsert converges across devices. Build that key from the signed-in
+        user's id plus the date or week. Ids are primary keys shared by every account on the
+        server, so without the user id two accounts' rows for the same day get the same id.
+        The second account's upsert then fails, and its sync stalls on that row.
+    </Step>
+    <Step title="API client">
+        In `<name>.api.ts`, implement an `OfflineApiClient<X>` on `authenticatedAPI`, with
+        `list()` (GET), `put(entity)` (PUT `:id`) and `remove(id)` (DELETE `:id`). `list()`
+        **must throw** when there is no session. It must never return `[]`.
+    </Step>
+    <Step title="Sync engine">
+        In `<name>.sync.ts`:
+        `export const xSync = createListSync(xRepo, xApi, { label: 'xSync' })`.
+    </Step>
+    <Step title="Store">
+        In `<name>Store.ts`, write a Pinia store over the repo and the sync engine. Copy
+        `notesStore.ts`, including its `registerSyncTarget('<name>', syncAndReload)` line: that
+        is what syncs the entity and refreshes its list when the app resumes and after sign-in.
+    </Step>
+    <Step title="Register">
+        Add `import '@/features/<name>/<name>.entity';` to `services/offline/register.ts`.
+    </Step>
+    <Step title="UI">
+        A page, a route with `meta: { requiresAuth: true }`, optionally a tab-bar or side-menu
+        entry, and i18n. Call `store.load()` from `onIonViewWillEnter`, not `onMounted`: Ionic
+        keeps visited pages alive, so `onMounted` runs only on the first visit.
+    </Step>
+    <Step title="Backend">
+        A `/v1/<name>` module in `shipwide_api` that meets the contract below. Until it exists,
+        the feature works locally and its changes stay pending.
+    </Step>
+</Steps>
+
+### Server contract
+
+| Endpoint | Must |
+|----------|------|
+| `GET /v1/<name>` | Return the account's full list as a JSON array of entities (camelCase, ISO-8601 timestamps). |
+| `PUT /v1/<name>/:id` | Upsert by the **client-supplied** id, scoped to the account. Store values **verbatim**. |
+| `DELETE /v1/<name>/:id` | Be idempotent: succeed with `204` even if the row is already gone. |
+
+All three require a signed-in session. Model the table on `notes`:
+
+- The primary key is a **`text` column holding the client's id**, not a server-generated id, so a
+    record keeps the same id on every device.
+- `user_id` is a foreign key with `ON DELETE CASCADE`.
+- Run `npm run db:generate` afterwards.
+
+<Note>
+    Never rewrite a stored value (trim, normalize): the client reads the change as a new server
+    edit, and every device keeps re-syncing. If you use `newId`, make the `:id` validation accept
+    your key format. The Notes module accepts UUIDs only.
+</Note>
+
+## The Notes example
+
+**App**: `features/notes/` holds `notes.entity.ts` (spec, repo and registration),
+`notes.api.ts`, `notes.sync.ts`, `notesStore.ts` and `NotesPage.vue`. The route is `/notes`
+(signed-in only), with an entry in the bottom tab bar and in the side menu. Type a note and press
+**Add**; swipe a row left to delete it.
+
+**API**: `src/modules/notes/` plus the `notes` table (`src/db/schema/notes.ts`), which the kit's
+migrations create.
+
+| Route | Behaviour |
+|-------|-----------|
+| `GET /v1/notes` | The account's notes, most recently updated first: `[{ id, title, body, createdAt, updatedAt }]`. |
+| `PUT /v1/notes/:id` | Upserts by the client's UUID. Body `{ title?, body? }`; each defaults to `''`, is stored verbatim, and is capped at 10,000 / 500,000 characters. The server sets `updatedAt`. Returns the stored note. |
+| `DELETE /v1/notes/:id` | Idempotent delete → `204`. |
+
+All routes require sign-in. Only the owning account can read or write a note, and notes are
+deleted with their account. Against a backend without this module, pushes fail and the notes stay
+pending, but the tab keeps working locally.
+
+## Remove the Notes example
+
+<Steps>
+    <Step title="App — delete the feature">
+        Delete `src/features/notes/`. In `src/services/offline/register.ts`, remove
+        `import '@/features/notes/notes.entity';`. In `src/router/routes.ts`, remove the `/notes`
+        route.
+    </Step>
+    <Step title="App — navigation and i18n">
+        In `src/views/core/BottomTabBar.vue`, remove the Notes `<router-link>` and remove
+        `documentTextOutline` from its icon import. In `src/views/core/SideMenu.vue`, remove the
+        `/notes` entry from `menuItems`, but keep the `documentTextOutline` import; the Terms item
+        still uses it. Delete `src/i18n/locales/*/notes.json` and the `notes` key in each
+        `src/i18n/locales/*/navigation.json`.
+    </Step>
+    <Step title="API — delete the module">
+        Delete `src/modules/notes/`, `src/db/schema/notes.ts` and `tests/notes.schemas.test.ts`.
+        Then remove three references: the `notesRoutes` import and its `app.register(...)` line in
+        `src/app.ts`; the `export * from './notes.js'` line in `src/db/schema/index.ts`; and
+        `noteDTO` with its `NoteRow` import in `src/shared/serializers.ts`.
+    </Step>
+    <Step title="API — drop the table">
+        Run `npm run db:generate`. It creates a migration that drops the `notes` table, which
+        applies on the next boot (`migrate → seed → serve`) or with `npm run db:migrate`.
+    </Step>
+    <Step title="Verify">
+        Run `npm run build` and `npm test` in both parts.
+    </Step>
+</Steps>
+
+<Tip>
+    You can keep the layer itself. With no entity registered, nothing opens the database, and the
+    `clearAllLocalData()` calls on Log out and sign-in do nothing. To remove the layer too, delete
+    `src/services/offline/` and `src/helpers/uuid.ts` (only the layer uses it). Also remove the
+    `clearAllLocalData` import and call in `src/views/pages/_base/Logout.vue`, the
+    `claimLocalData` import and call in `src/views/pages/_base/Login.vue`, `localDataOwnerId` in
+    `src/stores/core/systemStore.ts` (its ref, `$reset` line, return entry and persist path),
+    `public/assets/sql-wasm.wasm`, the `VITE_OFFLINE_DB_NAME` lines in `env/`, and the
+    `@capacitor-community/sqlite`, `jeep-sqlite` and `sql.js` dependencies. Then run
+    `npx cap sync`.
+</Tip>
+
+## Gotchas
+
+1. **jeep-sqlite under Vite:** `sqlite.ts` loads the custom-elements build
+    (`jeep-sqlite/dist/components/jeep-sqlite` + `defineCustomElement()`), not
+    `jeep-sqlite/loader`. The lazy loader never finishes hydrating, so `getDb()` hangs on web.
+2. **The wasm file must match `sql.js`:** `public/assets/sql-wasm.wasm` must come from the exact
+    `sql.js` version in `package.json` (`1.11.0`). When you upgrade `sql.js`, copy its
+    `dist/sql-wasm.wasm` over it. A mismatch breaks only web and desktop, so native testing won't
+    catch it.
+3. **`persist()` after every write:** on web, a write stays in memory until it is saved to
+    IndexedDB. The repo factory does this for you; do the same in any raw SQL you add.
+4. **One write at a time:** every write shares one connection, and each `db.run()` opens its
+    own transaction. Two writes that overlap fail on web and desktop ("cannot start a
+    transaction within a transaction"), and the losing write is dropped. The repo factory runs
+    each write method through `serializeWrite()`. Wrap any raw SQL write you add the same way,
+    including the reads that decide it and its `persist()`. Don't call a queued function from
+    inside `serializeWrite()`: the queue isn't reentrant, so the call would wait forever. If it
+    happens anyway, the queue reports any write that waited more than 10 seconds for its turn.
+    The report is an `Error`, so you see it in the console in development and in Sentry in
+    production, instead of a silent hang.
+5. **`list()` throws when signed out:** a sign-out that races a sync must not feed an empty list
+    into the merge and wipe the cache.
+6. **Migrations only grow, and their numbers are global:** never edit a shipped step; add a new
+    one with a higher version. Version numbers are unique across **all** entities, and a collision
+    throws at startup.
+7. **A tie keeps the local edit** (`>=` in the merge). This is intentional; don't tighten it to
+    `>`.
+8. **Unit tests:** `npm test` (Vitest, `TZ=UTC`) runs the `*.test.ts` files next to the code.
+    Tests ship for the offline layer (registry, write queue, cache ownership, sync gate), for
+    token refresh, and for the Pro gate.
+
+## Gate it behind Pro
+
+`useProGate()` (see [Billing](/shipwide/billing)) caps a free tier in one call:
+
+```ts
+const { ensureUnderLimit } = useProGate();
+
+async function onAdd(title: string): Promise<void> {
+    if (!ensureUnderLimit(store.items.length, 20)) return; // upsell shown, create blocked
+    await store.add({ title, body: '' });
+}
+```

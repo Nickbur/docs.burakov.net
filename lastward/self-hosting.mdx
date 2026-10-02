@@ -14,43 +14,54 @@ model trusted privacy tools like Bitwarden and Standard Notes use. You can read 
 run it yourself, and keep it running on your own terms.
 
 <Card title="What the core gives you" icon="server">
-  A standalone server you run with `docker compose up`: your switches, check-ins, the firing
-  engine, and the recipient release page — all on infrastructure you control. It stays
-  **content-blind**, exactly like the hosted service.
+    A standalone server you run with `docker compose up`: your switches, check-ins, the firing
+    engine, and the recipient release page — all on infrastructure you control. It stays
+    **content-blind**, exactly like the hosted service.
 </Card>
 
 ## Quick start
 
 <Steps>
-  <Step title="Get the core">
-    Clone [the repository](https://github.com/Nickbur/lastward_core) and copy `.env.example` to `.env`:
+    <Step title="Get the core">
+        Clone [the repository](https://github.com/Nickbur/lastward_core) and copy `.env.example` to `.env`:
 
-    ```bash
-    git clone https://github.com/Nickbur/lastward_core.git
-    cd lastward_core
-    cp .env.example .env
-    ```
-  </Step>
-  <Step title="Set your owner token">
-    Generate a strong token (`openssl rand -hex 32`) and set `OWNER_TOKEN` — it's how your app
-    authenticates to your instance.
-  </Step>
-  <Step title="Run it">
-    `docker compose up` starts PostgreSQL and the server, applies the database migrations, and
-    begins the check-in sweep. Point your client at your instance's URL and you're live.
-  </Step>
+        ```bash
+        git clone https://github.com/Nickbur/lastward_core.git
+        cd lastward_core
+        cp .env.example .env
+        ```
+    </Step>
+    <Step title="Set your owner token">
+        Generate a strong token (`openssl rand -hex 32`) and set `OWNER_TOKEN` — it's how your app
+        authenticates to your instance.
+    </Step>
+    <Step title="Run it">
+        `docker compose up` starts PostgreSQL and the server, applies the database migrations, and
+        begins the check-in sweep. Point your client at your instance's URL and you're live.
+    </Step>
+    <Step title="Connect the app">
+        In the app, open **Settings → Self-hosted instance** (or tap **Connect an instance** on the
+        sign-in screen) and enter your instance's URL and `OWNER_TOKEN`. The app reloads against
+        your instance — no account needed.
+    </Step>
 </Steps>
+
+<Note>
+    While the app is connected to your instance, every feature is unlocked and there's no
+    subscription. Check-in reminders keep firing on your device, but push notifications from the
+    hosted service are off.
+</Note>
 
 ## Continuity guarantees
 
 - **Export anytime.** You can always download an encrypted bundle of your switches, so your
-  setup is never trapped inside one service.
+    setup is never trapped inside one service.
 - **Published shutdown protocol.** If the hosted service ever winds down, you get long advance
-  notice, a final export, and a migration guide to self-hosting.
+    notice, a final export, and a migration guide to self-hosting.
 - **Honest limits.** "It outlives any company" is only partly solvable — self-hosting is the
-  real backstop, and we document that plainly rather than overclaiming.
+    real backstop, and we document that plainly rather than overclaiming.
 
 <Note>
-  The truly-public "make it public to the world" action is available **only on self-hosted
-  instances** — the hosted service deliberately doesn't publish content to the open web.
+    The truly-public "make it public to the world" action is available **only on self-hosted
+    instances** — the hosted service deliberately doesn't publish content to the open web.
 </Note>

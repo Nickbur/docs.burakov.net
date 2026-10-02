@@ -4,35 +4,44 @@ description: "Ship each part to production — keeping secrets on the server."
 ---
 
 <Warning>
-  **Golden rule: secrets stay on the server.** Fill the `CHANGE-ME` placeholders in the API's
-  `env.prod` there, never commit them, and never put a secret in a `VITE_*` / `PUBLIC_*` var
-  (those are inlined into the shipped bundle).
+    **Golden rule: secrets stay on the server.** Fill the `REPLACE_ME_*` placeholders in the API's
+    `env.prod` there, never commit them, and never put a secret in a `VITE_*` / `PUBLIC_*` var
+    (those are inlined into the shipped bundle).
 </Warning>
 
 ## Backend (`shipwide_api`)
 
 - **Docker**: the container boots `migrate → seed → serve`. Migrations + the idempotent seed run
-  automatically. Provide a managed Postgres 17 + Redis 7 (or run them alongside).
+    automatically. Provide a managed Postgres 17 + Redis 7 (or run them alongside).
 - **Purge cron** (required): run daily — `node dist/jobs/purge.js` (compiled path; `tsx` is
-  dev-only). It's the physical half of account deletion + support-ticket retention; idempotent.
+    dev-only). It's the physical half of account deletion + support-ticket retention; idempotent.
 - **Email**: point `SMTP_*` at a transactional provider (e.g. Postmark). Set **SPF, DKIM, DMARC**
-  on the sending domain — with passwordless auth, a code in spam means nobody can sign in.
+    on the sending domain — with passwordless auth, a code in spam means nobody can sign in.
+    `MAIL_REPLY_TO` is your support inbox: ticket notifications answer to it, and the website's
+    support form (`POST /v1/support`) delivers its messages there.
 - **CORS**: `CORS_ORIGINS` = your exact web origin(s). Native schemes (`capacitor://localhost`,
-  `tauri://localhost`) and the admin's `ADMIN_URL` are always allowed.
+    `tauri://localhost`) and the admin's `ADMIN_URL` are always allowed.
+- **Client allowlist**: `CLIENT_IDS` = your app's `VITE_CLIENT_ID` (comma-separated for several
+    clients). Only those ids (plus the admin's `admin`) can sign in.
 - **Reverse proxy**: `TRUST_PROXY` = whose `X-Forwarded-For` the API trusts. The default
-  `loopback,uniquelocal` covers a proxy on the same host / private network (e.g. nginx → the
-  container); otherwise list your proxy's IPs/CIDRs. Never `true` on a publicly reachable API —
-  clients could spoof their IP and dodge per-IP rate limits.
-- **Secrets to set**: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET` (≥32), `SMTP_*`, `ADMIN_*`, and
-  any `GOOGLE_/APPLE_/REVENUECAT/ONESIGNAL` integration you enable.
+    `loopback,uniquelocal` covers a proxy on the same host / private network (e.g. nginx → the
+    container); otherwise list your proxy's IPs/CIDRs. Never `true` on a publicly reachable API —
+    clients could spoof their IP and dodge per-IP rate limits.
+- **Secrets to set**: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET` (≥32), `SMTP_*`, `ADMIN_*`,
+    `DATA_ENCRYPTION_KEY`, and any `GOOGLE_/APPLE_/REVENUECAT/ONESIGNAL` integration you enable.
+- **At-rest encryption key**: `DATA_ENCRYPTION_KEY` (`openssl rand -base64 32`) encrypts admin
+    TOTP secrets in the database. Unset ⇒ they are stored in plaintext and the API logs a warning at
+    boot. Once set, **never lose or remove it** — keep an offline copy. To rotate: move the old key
+    to `DATA_ENCRYPTION_PREVIOUS_KEYS`, set the new one, restart, run
+    `node dist/scripts/encryptAtRest.js`, then drop the old key.
 
 ## App (`shipwide_app`)
 
 - **Web / PWA**: `npm run build` → static output (keeps pre-compressed `.gz`/`.br` assets). Serve
-  from any static host / CDN. Its origin must be in the API's `CORS_ORIGINS`.
+    from any static host / CDN. Its origin must be in the API's `CORS_ORIGINS`.
 - **iOS / Android**: `npm run build:native` (sets `SHIPWIDE_NATIVE=1` so compressed assets aren't
-  bundled into the WebView), then open the committed `ios/` / `android/` projects in Xcode /
-  Android Studio to archive and submit.
+    bundled into the WebView), then open the committed `ios/` / `android/` projects in Xcode /
+    Android Studio to archive and submit.
 - **Desktop**: Tauri bundles from `src-tauri/` (Rust stable). Icons via `npx tauri icon`.
 
 ## Admin (`shipwide_admin`)
@@ -41,8 +50,8 @@ Docker + nginx, built with `--build-arg VITE_*`:
 
 ```bash
 docker build --build-arg VITE_API_URL=https://api.example.com \
-             --build-arg VITE_SITE_URL=https://example.com \
-             --build-arg VITE_BRAND="Your product" -t shipwide-admin .
+    --build-arg VITE_SITE_URL=https://example.com \
+    --build-arg VITE_BRAND="Your product" -t shipwide-admin .
 docker run -p 8080:80 shipwide-admin
 ```
 
@@ -55,5 +64,6 @@ origin or CORS refuses it; (2) put a **network gate** in front (Cloudflare Acces
 
 `npm run switch_to_prod` (set your domain first), then `npm run build`
 (`astro-i18next generate + astro check + astro build`) → static output; serve from any static
-host / CDN. `PUBLIC_*` are inlined at build. If the support form posts to your API, set
-`PUBLIC_SUPPORT_ENDPOINT` and add the site origin to the API's `CORS_ORIGINS`.
+host / CDN. `PUBLIC_*` are inlined at build. To make the support form post to your API, set
+`PUBLIC_SUPPORT_ENDPOINT=https://<your-api-host>/v1/support` and add the site origin to the
+API's `CORS_ORIGINS`.

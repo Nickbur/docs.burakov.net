@@ -1,0 +1,144 @@
+---
+title: "Self-hosted instances"
+description: "Let users point the app at another deployment of your backend at runtime, with a URL and an access token."
+---
+
+Users can point the app **at runtime** at another deployment of your backend, with no rebuild.
+The typical case is a customer running your product on their own server. The user enters an
+**instance URL** and an **access token**. From then on, every request goes to that origin and
+authenticates with that token instead of a signed-in account session.
+
+<Warning>
+    **Your instance has to support it.** The stock `shipwide_api` accepts JWT access tokens only.
+    If you point the app at it, the connection check passes, but every signed-in request gets a
+    `401`. See [What the instance must provide](#what-the-instance-must-provide).
+</Warning>
+
+## Where users find it
+
+- **Sign-in screen:** a **Connect an instance** link under the sign-in form, so users can connect
+    without a hosted account.
+- **Settings → Self-hosted instance:** shows the connected origin and opens the same dialog.
+
+Both open `views/components/SelfHostModal.vue`. It has an **Instance URL** field, an **Access
+token** field, a **Connect** button and, while connected, a **Use the hosted service** button.
+
+## Connect and disconnect
+
+**Connect** (`helpers/selfHost.ts`) works in four steps:
+
+<Steps>
+    <Step title="Normalize the URL">
+        Trim it, add `https://` if there is no scheme, and strip trailing slashes. For any host
+        that isn't local, `http://` becomes `https://`. Local hosts are `localhost`,
+        `127.0.0.1`, `192.168.*`, `10.*` and `*.local`.
+    </Step>
+    <Step title="Require a token">
+        The token field can't be empty.
+    </Step>
+    <Step title="Probe the instance">
+        `GET <url>/v1/health` with `Authorization: Bearer <token>` and a 6 s timeout. Only HTTP
+        200 passes; anything else shows "Couldn't reach that instance".
+    </Step>
+    <Step title="Save and restart">
+        Store the origin and token in `systemStore.backendIp` and `systemStore.selfHostToken`,
+        persisted in the app's encrypted storage. Clear the cached API origin, the account
+        session and the subscription state; theme and language are kept. Hand the offline
+        database to the instance (`claimLocalData()`): data a hosted account left on the device
+        is wiped first, so it never syncs into the instance. Then restart the app at `/`. It
+        opens straight into the app, with no sign-in.
+    </Step>
+</Steps>
+
+**Use the hosted service** clears the origin and token the same way. The app restarts on
+`VITE_BACKEND_URL`, signed out. The instance still owns the offline database until the next
+sign-in, which wipes it before anything syncs, so instance data never reaches a hosted account.
+**Log out** also disconnects: it clears the stored system state,
+including the instance, and returns to the hosted sign-in.
+
+## What changes while connected
+
+| | Hosted (default) | Self-hosted instance |
+|---|---|---|
+| API origin | `VITE_BACKEND_URL`, with failover to `VITE_BACKEND_FALLBACK` | The instance URL only. No failover and no retry on another server. |
+| `Authorization` | The account's JWT. Refreshed before it expires; after a `401`, refreshed and the request retried. | The static token, sent as-is. Never refreshed, never retried. |
+| Route guard & splash | Require a signed-in session | Require only a stored token |
+| Profile | Fetched on launch and resume | Fetched from the instance (`/v1/account/me`) on launch and resume |
+| Offline sync | Runs while signed in | Runs with the instance token. A cache still tagged with a hosted account never syncs to the instance. See [Offline-first data](/shipwide/offline-sync). |
+| Chunked uploads (`useFileUpload`) | JWT on every chunk | Instance token on every chunk |
+| Billing | RevenueCat + `/subscriptions/me` | Off: RevenueCat stays anonymous and `/subscriptions/me` isn't called. `isPro` and `has()` read `true` — the instance's owner runs the server, so it's unlimited. |
+| Push | OneSignal logs the device in under the account id | Off: the device stays logged out (no External ID, no permission prompt). Your OneSignal app belongs to the hosted service, and the instance can't send through it. |
+| Settings | Notifications test + Subscription sections | Both hidden |
+| Billing pages (`/subscription`, `/subscription/premium-example`) | Open | Redirect to `/home` (route meta `hostedOnly`) |
+| `X-Client-Id` · `X-App-Version` | Sent | Sent, so the instance can run its own upgrade gate |
+
+The switch lives in `helpers/systemUtils.ts`:
+
+- `isSelfHost()` tells you which mode is active.
+- `getSelfHostToken()` returns the stored token.
+- `getAuthToken()` returns the token a request should carry in either mode.
+- `getAvailableServer()` returns the instance first when one is stored.
+
+`authenticatedAPI` uses these for every signed-in request. When you add a feature that sends a
+token or needs a hosted-only service, read the token through `getAuthToken()` (never
+`accountStore.accessToken`) and branch on `isSelfHost()`. Mark a page that can't work against an
+instance with `meta: { hostedOnly: true }` in `router/routes.ts`.
+
+## What the instance must provide
+
+- **`GET /v1/health` → 200** for the connection check.
+- **Bearer auth with the static token** on every `/v1` route the app calls. The instance resolves
+    the token to the account that owns it.
+- **`GET /v1/account/me`** returning that owner account, so the app can show a profile. Without
+    it the profile stays empty; nothing else depends on it.
+- **The kit's wire contract:** the `/v1` prefix, camelCase, ISO-8601 dates and
+    `{ code, message }` errors.
+- **CORS** that allows the web build's origin. Native schemes are handled as described in
+    [Configuration](/shipwide/configuration).
+
+<Tip>
+    To make `shipwide_api` a valid instance, add a static-token branch to the `authenticate` hook
+    in `src/plugins/auth.plugin.ts`. It should compare the bearer with a server-side secret in
+    constant time and set `request.authUser` to the owner account. Keep the secret in the server
+    env, never in a `VITE_*`.
+</Tip>
+
+## Security notes
+
+- The token is a long-lived bearer secret. On the instance side, treat it like a password: long,
+    random and revocable.
+- On the device it sits with the session, in the encrypted storage layer (see
+    [App](/shipwide/app) → Session storage).
+- Plain `http://` is kept only for local hosts. On Android release builds, cleartext is further
+    limited to the hosts in `android/app/src/main/res/xml/network_security_config.xml`
+    (`localhost`, `127.0.0.1`, `10.0.2.2`). Serve real instances over HTTPS.
+
+## Remove it
+
+Users opt in to this mode one by one. To hide it, remove its entry points:
+
+<Steps>
+    <Step title="Delete the dialog and helpers">
+        Delete `src/views/components/SelfHostModal.vue` and `src/helpers/selfHost.ts`.
+    </Step>
+    <Step title="Sign-in screen">
+        In `src/views/pages/_base/Login.vue`, remove the `.self-host-link` element and its
+        style, the `<SelfHostModal>` tag and its import, and the `selfHostOpen` ref.
+    </Step>
+    <Step title="Settings">
+        In `src/views/pages/_settings/AppSettings.vue`, remove the "Self-hosted instance"
+        `<ion-list>`, the `<SelfHostModal>` tag and its import, `selfHostOpen`,
+        `selfHostConnected` and `currentInstance` (with the `v-if="!selfHostConnected"` on the
+        Notifications and Subscription lists), and the `useSystemStore` and `IonNote` imports.
+    </Step>
+    <Step title="i18n">
+        Remove the `selfHost` block from `src/i18n/locales/*/settings.json`.
+    </Step>
+</Steps>
+
+The rest of the plumbing does nothing while no instance is stored, so you can keep it or remove
+it. It consists of the `isSelfHost()` branches in `systemUtils.ts`, `authenticatedAPI.ts`, the
+router guard, `Splash.vue`, `views/core/App.vue`, `OneSignalInitializer.vue`,
+`RevenueCatInitializer.vue` and `subscriptionStore.ts`; `getAuthToken()` in `createListSync.ts`
+and `useFileUpload.ts`; the `hostedOnly` route meta in `router/routes.ts`; plus `backendIp` and
+`selfHostToken` in `systemStore`.

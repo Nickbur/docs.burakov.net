@@ -23,9 +23,9 @@ migrate, seed), `src/plugins` (cors, rate-limit, auth, swagger, error handler), 
 (errors, crypto, uuidv7, username rules, email, serializers), `src/jobs`.
 
 <Note>
-  Every service function, handler, schema and type is exported and ready to use — including
-  handlers that no default route mounts yet, so you can wire them into your own routes as you
-  build.
+    Every service function, handler, schema and type is exported and ready to use — including
+    handlers that no default route mounts yet, so you can wire them into your own routes as you
+    build.
 </Note>
 
 ## Auth model — passwordless only
@@ -35,16 +35,16 @@ code for an unknown address creates the account. No password, no register/login 
 reset, no separate email verification.
 
 - `POST /v1/auth/code` — emails a code. **204 for any address** (not an enumeration oracle).
-  10-min life, 5 attempts, single use, hashed at rest, constant-time compare.
+    10-min life, 5 attempts, single use, hashed at rest, constant-time compare.
 - `POST /v1/auth/code/verify` — **sign in** · **create-and-sign-in** (username auto-generated
-  from the email) · **`deletion_pending`** (soft-deleted → `restoreToken`).
+    from the email) · **`deletion_pending`** (soft-deleted → `restoreToken`).
 - Google / Apple sign-in available alongside.
 - Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
-  `sessions` row; live-session check cached in Redis with a DB fallback.
+    `sessions` row; live-session check cached in Redis with a DB fallback.
 
 <Note>
-  Authentication is passwordless by design — there is intentionally no password, no reset,
-  and no separate email-verification step.
+    Authentication is passwordless by design — there is intentionally no password, no reset,
+    and no separate email-verification step.
 </Note>
 
 **Test / review accounts:** `TEST_ACCOUNTS=email:6digits,…` — a fixed code for App Store /
@@ -60,10 +60,10 @@ code never creates one. Every fixed-code sign-in is logged at `warn`.
 | Sessions | `GET /v1/sessions` · `/current` · `DELETE /v1/sessions` · `/:id` · `PUT /:id` |
 | Upload | `POST /v1/upload` + chunked upload start/append/status/complete/abort · file delete/serve |
 | Push | `POST /v1/push/test` (verify delivery to the signed-in user's own devices) |
-| Support | `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `/:id/reply` |
+| Support | `POST /v1/support` — the website's support form: **no session**, 5 per IP / 10 min, honeypot + fill-time bot check, emailed to `MAIL_REPLY_TO` (not stored) · signed-in tickets: `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `/:id/reply` |
+| Notes | `GET /v1/notes` · `PUT /:id` (upsert by client id) · `DELETE /:id` (idempotent) — sync endpoints for the app's offline-first Notes example. See [Offline-first data](/shipwide/offline-sync) |
 | Subscriptions | `POST /v1/subscriptions/webhook` · `GET /me` · `POST /sync` · `GET /premium-example` — off until configured |
-| Gamification | `GET /v1/gamification/stats` — points awarded server-side only |
-| Admin | auth methods · users (role, delete/restore/purge, sessions, entitlements, gamification) · sessions · tickets · uploads · push · audit · ops |
+| Admin | auth methods + TOTP · stats · users (role, delete/restore/purge, sessions, entitlements) · sessions · tickets · uploads · push · audit · app settings (version policy) · ops |
 | Health | `GET /v1/health` · `/version` · `/app-version` (client version policy) |
 
 Interactive reference at `/docs` (Swagger UI). Other mechanics: **username** (auto from email,
@@ -76,9 +76,9 @@ The app publishes a version policy the client honours — set it in **Admin → 
 
 - **Latest version** → a soft "update available" dot when the installed build is older. A nudge.
 - **Min. supported version** → a **hard gate**: a build below it is blocked. Enforced two ways —
-  the app checks `/v1/app-version` on launch + hourly, **and** every request sends
-  `X-App-Version` so the API answers **`426 Upgrade Required`** for a stale build. Recovery
-  endpoints (`/health`, `/version`, `/app-version`) are never gated.
+    the app checks `/v1/app-version` on launch + hourly, **and** every request sends
+    `X-App-Version` so the API answers **`426 Upgrade Required`** for a stale build. Recovery
+    endpoints (`/health`, `/version`, `/app-version`) are never gated.
 
 Leave a field empty to disable that half. Separately, `API_DEPRECATION` / `API_SUNSET` add the
 RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
@@ -88,12 +88,13 @@ RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
 | Script | What it does |
 |--------|--------------|
 | `switch_to_dev` / `switch_to_prod` | copy `env/env.dev\|prod` → `.env` |
-| `dev` / `build` / `start` | tsx watch / compile / run compiled |
+| `serve` / `build` / `start` | tsx watch / compile / run compiled |
+| `typecheck` | types only |
 | `db:generate` / `db:migrate` / `db:studio` | migration from schema / apply / Drizzle Studio |
 | `seed` | test/review accounts |
 | `purge` | physically delete accounts past the soft-delete window (daily cron) |
-| `gamification:reset` | zero every user's score for the new period (cron) |
 | `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
+| `encrypt:backfill [-- --dry-run]` | encrypt TOTP secrets stored before `DATA_ENCRYPTION_KEY` was set, or re-encrypt them after a key rotation (prod: `node dist/scripts/encryptAtRest.js`) |
 | `test` | Vitest |
 
 ## Operational notes
@@ -101,8 +102,11 @@ RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
 - The container boots **`migrate → seed → serve`**.
 - Run **purge** daily on cron; in the prod image use the compiled path: `node dist/jobs/purge.js`.
 - Email: point `SMTP_*` at a transactional provider (Postmark works). Set **SPF, DKIM, DMARC** —
-  with passwordless auth, a code in spam means nobody can sign in.
+    with passwordless auth, a code in spam means nobody can sign in.
 - CORS: `CORS_ORIGINS` = exact web origin(s); native schemes and the admin's `ADMIN_URL` are
-  always allowed.
+    always allowed.
+- Client allowlist: `CLIENT_IDS` = your app's `client_id`(s), comma-separated; `admin` is always
+    allowed. A sign-in from any other id gets `400 unknown_client` before a code is emailed or an
+    account is created.
 - Reverse proxy: `TRUST_PROXY` (default `loopback,uniquelocal`) = the proxy IPs/CIDRs whose
-  `X-Forwarded-For` is trusted; never `true` on a publicly reachable API.
+    `X-Forwarded-For` is trusted; never `true` on a publicly reachable API.

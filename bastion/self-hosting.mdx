@@ -16,45 +16,57 @@ Self-hosting puts your organization's chat and calls on a server **you** control
 A single `docker compose` setup brings up everything the platform needs, so you're not wiring services together by hand:
 
 <CardGroup cols={2}>
-  <Card title="Bastion node" icon="server">
-    The API and real-time layer for chat, calls, keys and uploads.
-  </Card>
-  <Card title="Database & cache" icon="database">
-    PostgreSQL for durable data, Redis for presence and real-time fan-out.
-  </Card>
-  <Card title="File storage" icon="box-archive">
-    S3-compatible object storage for encrypted attachments (bundled, or bring your own).
-  </Card>
-  <Card title="Media server" icon="video">
-    Carries encrypted call audio, video and screen share — on your infrastructure.
-  </Card>
-  <Card title="Background worker" icon="gears">
-    A separate worker process delivers notifications and fans messages out to large channels, so it never competes with the API for responsiveness.
-  </Card>
+    <Card title="Bastion node" icon="server">
+        The API and real-time layer for chat, calls, keys and uploads.
+    </Card>
+    <Card title="Database & cache" icon="database">
+        PostgreSQL for durable data, Redis for presence and real-time fan-out.
+    </Card>
+    <Card title="File storage" icon="box-archive">
+        S3-compatible object storage for encrypted attachments (bundled, or bring your own).
+    </Card>
+    <Card title="Media server" icon="video">
+        Carries encrypted call audio, video and screen share — on your infrastructure.
+    </Card>
+    <Card title="Background worker" icon="gears">
+        A separate worker process delivers notifications and fans messages out to large channels, so it never competes with the API for responsiveness.
+    </Card>
 </CardGroup>
 
 ## Bring it up
 
 <Steps>
-  <Step title="Generate config and secrets">
-    ```bash
-    npm run setup      # strong, unique secrets + your domains, written into the environment
-    ```
-  </Step>
-  <Step title="Start the stack">
-    ```bash
-    docker compose --profile prod up -d
-    ```
-  </Step>
-  <Step title="Register your organization">
-    Create the organization once, then invite members from the [admin panel](/bastion/administration).
-  </Step>
+    <Step title="Generate config and secrets">
+        ```bash
+        npm run setup      # strong, unique secrets + your domains, written into the environment
+        ```
+    </Step>
+    <Step title="Start the stack">
+        ```bash
+        docker compose --profile prod up -d
+        ```
+    </Step>
+    <Step title="Register your organization">
+        Create the organization once, then invite members from the [admin panel](/bastion/administration).
+    </Step>
 </Steps>
+
+## How members connect
+
+There's **one Bastion app for every organization** — on the web, desktop, iOS and Android. You don't ship a custom build or hand out a server address:
+
+1. Your node registers its public address with the control plane when it starts, and again on every license check. The control plane first verifies that the server at that address really is your node (it answers a one-time challenge with your organization's secret), so nobody can point your members at a server of their own.
+2. A member signs in with their email and sees your invitation; they join with one tap. Nobody becomes a member of an organization without accepting.
+3. The app checks your node is reachable, then connects to it directly. Messages, files and calls flow between the member's device and **your** node only.
+
+Moving the node to a new domain? Update `NODE_PUBLIC_URL` and restart — once the new address is verified (usually within a minute), members' apps follow it on their next refresh, with no data lost. Someone who belongs to several organizations switches between them in the app; each organization's data stays on its own node.
 
 ## Configuration worth knowing
 
-A few environment settings shape privacy and limits (sensible defaults ship out of the box):
+A few environment settings shape connectivity, privacy and limits (sensible defaults ship out of the box):
 
+- **`NODE_PUBLIC_URL`** — the public **HTTPS** address members' apps connect to (set from your domain by `npm run setup`). It must be reachable from members' devices **and from the internet**: the control plane verifies it before members are routed to your node. Until then the node logs a warning with the reason and retries within minutes.
+- **`APP_WEB_ORIGINS`** — browser origins of the Bastion web app allowed to call your node; defaults to the hosted web app. The desktop and mobile apps are always allowed.
 - **`MESSAGE_PUSH_HIDE_METADATA`** — keep notifications generic (no sender/chat identity in the push). **On by default**; set `false` for richer named notifications.
 - **`MAX_ATTACHMENT_BYTES`** — hard cap on a single attachment (default 100 MiB), enforced both up front and against the stored object.
 - **`FANOUT_MODE`** — `dedicated` (default in the prod stack) runs the separate worker container above; `inline` folds that work into the API for a minimal single-container deploy.
@@ -63,14 +75,14 @@ Organization-level privacy (metadata-minimal mode) is toggled from the [admin pa
 
 ## Secure by default
 
-- **HTTPS** is issued and renewed automatically by the bundled reverse proxy.
+- **HTTPS** is issued and renewed automatically by the bundled reverse proxy. The apps upgrade a node's public address to HTTPS, so a sign-in token never crosses the internet in the clear.
 - The **database and file storage bind to localhost** — never exposed to the open internet. Only the web app and media server are reachable from outside.
 - **Fail-closed secrets:** if a required secret is missing, the stack refuses to start rather than booting with a weak default.
 
 ## What still depends on the control plane
 
-Identity (passwordless sign-in), push notifications and licensing are brokered by the shared control plane, so accounts work across every app and across devices. Your **content** — messages, files and calls — never leaves your node; only that identity and licensing traffic goes to the control plane. See [Accounts & privacy](/bastion/accounts-and-privacy).
+Identity (passwordless sign-in), the directory of which organizations you belong to, push notifications and licensing are brokered by the shared control plane, so accounts work across every app and across devices. Your **content** — messages, files and calls — never leaves your node; only that identity and licensing traffic goes to the control plane. See [Accounts & privacy](/bastion/accounts-and-privacy).
 
 <Note>
-  Don't want to run any of this? The **managed** option is the exact same stack, operated for you. See [Pricing](/bastion/pricing).
+    Don't want to run any of this? The **managed** option is the exact same stack, operated for you. See [Pricing](/bastion/pricing).
 </Note>

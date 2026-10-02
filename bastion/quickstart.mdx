@@ -10,53 +10,60 @@ There are two ways to start with Bastion. Pick the one that fits.
 If your organization uses a managed Bastion workspace, you only need to sign in.
 
 <Steps>
-  <Step title="Open the app">
-    Use the web app in your browser, or install Bastion for desktop, iOS or Android — see [Download](https://burakov.net/projects/bastion/download).
-  </Step>
-  <Step title="Sign in with your email">
-    Enter your email address. Bastion sends a one-time code — no password to remember. The same account works on every device.
-  </Step>
-  <Step title="Start talking">
-    Open a chat or start a call. Everything is end-to-end encrypted by default — see [Security](/bastion/security).
-  </Step>
+    <Step title="Open the app">
+        Use the web app in your browser, or install Bastion for desktop, iOS or Android — see [Download](https://burakov.net/projects/bastion/download). It's one app for every organization — nothing to configure.
+    </Step>
+    <Step title="Sign in with your email">
+        Enter your email address. Bastion sends a one-time code — no password to remember. The same account works on every device.
+    </Step>
+    <Step title="Choose your organization">
+        Bastion lists the organizations you're a member of and connects to the one you pick. If you belong to just one, it opens straight away. Belong to several? Switch any time from the side menu or **Settings → Organization**. Invitations wait at the top of the same screen — nobody joins an organization without tapping **Join**, and you can leave one any time from its **⋯** menu.
+    </Step>
+    <Step title="Start talking">
+        Open a chat or start a call. Everything is end-to-end encrypted by default — see [Security](/bastion/security).
+    </Step>
 </Steps>
+
+<Tip>
+    Don't see your organization? Ask its admin to invite the email you signed in with — you'll get an email — then tap **Check again**.
+</Tip>
 
 ## Option B — Self-hosted (your own server)
 
 Run the whole platform on a server you control. You'll need a host with **Docker** and a **domain name** pointing at it.
 
 <Steps>
-  <Step title="Get the node">
-    Pull the image or clone the node repository. Everything the platform needs — database, cache, file storage and the media server — is described in one `docker compose` setup.
-  </Step>
-  <Step title="Generate config and secrets">
-    ```bash
-    npm run setup      # generates strong, unique secrets and fills in your domains
-    ```
-    Strong secrets are created for you; the stack refuses to start if a required one is missing, so it can't boot with a weak default.
-  </Step>
-  <Step title="Bring it up">
-    ```bash
-    docker compose --profile prod up -d
-    ```
-    HTTPS certificates are issued and renewed automatically. Your database and storage bind to localhost — only the parts that must be public are exposed.
-  </Step>
-  <Step title="Create your organization">
-    Register the organization once, then invite members by email. Manage everything from the [admin panel](/bastion/administration).
-  </Step>
+    <Step title="Get the node">
+        Pull the image or clone the node repository. Everything the platform needs — database, cache, file storage and the media server — is described in one `docker compose` setup.
+    </Step>
+    <Step title="Generate config and secrets">
+        ```bash
+        npm run setup      # generates strong, unique secrets and fills in your domains
+        ```
+        Strong secrets are created for you; the stack refuses to start if a required one is missing, so it can't boot with a weak default.
+    </Step>
+    <Step title="Bring it up">
+        ```bash
+        docker compose --profile prod up -d
+        ```
+        HTTPS certificates are issued and renewed automatically. Your database and storage bind to localhost — only the parts that must be public are exposed. Once online, the node registers its public address, so the Bastion apps can find it.
+    </Step>
+    <Step title="Create your organization">
+        Register the organization once, then invite members by email. Manage everything from the [admin panel](/bastion/administration). Members sign in to the regular Bastion app and pick your organization — no custom build, no server address to type.
+    </Step>
 </Steps>
 
 <Note>
-  Prefer not to run anything yourself? The **managed** option is the same single-tenant stack, operated for you — one organization per instance. See [Pricing](/bastion/pricing).
+    Prefer not to run anything yourself? The **managed** option is the same single-tenant stack, operated for you — one organization per instance. See [Pricing](/bastion/pricing).
 </Note>
 
 ## Next
 
 <CardGroup cols={2}>
-  <Card title="Self-hosting" icon="server" href="/bastion/self-hosting">
-    Requirements, TLS, and how the pieces fit together.
-  </Card>
-  <Card title="Administration" icon="users-gear" href="/bastion/administration">
-    Invite members, set roles, and configure retention.
-  </Card>
+    <Card title="Self-hosting" icon="server" href="/bastion/self-hosting">
+        Requirements, TLS, and how the pieces fit together.
+    </Card>
+    <Card title="Administration" icon="users-gear" href="/bastion/administration">
+        Invite members, set roles, and configure retention.
+    </Card>
 </CardGroup>
