@@ -26,7 +26,7 @@ All configuration lives in a single `.env` file at the project root. Copy `.env.
 | `DB_EXTERNAL_PORT` | `5432` | Port mapped to your host machine. |
 
 <Note>
-  Divine eCommerce targets **PostgreSQL** — full-text search and the boolean-safe write layer are built around it.
+    Divine eCommerce targets **PostgreSQL** — full-text search and the boolean-safe write layer are built around it.
 </Note>
 
 ## Cache & mail
@@ -44,5 +44,5 @@ All configuration lives in a single `.env` file at the project root. Copy `.env.
 A LiqPay payment gateway is included but off by default — checkout ships with **cash on delivery** and **store pickup**. To enable online payment you need to provide `LIQPAY_*` keys and add a `payment_methods` row with `code='liqpay'`.
 
 <Warning>
-  Never commit real secrets to a public repository. Keep production keys in your deployment's `.env`, which is not tracked.
+    Never commit real secrets to a public repository. Keep production keys in your deployment's `.env`, which is not tracked.
 </Warning>

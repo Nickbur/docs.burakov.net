@@ -17,7 +17,7 @@ For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month"
 - **6 fields** adds a leading seconds field for finer timing.
 
 <Tip>
-  New to cron? Start from the example in the field (`0 9 * * *`) and change one part at a time. Interval mode is often easier for "every so often" jobs; cron shines for "at this clock time".
+    New to cron? Start from the example in the field (`0 9 * * *`) and change one part at a time. Interval mode is often easier for "every so often" jobs; cron shines for "at this clock time".
 </Tip>
 
 ## Once
@@ -34,16 +34,16 @@ Computers sleep and shut down, so a scheduled time can pass while Cronch isn't r
 A **Once** schedule that was missed always runs on the next start — that's the whole reason you set it.
 
 <Note>
-  Cronch re-checks its schedule continuously, so clock changes and sleep/wake are handled without relying on operating-system power events. You don't need to configure anything for this.
+    Cronch re-checks its schedule continuously, so clock changes and sleep/wake are handled without relying on operating-system power events. You don't need to configure anything for this.
 </Note>
 
 ## Next
 
 <CardGroup cols={2}>
-  <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
-    What actually runs, in which shell, and what to do about overlap.
-  </Card>
-  <Card title="History & logs" icon="clock-rotate-left" href="/cronch/history">
-    Confirm a schedule is firing by checking its run history.
-  </Card>
+    <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
+        What actually runs, in which shell, and what to do about overlap.
+    </Card>
+    <Card title="History & logs" icon="clock-rotate-left" href="/cronch/history">
+        Confirm a schedule is firing by checking its run history.
+    </Card>
 </CardGroup>

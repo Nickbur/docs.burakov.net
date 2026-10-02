@@ -19,17 +19,17 @@ In Xcode → **Signing & Capabilities**, add:
 ```xml
 <key>UIBackgroundModes</key>
 <array>
-  <string>voip</string>
-  <string>audio</string>
+    <string>voip</string>
+    <string>audio</string>
 </array>
 <key>NSMicrophoneUsageDescription</key>
 <string>Microphone access is used for calls.</string>
 ```
 
 <Note>
-  The microphone usage string is required because the in-call audio module uses
-  `.playAndRecord`. A ring-only app that never captures audio can set `manageCallAudio: false`
-  or `callAudioMode: 'observe'` — see [In-call audio](/ringkit/audio).
+    The microphone usage string is required because the in-call audio module uses
+    `.playAndRecord`. A ring-only app that never captures audio can set `manageCallAudio: false`
+    or `callAudioMode: 'observe'` — see [In-call audio](/ringkit/audio).
 </Note>
 
 ## 3. Send the VoIP push
@@ -47,10 +47,10 @@ Payload (default `payloadPreset: "raw"`):
 
 ```json
 {
-  "callId": "a1b2c3",
-  "handle": "Ada Lovelace",
-  "hasVideo": false,
-  "chatId": "room-42"
+    "callId": "a1b2c3",
+    "handle": "Ada Lovelace",
+    "hasVideo": false,
+    "chatId": "room-42"
 }
 ```
 
@@ -71,10 +71,10 @@ the emitted VoIP token with your OneSignal VoIP app.
 ## Notes
 
 - **PushKit VoIP pushes do not fire on the iOS Simulator** — test the wake path on a real
-  device. The CallKit UI itself can be exercised in the simulator via `reportIncomingCall(...)`.
+    device. The CallKit UI itself can be exercised in the simulator via `reportIncomingCall(...)`.
 - CallKit needs no special entitlement beyond Push Notifications.
 - The provider name on the CallKit screen is the app's own display name — iOS does not allow
-  overriding it at runtime, so the `appName` config applies to Android only.
+    overriding it at runtime, so the `appName` config applies to Android only.
 
 ## Testing
 

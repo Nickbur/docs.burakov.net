@@ -17,12 +17,12 @@ full-screen call Activity, the notification action receiver, and the permissions
 ## Runtime permissions
 
 - **Android 13+** — request `POST_NOTIFICATIONS` before calls arrive. The full-screen fallback
-  is a notification; without the permission it cannot show. (The Telecom path does not need it.)
+    is a notification; without the permission it cannot show. (The Telecom path does not need it.)
 - **Android 14+** — `USE_FULL_SCREEN_INTENT` is auto-granted to apps whose notifications use
-  `CATEGORY_CALL` (RingKit's do). No manual grant needed for a calling app.
+    `CATEGORY_CALL` (RingKit's do). No manual grant needed for a calling app.
 - **Bluetooth selection** — enumerating/selecting a specific Bluetooth device on Android 12+
-  needs the runtime `BLUETOOTH_CONNECT` permission. Without it, RingKit still routes to
-  earpiece/speaker.
+    needs the runtime `BLUETOOTH_CONNECT` permission. Without it, RingKit still routes to
+    earpiece/speaker.
 
 ## Delivering the wake push
 
@@ -32,11 +32,11 @@ If your app has no other FCM service, declare the opt-in service in your app man
 
 ```xml
 <service
-    android:name="net.burakov.ringkit.RingKitMessagingService"
-    android:exported="false">
-  <intent-filter>
-    <action android:name="com.google.firebase.MESSAGING_EVENT" />
-  </intent-filter>
+        android:name="net.burakov.ringkit.RingKitMessagingService"
+        android:exported="false">
+    <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+    </intent-filter>
 </service>
 ```
 
@@ -44,11 +44,11 @@ Send a **high-priority `data` message** (at minimum `callId`):
 
 ```json
 {
-  "message": {
-    "token": "<device-fcm-token>",
-    "android": { "priority": "HIGH" },
-    "data": { "callId": "a1b2c3", "handle": "Ada Lovelace", "hasVideo": "false", "chatId": "room-42" }
-  }
+    "message": {
+        "token": "<device-fcm-token>",
+        "android": { "priority": "HIGH" },
+        "data": { "callId": "a1b2c3", "handle": "Ada Lovelace", "hasVideo": "false", "chatId": "room-42" }
+    }
 }
 ```
 
@@ -71,8 +71,8 @@ instead — branch on `RingKitPayload.isCancel(dataMap, config)`. For OneSignal,
 `payloadPreset: "onesignal"` and hand OneSignal's data map to `RingKitPayload.extract`.
 
 <Warning>
-  Send the call fields as **`data`** (not `notification`) with `android.priority = "HIGH"`, or
-  the OS won't grant the background wake window and the call may never ring.
+    Send the call fields as **`data`** (not `notification`) with `android.priority = "HIGH"`, or
+    the OS won't grant the background wake window and the call may never ring.
 </Warning>
 
 ## Hybrid presentation
@@ -98,7 +98,7 @@ the same names in your app's `res/values-<lang>/strings.xml`:
 The native Telecom call screen is localized by the OS and needs nothing.
 
 <Note>
-  Huawei / non-GMS devices can't receive FCM. RingKit is push-agnostic — deliver the wake
-  message with HMS Push and call the same `present(...)` entry point. See the HMS section on
-  the [Reliability](/ringkit/reliability) page.
+    Huawei / non-GMS devices can't receive FCM. RingKit is push-agnostic — deliver the wake
+    message with HMS Push and call the same `present(...)` entry point. See the HMS section on
+    the [Reliability](/ringkit/reliability) page.
 </Note>

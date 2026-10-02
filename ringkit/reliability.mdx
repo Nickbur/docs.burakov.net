@@ -56,21 +56,21 @@ code:
 
 - **Request `POST_NOTIFICATIONS`** (Android 13+) — the fallback is a notification.
 - **Prompt for battery-optimization exemption** — Google allows this for calling apps; it
-  materially improves push delivery.
+    materially improves push delivery.
 - **Guide users to OEM autostart settings** on MIUI/EMUI/ColorOS. RingKit gives you
-  `getReliabilityInfo()` (manufacturer + battery-exemption + whether an autostart screen is
-  likely) and the actions `openBatteryOptimizationSettings()` / `openAutoStartSettings()` to
-  take the user straight there. Show a one-time hint when `!ignoringBatteryOptimizations ||
-  autoStartAvailable`.
+    `getReliabilityInfo()` (manufacturer + battery-exemption + whether an autostart screen is
+    likely) and the actions `openBatteryOptimizationSettings()` / `openAutoStartSettings()` to
+    take the user straight there. Show a one-time hint when `!ignoringBatteryOptimizations ||
+    autoStartAvailable`.
 
 ## Honest limits
 
 - A device with FCM fully starved (aggressive OEM killer + user never opened the app) can still
-  miss a call — no library beats an OS that refuses to deliver the push. Battery-exemption and
-  autostart guidance is the real lever.
+    miss a call — no library beats an OS that refuses to deliver the push. Battery-exemption and
+    autostart guidance is the real lever.
 - The full-screen fallback is a very good call screen, but it isn't the system call UI: it
-  doesn't appear in the OS call log or integrate with car kits the way a Telecom call does.
-  That's the trade-off for ringing everywhere.
+    doesn't appear in the OS call log or integrate with car kits the way a Telecom call does.
+    That's the trade-off for ringing everywhere.
 
 ## Non-GMS (Huawei) via HMS Push
 

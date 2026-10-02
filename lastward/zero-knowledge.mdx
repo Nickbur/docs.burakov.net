@@ -21,25 +21,25 @@ inside*.**
 Your files and secrets (and, if you choose, your messages) are **zero-knowledge**:
 
 <Steps>
-  <Step title="Encrypted on your device">
-    When you save an encrypted item, your device encrypts it with a strong modern cipher
-    (XChaCha20-Poly1305). The key is derived from a **passphrase you choose** (via Argon2id).
-    Only the ciphertext ever leaves your device.
-  </Step>
-  <Step title="Share the passphrase out-of-band">
-    You give the passphrase to your recipient **outside the app** — in a will, a sealed
-    envelope, or in person. We never see it, so we can't lose it or hand it over.
-  </Step>
-  <Step title="Your recipient decrypts in their browser">
-    When the switch fires, your recipient opens a link and enters the passphrase. Decryption
-    happens **entirely in their browser** — the passphrase is never sent to us.
-  </Step>
+    <Step title="Encrypted on your device">
+        When you save an encrypted item, your device encrypts it with a strong modern cipher
+        (XChaCha20-Poly1305). The key is derived from a **passphrase you choose** (via Argon2id).
+        Only the ciphertext ever leaves your device.
+    </Step>
+    <Step title="Share the passphrase out-of-band">
+        You give the passphrase to your recipient **outside the app** — in a will, a sealed
+        envelope, or in person. We never see it, so we can't lose it or hand it over.
+    </Step>
+    <Step title="Your recipient decrypts in their browser">
+        When the switch fires, your recipient opens a link and enters the passphrase. Decryption
+        happens **entirely in their browser** — the passphrase is never sent to us.
+    </Step>
 </Steps>
 
 <Warning>
-  Because it's truly zero-knowledge, **if the passphrase is lost, the content cannot be
-  recovered** — not even by us. That's the point. Record it somewhere durable (the same place
-  you'd keep a will) and make sure your recipient will have it.
+    Because it's truly zero-knowledge, **if the passphrase is lost, the content cannot be
+    recovered** — not even by us. That's the point. Record it somewhere durable (the same place
+    you'd keep a will) and make sure your recipient will have it.
 </Warning>
 
 ## Readable messages

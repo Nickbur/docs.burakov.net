@@ -17,10 +17,10 @@ RingKit removes the guesswork: **start your media only when RingKit says the ses
 
 ```ts
 RingKit.addListener('audioSessionActivated', async ({ callId }) => {
-  await startYourMedia(callId);   // getUserMedia / SFU connect ONLY here
+    await startYourMedia(callId);   // getUserMedia / SFU connect ONLY here
 });
 RingKit.addListener('audioSessionDeactivated', ({ callId }) => {
-  stopYourMedia(callId);
+    stopYourMedia(callId);
 });
 ```
 
@@ -41,11 +41,11 @@ RingKit.addListener('callUnheld', ({ callId }) => restoreYourMic(callId));
 ```
 
 - **iOS** sets the category (`.playAndRecord`, mode `.voiceChat`/`.videoChat`) before the call
-  is answered and re-asserts your chosen route after WebKit's mid-call session churn.
+    is answered and re-asserts your chosen route after WebKit's mid-call session churn.
 - **Android** takes audio focus, sets `MODE_IN_COMMUNICATION`, and releases focus on **every**
-  teardown path (guarded so it can't leak and leave the user's music muted). Proximity blackout
-  is handled natively while on the earpiece, so `setProximityMonitoring` is a successful no-op
-  there.
+    teardown path (guarded so it can't leak and leave the user's music muted). Proximity blackout
+    is handled natively while on the earpiece, so `setProximityMonitoring` is a successful no-op
+    there.
 
 ## Outgoing calls
 
@@ -65,8 +65,8 @@ If a **native media SDK already owns the audio session** (a native LiveKit/Agora
 bridge — not the WebView), two managers would fight. Two options:
 
 - **`callAudioMode: 'observe'`** — RingKit still emits `audioSessionActivated`/`Deactivated`,
-  `callHeld`/`Unheld` and `audioRouteChanged` (so you keep the "safe to start" gate) but does
-  **not** touch the category or route.
+    `callHeld`/`Unheld` and `audioRouteChanged` (so you keep the "safe to start" gate) but does
+    **not** touch the category or route.
 - **`manageCallAudio: false`** — the module is fully off.
 
 Also use `observe`/`false` for a **ring-only** app that never captures audio, so `.playAndRecord`

@@ -20,17 +20,17 @@ does, so you can pick the right tool.
 ## When to choose which
 
 - **`@capgo/capacitor-incoming-call-kit`** — if you already run your own reliable push + wake
-  pipeline and only need a native incoming-call *screen* on both platforms. A good, maintained,
-  presentation-only plugin — and free.
+    pipeline and only need a native incoming-call *screen* on both platforms. A good, maintained,
+    presentation-only plugin — and free.
 - **The community `capacitor-incoming-call-kit`** — the most feature-rich *free* option (a broad
-  call-UI API on both platforms). Choose it if you want that surface for free **and** are willing
-  to own the push transport, the killed-app reliability across the Android OEM zoo, and the
-  long-term maintenance yourself.
+    call-UI API on both platforms). Choose it if you want that surface for free **and** are willing
+    to own the push transport, the killed-app reliability across the Android OEM zoo, and the
+    long-term maintenance yourself.
 - **`@capgo/capacitor-callkit-voip` and its forks** — iOS-only and effectively unmaintained.
-  Fine for a quick iOS-only prototype, not for shipping on both platforms.
+    Fine for a quick iOS-only prototype, not for shipping on both platforms.
 - **RingKit** — if you want the **whole cycle handled and maintained** on both platforms: the
-  VoIP token, the push→wake-from-killed path, the Android OEM reliability layer, provider-agnostic
-  payload mapping, and someone keeping it working as iOS/Android change each year.
+    VoIP token, the push→wake-from-killed path, the Android OEM reliability layer, provider-agnostic
+    payload mapping, and someone keeping it working as iOS/Android change each year.
 
 The honest line: the hard, perishable part of VoIP calling on mobile isn't the call screen —
 plenty of plugins draw one. It's making the phone *ring reliably from a killed app across the

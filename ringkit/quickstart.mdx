@@ -18,7 +18,7 @@ npx cap sync
 ```
 
 <Note>
-  No license yet? See [License](/ringkit/license) — $99/year per app.
+    No license yet? See [License](/ringkit/license) — $99/year per app.
 </Note>
 
 ## 2. Configure
@@ -28,13 +28,13 @@ static — on a killed app the JS layer isn't alive to configure the call):
 
 ```json
 {
-  "plugins": {
-    "RingKit": {
-      "appName": "Acme",
-      "supportsVideo": true,
-      "payloadPreset": "raw"
+    "plugins": {
+        "RingKit": {
+            "appName": "Acme",
+            "supportsVideo": true,
+            "payloadPreset": "raw"
+        }
     }
-  }
 }
 ```
 
@@ -43,32 +43,32 @@ Every key is documented in [Configuration](/ringkit/configuration).
 ## 3. Wire the call lifecycle
 
 <Warning>
-  Attach listeners **before** `register()`. The iOS VoIP token and an Android cold-start
-  answer can fire the moment `register()` runs.
+    Attach listeners **before** `register()`. The iOS VoIP token and an Android cold-start
+    answer can fire the moment `register()` runs.
 </Warning>
 
 ```ts
 import { RingKit } from '@nickbur/ringkit';
 
 async function setupCalls() {
-  if (!(await RingKit.isAvailable()).available) return; // web/desktop → in-app ringing
+    if (!(await RingKit.isAvailable()).available) return; // web/desktop → in-app ringing
 
-  await RingKit.addListener('registration', ({ token, platform, apsEnvironment }) => {
-    // Register `token` with your push provider so it can wake this device.
-    // iOS: `apsEnvironment` ('development' | 'production') tells you which APNs
-    // gateway / OneSignal test_type to route the VoIP token through.
-  });
+    await RingKit.addListener('registration', ({ token, platform, apsEnvironment }) => {
+        // Register `token` with your push provider so it can wake this device.
+        // iOS: `apsEnvironment` ('development' | 'production') tells you which APNs
+        // gateway / OneSignal test_type to route the VoIP token through.
+    });
 
-  await RingKit.addListener('callAnswered', async ({ callId, chatId, hasVideo }) => {
-    await joinYourCall(callId, chatId, hasVideo);   // your media/SFU join
-    await RingKit.reportCallConnected({ callId });
-  });
+    await RingKit.addListener('callAnswered', async ({ callId, chatId, hasVideo }) => {
+        await joinYourCall(callId, chatId, hasVideo);   // your media/SFU join
+        await RingKit.reportCallConnected({ callId });
+    });
 
-  await RingKit.addListener('callEnded', ({ callId }) => {
-    teardownYourCall(callId);
-  });
+    await RingKit.addListener('callEnded', ({ callId }) => {
+        teardownYourCall(callId);
+    });
 
-  await RingKit.register();
+    await RingKit.register();
 }
 ```
 
@@ -93,23 +93,23 @@ infrastructure. For the killed-app path, use the ready-made test-push senders in
 `example/scripts/`.
 
 <Note>
-  Gating your media start on the audio session is what prevents the iOS dead-microphone bug —
-  see [In-call audio](/ringkit/audio).
+    Gating your media start on the audio session is what prevents the iOS dead-microphone bug —
+    see [In-call audio](/ringkit/audio).
 </Note>
 
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="iOS setup" icon="apple" href="/ringkit/ios">
-    Capabilities, Info.plist, and the VoIP push.
-  </Card>
-  <Card title="Android setup" icon="android" href="/ringkit/android">
-    The wake push and runtime permissions.
-  </Card>
-  <Card title="Configuration" icon="gear" href="/ringkit/configuration">
-    Every config key and payload mapping.
-  </Card>
-  <Card title="API reference" icon="code" href="/ringkit/api">
-    Methods and events.
-  </Card>
+    <Card title="iOS setup" icon="apple" href="/ringkit/ios">
+        Capabilities, Info.plist, and the VoIP push.
+    </Card>
+    <Card title="Android setup" icon="android" href="/ringkit/android">
+        The wake push and runtime permissions.
+    </Card>
+    <Card title="Configuration" icon="gear" href="/ringkit/configuration">
+        Every config key and payload mapping.
+    </Card>
+    <Card title="API reference" icon="code" href="/ringkit/api">
+        Methods and events.
+    </Card>
 </CardGroup>

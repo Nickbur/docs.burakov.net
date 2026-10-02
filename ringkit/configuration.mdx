@@ -9,14 +9,14 @@ reads this config to brand and present the call.
 
 ```json
 {
-  "plugins": {
-    "RingKit": {
-      "appName": "Acme",
-      "supportsVideo": true,
-      "ringtoneName": "ringtone.caf",
-      "payloadPreset": "raw"
+    "plugins": {
+        "RingKit": {
+            "appName": "Acme",
+            "supportsVideo": true,
+            "ringtoneName": "ringtone.caf",
+            "payloadPreset": "raw"
+        }
     }
-  }
 }
 ```
 
@@ -47,25 +47,25 @@ RingKit doesn't own your push transport — your backend/provider sends the push
 it. It reads the call fields out of whatever shape you send:
 
 - **`payloadPreset: "raw"`** (default) — read the fields from the payload directly (top-level
-  unless overridden by `payloadKeys`).
+    unless overridden by `payloadKeys`).
 - **`payloadPreset: "onesignal"`** — first unwrap OneSignal's `custom.a` envelope, then apply
-  `payloadKeys`.
+    `payloadKeys`.
 
 If your fields live under different names or nested paths, remap them with dot-paths:
 
 ```json
 {
-  "plugins": {
-    "RingKit": {
-      "payloadPreset": "raw",
-      "payloadKeys": {
-        "callId": "call.id",
-        "handle": "call.from.name",
-        "hasVideo": "call.video",
-        "chatId": "call.room"
-      }
+    "plugins": {
+        "RingKit": {
+            "payloadPreset": "raw",
+            "payloadKeys": {
+                "callId": "call.id",
+                "handle": "call.from.name",
+                "hasVideo": "call.video",
+                "chatId": "call.room"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -79,7 +79,7 @@ If the caller hangs up before the callee answers, send the callee another push w
 even on a killed device:
 
 - **iOS** — CallKit requires *every* VoIP push to report a call, so the cancel reports a brief,
-  self-ending placeholder (a momentary missed-call entry) and ends the real ring. This flash is
-  unavoidable per Apple's rule.
+    self-ending placeholder (a momentary missed-call entry) and ends the real ring. This flash is
+    unavoidable per Apple's rule.
 - **Android** — the FCM service tears the call surface down silently. Custom handlers branch on
-  `RingKitPayload.isCancel(dataMap, config)` → `RingKitIncomingCall.dismiss(context, callId)`.
+    `RingKitPayload.isCancel(dataMap, config)` → `RingKitIncomingCall.dismiss(context, callId)`.

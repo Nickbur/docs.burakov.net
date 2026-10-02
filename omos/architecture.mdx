@@ -8,15 +8,15 @@ OMOS is built around a simple principle: keep the trusted core small, and push e
 ## The layers
 
 <Steps>
-  <Step title="The core">
-    A small, trusted core handles the essentials: scheduling work across your processor, managing memory, letting parts of the system talk to each other, and enforcing who is allowed to do what.
-  </Step>
-  <Step title="Drivers and services">
-    The parts that talk to hardware — disks, input, and more — and system services run **outside** the trusted core, in protected user space. Each gets only the narrow access it needs.
-  </Step>
-  <Step title="Applications">
-    Your programs run further out still, each in its own protected space, able to touch only what you've granted them.
-  </Step>
+    <Step title="The core">
+        A small, trusted core handles the essentials: scheduling work across your processor, managing memory, letting parts of the system talk to each other, and enforcing who is allowed to do what.
+    </Step>
+    <Step title="Drivers and services">
+        The parts that talk to hardware — disks, input, and more — and system services run **outside** the trusted core, in protected user space. Each gets only the narrow access it needs.
+    </Step>
+    <Step title="Applications">
+        Your programs run further out still, each in its own protected space, able to touch only what you've granted them.
+    </Step>
 </Steps>
 
 ## Why the core stays small
@@ -32,5 +32,5 @@ Parts of the system don't reach into each other directly. They communicate over 
 This structure is identical on every supported chip. The details of talking to an Intel processor, an ARM one, or a RISC-V one differ underneath, but the shape of the system above that — the core, the protected drivers and services, your apps — is the same. See [Platform support](/omos/platform-support) for what that covers today.
 
 <Note>
-  Higher layers described in the vision — a graphical shell, networking, a distributed layer that pools machines — build on this foundation and are on the [roadmap](/omos/roadmap).
+    Higher layers described in the vision — a graphical shell, networking, a distributed layer that pools machines — build on this foundation and are on the [roadmap](/omos/roadmap).
 </Note>

@@ -13,16 +13,16 @@ pages that load their own data.
 A **single shared bar instance** — there is never more than one bar on screen:
 
 1. **Automatic (router-driven).** The router shows the bar during navigation, most visibly on the
-   web where visiting a route downloads its lazy-loaded chunk. Every page gets this for free.
+    web where visiting a route downloads its lazy-loaded chunk. Every page gets this for free.
 2. **Opt-in (page-driven).** A page that fetches its own data drives the same bar through the
-   fetch, so the bar reflects the real load.
+    fetch, so the bar reflects the real load.
 
 The two are **mutually exclusive per route**, which guarantees a single, non-conflicting bar.
 
 - **Trickle:** `start()` shows the bar and lets it creep toward 90% on its own; `done()` finishes
-  it to 100% and hides it. It looks alive even when the duration is unknown.
+    it to 100% and hides it. It looks alive even when the duration is unknown.
 - **Show-delay (200 ms):** navigations faster than this never flash the bar. On native builds route
-  chunks are bundled, so navigation is instant and the router bar simply doesn't appear.
+    chunks are bundled, so navigation is instant and the router bar simply doesn't appear.
 - **Accessibility:** honors `prefers-reduced-motion` — the slide transition and stream dots switch off.
 
 ## Quick start: nothing to do
@@ -33,47 +33,47 @@ bar already covers it. This is every static page in the kit.
 ## Adding a data-loading page
 
 <Steps>
-  <Step title="Mark the route">
-    In `src/router/routes.ts`, so the router hands the bar to the page instead of completing it on arrival:
+    <Step title="Mark the route">
+        In `src/router/routes.ts`, so the router hands the bar to the page instead of completing it on arrival:
 
-    ```ts
-    {
-      path: '/reports',
-      component: () => import('@/views/pages/reports/Reports.vue'),
-      meta: { requiresAuth: true, managesProgress: true },
-    }
-    ```
-  </Step>
-  <Step title="Drive it — always complete in a finally">
-    ```ts
-    import { useRouteProgress } from '@/composables/useRouteProgress';
-    const pageProgress = useRouteProgress();
+        ```ts
+        {
+            path: '/reports',
+            component: () => import('@/views/pages/reports/Reports.vue'),
+            meta: { requiresAuth: true, managesProgress: true },
+        }
+        ```
+    </Step>
+    <Step title="Drive it — always complete in a finally">
+        ```ts
+        import { useRouteProgress } from '@/composables/useRouteProgress';
+        const pageProgress = useRouteProgress();
 
-    onMounted(async () => {
-      pageProgress.start();          // show + auto-trickle
-      try {
-        await loadReports();
-      } finally {
-        pageProgress.done();         // ALWAYS complete, even on error
-      }
-    });
-    ```
-  </Step>
-  <Step title="(Optional) multi-step">
-    Call `set()` between stages for a determinate bar (this stops the auto-trickle):
+        onMounted(async () => {
+            pageProgress.start();          // show + auto-trickle
+            try {
+                await loadReports();
+            } finally {
+                pageProgress.done();         // ALWAYS complete, even on error
+            }
+        });
+        ```
+    </Step>
+    <Step title="(Optional) multi-step">
+        Call `set()` between stages for a determinate bar (this stops the auto-trickle):
 
-    ```ts
-    pageProgress.start();
-    await loadHeader();  pageProgress.set(0.4);
-    await loadRows();    pageProgress.set(0.8);
-    await loadFooter();  pageProgress.done();
-    ```
-  </Step>
+        ```ts
+        pageProgress.start();
+        await loadHeader();  pageProgress.set(0.4);
+        await loadRows();    pageProgress.set(0.8);
+        await loadFooter();  pageProgress.done();
+        ```
+    </Step>
 </Steps>
 
 <Tip>
-  Canonical examples in the kit: `Subscription.vue`, `Support.vue`, `Onboarding.vue` are wired
-  exactly this way — copy from them.
+    Canonical examples in the kit: `Subscription.vue`, `Support.vue`, `Onboarding.vue` are wired
+    exactly this way — copy from them.
 </Tip>
 
 ## API — `useRouteProgress()`

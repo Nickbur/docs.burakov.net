@@ -50,29 +50,29 @@ import { RingKit } from '@nickbur/ringkit';
 
 ```ts
 interface ActiveCall {
-  callId: string;
-  handle: string;
-  hasVideo: boolean;
-  chatId?: string;
-  answered?: boolean;
-  muted?: boolean;
+    callId: string;
+    handle: string;
+    hasVideo: boolean;
+    chatId?: string;
+    answered?: boolean;
+    muted?: boolean;
 }
 
 interface ReliabilityInfo {
-  platform: 'ios' | 'android' | 'web';
-  manufacturer: string;               // Build.MANUFACTURER on Android; '' elsewhere
-  ignoringBatteryOptimizations: boolean;
-  autoStartAvailable: boolean;
+    platform: 'ios' | 'android' | 'web';
+    manufacturer: string;               // Build.MANUFACTURER on Android; '' elsewhere
+    ignoringBatteryOptimizations: boolean;
+    autoStartAvailable: boolean;
 }
 
 interface AudioDevice {
-  id: string;                         // opaque, pass to setAudioDevice
-  kind: 'earpiece' | 'speaker' | 'bluetooth' | 'headset' | 'unknown';
-  label: string;
+    id: string;                         // opaque, pass to setAudioDevice
+    kind: 'earpiece' | 'speaker' | 'bluetooth' | 'headset' | 'unknown';
+    label: string;
 }
 ```
 
 <Note>
-  Full type definitions live in the plugin's `src/definitions.ts`. `RingKitConfig` is documented
-  on the [Configuration](/ringkit/configuration) page.
+    Full type definitions live in the plugin's `src/definitions.ts`. `RingKitConfig` is documented
+    on the [Configuration](/ringkit/configuration) page.
 </Note>

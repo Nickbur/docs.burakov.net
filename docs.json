@@ -18,39 +18,26 @@
         "tabs": [
             {
                 "tab": "Home",
-                "pages": [
-                    "index"
-                ]
+                "pages": ["index"]
             },
             {
                 "tab": "Finity",
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "finity",
-                            "finity/countdowns"
-                        ]
+                        "pages": ["finity", "finity/countdowns"]
                     },
                     {
                         "group": "Reflection",
-                        "pages": [
-                            "finity/life-in-weeks",
-                            "finity/journal-and-character"
-                        ]
+                        "pages": ["finity/life-in-weeks", "finity/journal-and-character"]
                     },
                     {
                         "group": "Accounts & pricing",
-                        "pages": [
-                            "finity/accounts-and-privacy",
-                            "finity/pricing"
-                        ]
+                        "pages": ["finity/accounts-and-privacy", "finity/pricing"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "finity/faq"
-                        ]
+                        "pages": ["finity/faq"]
                     }
                 ]
             },
@@ -59,36 +46,23 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "tidybook",
-                            "tidybook/importing"
-                        ]
+                        "pages": ["tidybook", "tidybook/importing"]
                     },
                     {
                         "group": "Tidying up",
-                        "pages": [
-                            "tidybook/deduplication",
-                            "tidybook/cleanup-and-editing"
-                        ]
+                        "pages": ["tidybook/deduplication", "tidybook/cleanup-and-editing"]
                     },
                     {
                         "group": "Sync & privacy",
-                        "pages": [
-                            "tidybook/sync-and-encryption",
-                            "tidybook/accounts-and-privacy"
-                        ]
+                        "pages": ["tidybook/sync-and-encryption", "tidybook/accounts-and-privacy"]
                     },
                     {
                         "group": "Pricing",
-                        "pages": [
-                            "tidybook/pricing"
-                        ]
+                        "pages": ["tidybook/pricing"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "tidybook/faq"
-                        ]
+                        "pages": ["tidybook/faq"]
                     }
                 ]
             },
@@ -97,20 +71,11 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "shipwide",
-                            "shipwide/quickstart",
-                            "shipwide/architecture"
-                        ]
+                        "pages": ["shipwide", "shipwide/quickstart", "shipwide/architecture"]
                     },
                     {
                         "group": "The four parts",
-                        "pages": [
-                            "shipwide/backend",
-                            "shipwide/app",
-                            "shipwide/admin",
-                            "shipwide/website"
-                        ]
+                        "pages": ["shipwide/backend", "shipwide/app", "shipwide/admin", "shipwide/website"]
                     },
                     {
                         "group": "Guides",
@@ -133,9 +98,7 @@
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "shipwide/faq"
-                        ]
+                        "pages": ["shipwide/faq"]
                     }
                 ]
             },
@@ -144,44 +107,27 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "ringkit",
-                            "ringkit/quickstart"
-                        ]
+                        "pages": ["ringkit", "ringkit/quickstart"]
                     },
                     {
                         "group": "Platform setup",
-                        "pages": [
-                            "ringkit/ios",
-                            "ringkit/android"
-                        ]
+                        "pages": ["ringkit/ios", "ringkit/android"]
                     },
                     {
                         "group": "Guides",
-                        "pages": [
-                            "ringkit/reliability",
-                            "ringkit/audio",
-                            "ringkit/configuration"
-                        ]
+                        "pages": ["ringkit/reliability", "ringkit/audio", "ringkit/configuration"]
                     },
                     {
                         "group": "Reference",
-                        "pages": [
-                            "ringkit/api"
-                        ]
+                        "pages": ["ringkit/api"]
                     },
                     {
                         "group": "Choosing RingKit",
-                        "pages": [
-                            "ringkit/comparison",
-                            "ringkit/license"
-                        ]
+                        "pages": ["ringkit/comparison", "ringkit/license"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "ringkit/faq"
-                        ]
+                        "pages": ["ringkit/faq"]
                     }
                 ]
             },
@@ -190,23 +136,15 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "lastward",
-                            "lastward/how-it-works"
-                        ]
+                        "pages": ["lastward", "lastward/how-it-works"]
                     },
                     {
                         "group": "Privacy & trust",
-                        "pages": [
-                            "lastward/zero-knowledge",
-                            "lastward/self-hosting"
-                        ]
+                        "pages": ["lastward/zero-knowledge", "lastward/self-hosting"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "lastward/faq"
-                        ]
+                        "pages": ["lastward/faq"]
                     }
                 ]
             },
@@ -215,38 +153,23 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "bastion",
-                            "bastion/quickstart"
-                        ]
+                        "pages": ["bastion", "bastion/quickstart"]
                     },
                     {
                         "group": "Using Bastion",
-                        "pages": [
-                            "bastion/chat",
-                            "bastion/calls",
-                            "bastion/security"
-                        ]
+                        "pages": ["bastion/chat", "bastion/calls", "bastion/security"]
                     },
                     {
                         "group": "Running your own",
-                        "pages": [
-                            "bastion/self-hosting",
-                            "bastion/administration"
-                        ]
+                        "pages": ["bastion/self-hosting", "bastion/administration"]
                     },
                     {
                         "group": "Accounts & pricing",
-                        "pages": [
-                            "bastion/accounts-and-privacy",
-                            "bastion/pricing"
-                        ]
+                        "pages": ["bastion/accounts-and-privacy", "bastion/pricing"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "bastion/faq"
-                        ]
+                        "pages": ["bastion/faq"]
                     }
                 ]
             },
@@ -255,37 +178,23 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "cronch",
-                            "cronch/quickstart"
-                        ]
+                        "pages": ["cronch", "cronch/quickstart"]
                     },
                     {
                         "group": "Scheduling",
-                        "pages": [
-                            "cronch/schedules",
-                            "cronch/commands-and-shells"
-                        ]
+                        "pages": ["cronch/schedules", "cronch/commands-and-shells"]
                     },
                     {
                         "group": "Running & history",
-                        "pages": [
-                            "cronch/history",
-                            "cronch/settings"
-                        ]
+                        "pages": ["cronch/history", "cronch/settings"]
                     },
                     {
                         "group": "Trust",
-                        "pages": [
-                            "cronch/privacy"
-                        ]
+                        "pages": ["cronch/privacy"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "cronch/troubleshooting",
-                            "cronch/faq"
-                        ]
+                        "pages": ["cronch/troubleshooting", "cronch/faq"]
                     }
                 ]
             },
@@ -294,24 +203,15 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "lexiline",
-                            "lexiline/how-it-works"
-                        ]
+                        "pages": ["lexiline", "lexiline/how-it-works"]
                     },
                     {
                         "group": "Using Lexiline",
-                        "pages": [
-                            "lexiline/following-topics",
-                            "lexiline/digests-and-alerts"
-                        ]
+                        "pages": ["lexiline/following-topics", "lexiline/digests-and-alerts"]
                     },
                     {
                         "group": "Privacy & help",
-                        "pages": [
-                            "lexiline/privacy",
-                            "lexiline/faq"
-                        ]
+                        "pages": ["lexiline/privacy", "lexiline/faq"]
                     }
                 ]
             },
@@ -320,25 +220,15 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "proofday",
-                            "proofday/getting-started"
-                        ]
+                        "pages": ["proofday", "proofday/getting-started"]
                     },
                     {
                         "group": "Using Proofday",
-                        "pages": [
-                            "proofday/close-the-day",
-                            "proofday/streaks-and-momentum",
-                            "proofday/ai-proof"
-                        ]
+                        "pages": ["proofday/close-the-day", "proofday/streaks-and-momentum", "proofday/ai-proof"]
                     },
                     {
                         "group": "Privacy & help",
-                        "pages": [
-                            "proofday/privacy",
-                            "proofday/faq"
-                        ]
+                        "pages": ["proofday/privacy", "proofday/faq"]
                     }
                 ]
             },
@@ -347,23 +237,15 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "sidedrop",
-                            "sidedrop/how-it-works"
-                        ]
+                        "pages": ["sidedrop", "sidedrop/how-it-works"]
                     },
                     {
                         "group": "Receiving",
-                        "pages": [
-                            "sidedrop/saving-files"
-                        ]
+                        "pages": ["sidedrop/saving-files"]
                     },
                     {
                         "group": "Privacy & help",
-                        "pages": [
-                            "sidedrop/privacy",
-                            "sidedrop/faq"
-                        ]
+                        "pages": ["sidedrop/privacy", "sidedrop/faq"]
                     }
                 ]
             },
@@ -372,10 +254,7 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "semble",
-                            "semble/quickstart"
-                        ]
+                        "pages": ["semble", "semble/quickstart"]
                     },
                     {
                         "group": "Using Semble",
@@ -389,11 +268,7 @@
                     },
                     {
                         "group": "Billing, privacy & help",
-                        "pages": [
-                            "semble/credits",
-                            "semble/privacy",
-                            "semble/faq"
-                        ]
+                        "pages": ["semble/credits", "semble/privacy", "semble/faq"]
                     }
                 ]
             },
@@ -402,17 +277,11 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "whysoslow",
-                            "whysoslow/quickstart"
-                        ]
+                        "pages": ["whysoslow", "whysoslow/quickstart"]
                     },
                     {
                         "group": "On the road",
-                        "pages": [
-                            "whysoslow/the-drive-screen",
-                            "whysoslow/speed-cameras"
-                        ]
+                        "pages": ["whysoslow/the-drive-screen", "whysoslow/speed-cameras"]
                     },
                     {
                         "group": "Maps & your data",
@@ -424,10 +293,7 @@
                     },
                     {
                         "group": "Account & help",
-                        "pages": [
-                            "whysoslow/accounts-and-privacy",
-                            "whysoslow/faq"
-                        ]
+                        "pages": ["whysoslow/accounts-and-privacy", "whysoslow/faq"]
                     }
                 ]
             },
@@ -436,32 +302,19 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "fogline",
-                            "fogline/quickstart"
-                        ]
+                        "pages": ["fogline", "fogline/quickstart"]
                     },
                     {
                         "group": "On the map",
-                        "pages": [
-                            "fogline/the-map-screen",
-                            "fogline/painting-roads"
-                        ]
+                        "pages": ["fogline/the-map-screen", "fogline/painting-roads"]
                     },
                     {
                         "group": "Maps & your data",
-                        "pages": [
-                            "fogline/offline-maps",
-                            "fogline/coverage-and-stats",
-                            "fogline/sync-and-backup"
-                        ]
+                        "pages": ["fogline/offline-maps", "fogline/coverage-and-stats", "fogline/sync-and-backup"]
                     },
                     {
                         "group": "Account & help",
-                        "pages": [
-                            "fogline/accounts-and-privacy",
-                            "fogline/faq"
-                        ]
+                        "pages": ["fogline/accounts-and-privacy", "fogline/faq"]
                     }
                 ]
             },
@@ -470,32 +323,19 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "divine-ecommerce",
-                            "divine-ecommerce/quickstart",
-                            "divine-ecommerce/configuration"
-                        ]
+                        "pages": ["divine-ecommerce", "divine-ecommerce/quickstart", "divine-ecommerce/configuration"]
                     },
                     {
                         "group": "Building on it",
-                        "pages": [
-                            "divine-ecommerce/architecture",
-                            "divine-ecommerce/plugins"
-                        ]
+                        "pages": ["divine-ecommerce/architecture", "divine-ecommerce/plugins"]
                     },
                     {
                         "group": "Using the store",
-                        "pages": [
-                            "divine-ecommerce/storefront",
-                            "divine-ecommerce/admin"
-                        ]
+                        "pages": ["divine-ecommerce/storefront", "divine-ecommerce/admin"]
                     },
                     {
                         "group": "Deploy & help",
-                        "pages": [
-                            "divine-ecommerce/deployment",
-                            "divine-ecommerce/faq"
-                        ]
+                        "pages": ["divine-ecommerce/deployment", "divine-ecommerce/faq"]
                     }
                 ]
             },
@@ -504,37 +344,23 @@
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": [
-                            "omos",
-                            "omos/quickstart"
-                        ]
+                        "pages": ["omos", "omos/quickstart"]
                     },
                     {
                         "group": "How it works",
-                        "pages": [
-                            "omos/architecture",
-                            "omos/security",
-                            "omos/platform-support"
-                        ]
+                        "pages": ["omos/architecture", "omos/security", "omos/platform-support"]
                     },
                     {
                         "group": "Where it's going",
-                        "pages": [
-                            "omos/roadmap"
-                        ]
+                        "pages": ["omos/roadmap"]
                     },
                     {
                         "group": "Trust & licensing",
-                        "pages": [
-                            "omos/privacy",
-                            "omos/licensing"
-                        ]
+                        "pages": ["omos/privacy", "omos/licensing"]
                     },
                     {
                         "group": "Help",
-                        "pages": [
-                            "omos/faq"
-                        ]
+                        "pages": ["omos/faq"]
                     }
                 ]
             }
