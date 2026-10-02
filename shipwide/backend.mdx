@@ -90,7 +90,8 @@ RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
 | `switch_to_dev` / `switch_to_prod` | copy `env/env.dev\|prod` → `.env` |
 | `serve` / `build` / `start` | tsx watch / compile / run compiled |
 | `typecheck` | types only |
-| `db:generate` / `db:migrate` / `db:studio` | migration from schema / apply / Drizzle Studio |
+| `format` / `format:check` | Prettier (4-space style). A pre-commit hook (husky + lint-staged, installed by `npm install`) formats staged files automatically |
+| `db:generate` / `db:migrate` / `db:studio` | migration from schema / apply / Drizzle Studio (`postdb:generate` then formats the new migration automatically) |
 | `seed` | test/review accounts |
 | `purge` | physically delete accounts past the soft-delete window (daily cron) |
 | `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
