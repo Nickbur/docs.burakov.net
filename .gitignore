@@ -5,8 +5,3 @@ node_modules/
 # OS / editor
 .DS_Store
 *.log
-
-# Editor: only the shared settings are versioned
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json

@@ -21,7 +21,7 @@ There are two ways to get Cronch. Download a ready-made build, or build it from 
 
 ## Option B — Build from source
 
-Cronch is open source. If you'd rather build it yourself (or you're on a platform without a prebuilt binary), you need the Rust toolchain and a system linker.
+Cronch is open source. If you'd rather build it yourself (or you're on a platform without a prebuilt binary), you need a recent stable Rust toolchain (1.85 or newer) and a system linker: the MSVC toolchain on Windows (Visual Studio Build Tools with the **Desktop development with C++** workload), or Apple's Xcode Command Line Tools on macOS.
 
 <Steps>
     <Step title="Clone the repository">
@@ -34,7 +34,7 @@ Cronch is open source. If you'd rather build it yourself (or you're on a platfor
         ```bash
         cargo build --release
         ```
-        The binary lands at `target/release/cronch` (or `cronch.exe` on Windows). The full step-by-step, including how to install the toolchain, is in `BUILD.md` in the repository.
+        The binary lands at `target/release/cronch` (or `cronch.exe` on Windows). For a quick try-out, `cargo run` builds a debug copy and starts it straight away, with logs printed to the terminal. The full step-by-step, including how to install the toolchain, is in `BUILD.md` in the repository.
     </Step>
 </Steps>
 

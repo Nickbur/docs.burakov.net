@@ -36,15 +36,19 @@ run it yourself, and keep it running on your own terms.
         authenticates to your instance.
     </Step>
     <Step title="Run it">
-        `docker compose up` starts PostgreSQL and the server, applies the database migrations, and
-        begins the check-in sweep. Point your client at your instance's URL and you're live.
+        `docker compose up --build` starts PostgreSQL and the server, applies the database
+        migrations, and begins the check-in sweep. The server listens on `http://localhost:8080`.
+        Point your client at your instance's URL and you're live.
     </Step>
     <Step title="Connect the app">
-        In the app, open **Settings → Self-hosted instance** (or tap **Connect an instance** on the
-        sign-in screen) and enter your instance's URL and `OWNER_TOKEN`. The app reloads against
-        your instance — no account needed.
+        In the app, open **Settings → Self-hosted instance** (or tap **Connect your instance** on
+        the sign-in screen) and enter your instance's URL and `OWNER_TOKEN`. The app reloads
+        against your instance — no account needed.
     </Step>
 </Steps>
+
+Configuration, email delivery, backups, running without Docker and the full API are covered in
+[Running your instance](/lastward/running-your-instance).
 
 <Note>
     While the app is connected to your instance, every feature is unlocked and there's no

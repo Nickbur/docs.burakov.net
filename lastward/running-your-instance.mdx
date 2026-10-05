@@ -1,0 +1,204 @@
+---
+title: "Running your instance"
+description: "Configuration, delivery, backups and the API of a self-hosted Lastward core."
+---
+
+This page is for whoever runs a **Lastward core** instance — the open-source server from
+[Self-hosting](/lastward/self-hosting). It covers how to run and configure it, what it sends and
+when, how to keep it safe, and the API it speaks.
+
+## What your instance is
+
+- **Single-tenant.** One instance serves one owner. There are no accounts, sign-ups, plans or
+    limits — every feature is unlocked.
+- **The same protocol as the hosted service.** The core is a second, independent implementation
+    of the protocol the Lastward cloud speaks, so the Lastward app connects to it unchanged.
+- **Content-blind.** It stores ciphertext and a passphrase-wrapped content key — never your
+    passphrases or plaintext. The only exceptions are items you deliberately mark *readable*, and
+    public pages, which are plaintext by nature. It knows only what the firing engine needs: the
+    check-in rhythm, the deadline, recipient addresses, action types and state.
+- **AGPL-3.0.** Anyone who hosts a modified version for others must share its source — the
+    strongest trust signal for software that holds secrets. The Lastward apps are licensed
+    separately.
+
+## Running it
+
+With Docker, `docker compose up --build` is all it takes (see the
+[quick start](/lastward/self-hosting#quick-start)). It starts PostgreSQL and the server, applies
+the database migrations, and serves on `http://localhost:8080`. The firing engine runs inside the
+server every `SWEEP_INTERVAL_SECONDS` (60 by default), so no external scheduler is needed.
+
+<Note>
+    Under Docker Compose the server always uses the bundled database and listens on port 8080
+    inside its container. `PORT` in `.env` only chooses the port published on your machine.
+</Note>
+
+### Without Docker
+
+You need **Node.js 24.16 or newer** and your own PostgreSQL database. Put your settings in `.env`
+(it is read automatically) — at least `DATABASE_URL` and `OWNER_TOKEN`, which the migration step
+checks too.
+
+```bash
+npm install
+npm run build
+npm run db:migrate:prod   # apply the database migrations
+npm start                 # start the server
+```
+
+To drive the firing engine from cron instead of the built-in interval, set
+`SWEEP_INTERVAL_SECONDS=0` and run one sweep per tick with `node dist/sweep.js`.
+
+## Configuration
+
+`.env.example` lists every setting. The server refuses to start when a value is invalid.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `DATABASE_URL` | — (required) | PostgreSQL connection string. |
+| `OWNER_TOKEN` | — (required, 16+ chars) | The owner's bearer token for the owner API. |
+| `PUBLIC_URL` | `http://localhost:8080` | Public base URL (no trailing slash) used in release and public-page links. |
+| `SWEEP_INTERVAL_SECONDS` | `60` | How often the built-in sweep runs; `0` turns it off (use cron). |
+| `FIRE_RETENTION_DAYS` | `90` | How long encrypted payloads and release links are kept after a switch fires. |
+| `OWNER_EMAIL` | — | Where your check-in warning emails go. Empty = warnings are console-only. |
+| `SMTP_HOST` | — | SMTP server for outgoing mail. Unset = mail is printed to the console. |
+| `SMTP_PORT`, `SMTP_SECURE` | `587`, `false` | SMTP port, and whether to use TLS from the first byte. |
+| `SMTP_USER`, `SMTP_PASS` | — | SMTP credentials, if your server needs them. |
+| `MAIL_FROM` | `Lastward <no-reply@lastward.local>` | Sender of every email. |
+| `EMAIL_DEV_MODE` | `false` | `true` prints mail to the console even when SMTP is configured. |
+| `HOST`, `PORT` | `0.0.0.0`, `8080` | Where the server listens. |
+| `NODE_ENV`, `LOG_LEVEL` | `production`, `info` | Runtime mode and log verbosity. |
+
+<Warning>
+    Use a long, random `OWNER_TOKEN` (`openssl rand -hex 32`). Anyone who has it can disarm or
+    reconfigure your switches.
+</Warning>
+
+## Authentication
+
+Every owner call sends the token as a bearer header:
+
+```
+Authorization: Bearer <OWNER_TOKEN>
+```
+
+All `/v1/switches…` routes require it. The recipient release routes and public pages need no
+token — they are protected by their unguessable link instead.
+
+## What your instance sends
+
+- **Email** goes out over SMTP — or to the console when SMTP isn't configured. Your own warning
+    emails go to `OWNER_EMAIL`; without it, warnings are only logged.
+- Email is also the channel that carries your recipients' release links, so **configure SMTP
+    before you rely on the instance** — in console mode a fired switch reaches the log, not your
+    recipients.
+- **Push and SMS are console-only.** The core ships no push or SMS provider, so those warning
+    steps are written to the log, where you can wire up a provider of your own. In the Lastward
+    app, check-in reminders still fire on your device.
+
+## How a switch fires
+
+Firing is decided on the server, never on a device — your phone may be offline for the whole grace
+window. Each sweep:
+
+1. Moves a switch from **active** to **grace** once its check-in deadline passes.
+2. Sends the warning steps that are now due.
+3. Once the grace window (never less than 48 hours) has elapsed, **fires**: publishes any public
+    pages, then emails each recipient a private release link for encrypted items, with any
+    readable messages included in the email.
+4. Records every delivery before sending it, so crashes, overlapping sweeps and catch-up runs
+    never send twice. A failed recipient email is retried on later sweeps for up to a day after
+    firing.
+5. Deletes expired release links, and the payloads of switches that fired more than
+    `FIRE_RETENTION_DAYS` ago.
+
+A fired switch can't be checked in again — the API answers `already_fired`.
+
+## Public pages (self-host only)
+
+Lastward has five action types: `message`, `file`, `secret`, `private_page` and `public_page`.
+The hosted service refuses `public_page` — a truly public page is plaintext by nature and would
+make the host a publisher. **Your instance accepts it.**
+
+When a switch with a public page fires, its content is published at `/p/<slug>`. The slug comes
+from the action's `slug` (or its subject, or the switch title); a taken slug gets a short random
+suffix. The page is public and indexable, and — unlike encrypted payloads — it is **never** removed
+by the retention purge: a published page is meant to stay up.
+
+<Warning>
+    Whatever a public page publishes is your responsibility as the operator of the instance.
+</Warning>
+
+## Keeping it running
+
+- **Back up regularly.** A plain database dump captures every switch, recipient, action and
+    encrypted payload — a complete, portable backup that is enough to stand up an identical
+    instance elsewhere. Because payloads are ciphertext, the dump is safe to keep offsite:
+
+    ```bash
+    docker compose exec db pg_dump -U lastward lastward > lastward-backup.sql
+    ```
+
+- **Publish your own shutdown protocol.** If you will ever stop running an instance, give your
+    recipients advance notice on more than one channel, a final export, and a pointer to the
+    core's repository so they can keep the switches alive themselves. "A service outlives its
+    operator" is only partly solvable — open source plus export is the escape hatch, not a
+    guarantee.
+- **Keep passphrases out-of-band.** The server can never recover a zero-knowledge passphrase.
+    Make sure your recipients can get theirs even if you are gone.
+
+## API reference
+
+All JSON routes live under `/v1`. Bodies are camelCase, timestamps ISO-8601, and errors come back
+as `{ "code": "...", "message": "..." }`.
+
+### Owner routes (bearer token)
+
+| Method & path | Purpose |
+| --- | --- |
+| `GET /v1/switches` | List all switches with their recipients and actions. |
+| `GET /v1/switches/:id` | One switch. |
+| `PUT /v1/switches/:id` | Create or replace a switch by its client-generated UUID, with nested recipients and actions. The server computes the deadline; the state fields are read-only. |
+| `DELETE /v1/switches/:id` | Delete a switch and everything under it (idempotent). |
+| `POST /v1/switches/:id/checkin` | Proof of life: resets the deadline and re-activates the switch. |
+| `POST /v1/switches/:id/disarm` | Turn the switch off; a later check-in turns it back on. |
+| `PUT /v1/switches/:id/actions/:actionId/payload` | Upload the encrypted (or readable) content of one action. |
+
+A switch's safety settings:
+
+- **`cadence`** — `{ value, unit }` with `unit` = `day`, `week` or `month`.
+- **`grace`** — `{ value, unit }` with `unit` = `hour` or `day`; never less than **48 hours**.
+- **`warnings`** — escalation steps `{ offsetHours, channels }`, where `offsetHours` counts from the
+    missed deadline; `push` and `email` must both appear across the steps.
+
+Left out, they default to the Balanced preset: every 30 days, 14 days of grace, warnings at 0, 72
+and 168 hours. The floors are enforced when you save and again when the sweep runs.
+
+A **payload** is either zero-knowledge — `mode: "zk"` with `ciphertext`, `wrappedKey`, `salt`,
+`nonce` and `algo` (or a `blobRef` for a large file) — or `mode: "readable"` with
+`readableContent`, which is allowed only for a `message` or a `public_page`. A `public_page` must
+be readable; `file`, `secret` and `private_page` are always zero-knowledge.
+
+### Public routes (no token)
+
+| Method & path | Purpose |
+| --- | --- |
+| `GET /v1/release/:token` | The content-blind bundle a recipient of a **fired** switch decrypts in the browser. 404 for an unknown or expired link, or a switch that hasn't fired. |
+| `GET /release/:token` | The ready-made release page the fire emails link to: shows readable content right away and decrypts encrypted items in the browser. |
+| `GET /p/:slug` | A published public page. |
+| `GET /health`, `GET /v1/health` | Liveness check (the app uses it when you connect an instance). |
+
+### Reference encryption envelope
+
+The server never decrypts anything, but its release page includes an in-browser decryptor for the
+envelope `algo = "xchacha20poly1305-argon2id-v1"` (libsodium):
+
+```
+KEK        = crypto_pwhash(32, passphrase, salt, INTERACTIVE, INTERACTIVE, ARGON2ID13)
+contentKey = crypto_secretbox_open(wrappedKey[24:], wrappedKey[:24], KEK)
+plaintext  = crypto_aead_xchacha20poly1305_ietf_decrypt(ciphertext, nonce, contentKey)
+```
+
+`salt`, `wrappedKey`, `nonce` and `ciphertext` are all base64. A client that uses a different
+envelope can build its own release page on `GET /v1/release/:token` — the server stores and
+returns ciphertext unchanged either way.

@@ -244,7 +244,8 @@ pending, but the tab keeps working locally.
         applies on the next boot (`migrate → seed → serve`) or with `npm run db:migrate`.
     </Step>
     <Step title="Verify">
-        Run `npm run build` and `npm test` in both parts.
+        Run `npm run build` in both parts (in the app it also runs the unit tests), plus `npm test`
+        in the API.
     </Step>
 </Steps>
 
@@ -287,7 +288,7 @@ pending, but the tab keeps working locally.
     throws at startup.
 7. **A tie keeps the local edit** (`>=` in the merge). This is intentional; don't tighten it to
     `>`.
-8. **Unit tests:** `npm test` (Vitest, `TZ=UTC`) runs the `*.test.ts` files next to the code.
+8. **Unit tests:** `npm run build` runs the `*.test.ts` files next to the code (Vitest, `TZ=UTC`).
     Tests ship for the offline layer (registry, write queue, cache ownership, sync gate), for
     token refresh, and for the Pro gate.
 

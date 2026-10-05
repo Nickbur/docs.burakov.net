@@ -25,7 +25,9 @@ RingKit.addListener('audioSessionDeactivated', ({ callId }) => {
 ```
 
 This is the same cross-platform contract on iOS and Android. Follow those two events and the
-dead microphone simply doesn't happen.
+dead microphone simply doesn't happen. The plugin's example app ships a reference wiring to copy
+— `example/www/call-audio.js`: the media gate plus mute / speaker / hold / end controls and device
+selection.
 
 ## Routing, proximity, hold, devices
 

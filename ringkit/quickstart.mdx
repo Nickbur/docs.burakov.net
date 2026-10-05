@@ -97,6 +97,16 @@ infrastructure. For the killed-app path, use the ready-made test-push senders in
     see [In-call audio](/ringkit/audio).
 </Note>
 
+## How the killed-app path works
+
+- **iOS** — RingKit registers its own `PKPushRegistry` for VoIP pushes. iOS wakes the app for a
+    VoIP push and RingKit reports the call to CallKit synchronously (required by iOS), so the
+    native screen appears even when the app was terminated.
+- **Android** — a high-priority FCM data message starts RingKit's service in the background; it
+    presents the call via Telecom or the full-screen fallback. When the user answers, RingKit
+    revives your app (launcher intent) and flushes the `callAnswered` event on `register()`
+    (cold-start actions older than `androidPendingActionTtlMs` are dropped).
+
 ## Next steps
 
 <CardGroup cols={2}>

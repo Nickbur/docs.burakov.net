@@ -1,0 +1,55 @@
+---
+title: "Run from source"
+description: "Sidedrop is open source — run the web app on your own machine to explore or change it."
+---
+
+Sidedrop is **open source** under the MIT license. The repository holds the web app — everything
+that runs in your browser. To pair two devices, the app talks to a small **signaling service** in
+the Burakov API, which introduces the two sides and hands out relay credentials. It never carries
+your files.
+
+## What you need
+
+- **Node.js 24.16 or newer** — the project refuses to install on older versions.
+- The **Burakov API** running locally — the app expects its signaling service at
+    `http://localhost:3000` in development.
+
+## Run it locally
+
+<Steps>
+    <Step title="Get the code">
+        ```bash
+        git clone https://github.com/Nickbur/sidedrop_app.git
+        cd sidedrop_app
+        npm install
+        ```
+    </Step>
+    <Step title="Point it at the local API">
+        ```bash
+        npm run switch_to_dev
+        ```
+        This copies `env/env.dev` to `.env`, which sets `VITE_API_URL=http://localhost:3000` — the
+        address the app uses for signaling and relay credentials.
+    </Step>
+    <Step title="Start the dev server">
+        ```bash
+        npm run serve
+        ```
+        The app opens on `http://localhost:8103` — a fixed port, because it's the origin the API
+        accepts in development. Open it in two tabs, pair them, and drop a file.
+    </Step>
+</Steps>
+
+<Note>
+    `http://localhost` counts as a secure context, so the direct connection, on-disk saving, and
+    clipboard all work in development without HTTPS.
+</Note>
+
+## Build and check
+
+```bash
+npm run build
+```
+
+One command runs the full check — formatting, linting, type-checking, and the unit tests — and
+then produces the production build in `dist/`.

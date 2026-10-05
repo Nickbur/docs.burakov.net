@@ -140,7 +140,7 @@
                     },
                     {
                         "group": "Privacy & trust",
-                        "pages": ["lastward/zero-knowledge", "lastward/self-hosting"]
+                        "pages": ["lastward/zero-knowledge", "lastward/self-hosting", "lastward/running-your-instance"]
                     },
                     {
                         "group": "Help",
@@ -242,6 +242,10 @@
                     {
                         "group": "Receiving",
                         "pages": ["sidedrop/saving-files"]
+                    },
+                    {
+                        "group": "Running your own",
+                        "pages": ["sidedrop/run-from-source"]
                     },
                     {
                         "group": "Privacy & help",
