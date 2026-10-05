@@ -11,7 +11,7 @@ independently. This is what breaks, how RingKit mitigates it, and what you still
 | # | Layer | Failure mode | RingKit mitigation |
 |---|-------|--------------|--------------------|
 | 1 | **Push delivery** | Doze / App Standby / OEM "app killers" delay or drop the wake-up | Require a **high-priority `data`** FCM message — the OS grants a short background + foreground-service window for these |
-| 2 | **Presentation** | Self-managed Telecom is rejected — loudly, or **silently** (accepted, never shown) | Fall back to the full-screen UI on explicit failure, **plus a watchdog** that catches the silent case |
+| 2 | **Presentation** | Self-managed Telecom is rejected — loudly, or **silently** (accepted, never shown) | Fall back to the full-screen UI on explicit failure, **plus a ~2.5 s watchdog** that catches the silent case |
 | 3 | **Foreground-service start** | Android 12+ blocks starting an FGS from the background | The service starts inside the high-priority-FCM window (allowed); type `phoneCall` |
 | 4 | **Activity launch on answer** | Android 10/12/14 restrict background Activity starts | The full-screen intent is exempt; cold-start answers are persisted and flushed on `register()` |
 
@@ -21,7 +21,7 @@ The nastiest OEM bug: handing the call to the system returns success, no error c
 and no call UI appears. A naive hybrid assumes success and never falls back → **no ring at all.**
 
 RingKit doesn't trust "accepted." After the system takes a call, it arms a watchdog; if the
-real call screen hasn't materialized shortly after and the call is still live, RingKit claims
+real call screen hasn't materialized ~2.5 seconds later and the call is still live, RingKit claims
 the call for its full-screen fallback and rings there. A late system screen for a claimed call
 is turned away, so the OEM can't pop a second, empty call window.
 
@@ -30,14 +30,15 @@ is turned away, so the OEM can't pop a second, empty call window.
 | OEM / skin | Telecom self-managed UI | Recommendation |
 |------------|-------------------------|----------------|
 | **Pixel / AOSP** | Reliable | Default hybrid is ideal |
-| **Samsung / One UI** | Mostly reliable | Ask users to exclude the app from "Put unused apps to sleep" |
+| **Samsung / One UI** | Mostly reliable | Ask users to exclude the app from "Put unused apps to sleep" / "Deep sleeping apps" |
 | **Xiaomi / MIUI, HyperOS** | Frequently silent-fails | The watchdog covers ringing; consider `androidForceFullScreen: true`. Autostart + "No battery restrictions" must be enabled by the user |
 | **Huawei / EMUI (no GMS)** | Unreliable; often no FCM | Needs HMS Push (below); on GMS builds, treat like MIUI |
 | **Oppo / Vivo / Realme** | Unreliable | Same as MIUI; lean on the full-screen fallback |
 | **Nothing / Motorola / stock-ish** | Reliable | Default hybrid |
 
-Prefer the behavioural watchdog over manufacturer sniffing — skins and versions drift, the
-watchdog does not.
+If you want to branch config per OEM, `getReliabilityInfo().manufacturer` gives you
+`Build.MANUFACTURER` — but prefer the behavioural watchdog over manufacturer sniffing: skins and
+versions drift, the watchdog does not.
 
 ## Config recipes
 
@@ -45,7 +46,8 @@ watchdog does not.
 // Native-first (default): true OS call screen where it works, fallback where it doesn't.
 { "RingKit": { "androidFullScreenFallback": true } }
 
-// Reliability-max: skip Telecom entirely, always ring via the full-screen UI.
+// Reliability-max: skip Telecom entirely, always ring via the full-screen UI —
+// the most predictable option across the whole device long tail.
 { "RingKit": { "androidForceFullScreen": true } }
 ```
 
@@ -54,7 +56,10 @@ watchdog does not.
 RingKit ships the plumbing; a couple of levers are the user's to pull and can't be toggled in
 code:
 
-- **Request `POST_NOTIFICATIONS`** (Android 13+) — the fallback is a notification.
+- **Send the call push as high priority** — `android.priority = "HIGH"` with the call fields as
+    `data` (not `notification`), or the OS won't grant the wake window.
+- **Request `POST_NOTIFICATIONS`** (Android 13+) — the fallback is a notification; without the
+    permission it cannot show (the Telecom path doesn't need it).
 - **Prompt for battery-optimization exemption** — Google allows this for calling apps; it
     materially improves push delivery.
 - **Guide users to OEM autostart settings** on MIUI/EMUI/ColorOS. RingKit gives you
@@ -72,28 +77,15 @@ code:
     doesn't appear in the OS call log or integrate with car kits the way a Telecom call does.
     That's the trade-off for ringing everywhere.
 
-## Non-GMS (Huawei) via HMS Push
+## Non-GMS (Huawei) devices
 
-RingKit is **push-transport-agnostic**, so HMS plugs into the same native entry point — no
-RingKit changes, and the Huawei SDK never touches your GMS builds. Add HMS to *your app*, then
-hand the wake message to RingKit:
+Devices without Google Mobile Services can't receive FCM at all. RingKit is
+**push-transport-agnostic**, so HMS Push plugs into the same native entry point — no RingKit
+changes, and the Huawei SDK never touches your GMS builds. Full wiring (Gradle, the messaging
+service, the manifest entry): [Huawei / non-GMS](/ringkit/hms).
 
-```kotlin
-class AppHmsMessagingService : HmsMessageService() {
-    override fun onMessageReceived(message: RemoteMessage) {
-        val data = message.dataOfMap ?: return
-        val config = RingKitConfig.load(applicationContext)
-        val callIdKey = config.payloadKeys["callId"] ?: "callId"
-        if (data[callIdKey].isNullOrEmpty()) return          // not a call push
-        val info = RingKitPayload.extract(data, config)
-        RingKitIncomingCall.present(applicationContext, info, config)
-    }
-    override fun onNewToken(token: String) {
-        // Register this HMS token with your VoIP control-plane to wake the device.
-    }
-}
-```
+## Verifying it
 
-Send an HMS Push **data** message carrying the same call fields as FCM (`callId`, `handle`,
-`hasVideo`, `chatId`). Everything downstream — Telecom, the fallback, the watchdog, answer
-routing — is identical to the GMS path. The plugin's `docs/HMS.md` has the full Gradle wiring.
+Test on a real device matrix — a Pixel, a Samsung, a Xiaomi and an iPhone, each locked,
+backgrounded and fully killed — with the ready-made test-push senders. See
+[Testing](/ringkit/testing).

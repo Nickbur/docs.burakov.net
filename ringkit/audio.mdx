@@ -42,12 +42,25 @@ RingKit.addListener('callHeld',   ({ callId }) => muteYourMic(callId));   // OS 
 RingKit.addListener('callUnheld', ({ callId }) => restoreYourMic(callId));
 ```
 
-- **iOS** sets the category (`.playAndRecord`, mode `.voiceChat`/`.videoChat`) before the call
-    is answered and re-asserts your chosen route after WebKit's mid-call session churn.
-- **Android** takes audio focus, sets `MODE_IN_COMMUNICATION`, and releases focus on **every**
-    teardown path (guarded so it can't leak and leave the user's music muted). Proximity blackout
-    is handled natively while on the earpiece, so `setProximityMonitoring` is a successful no-op
-    there.
+- **iOS** sets the category (`.playAndRecord`, mode `.voiceChat`/`.videoChat`) **before** the
+    call is answered/started and never re-sets it on the active session — which is exactly what
+    avoids the stall. It re-asserts your chosen route after WebKit's mid-call session churn and
+    respects external outputs (headphones / Bluetooth / CarPlay).
+- **Android** — while ringing, the full-screen fallback takes transient audio focus, so the
+    ringtone pauses the user's music or another VoIP app. On answer (or when an outgoing call
+    connects via `reportCallConnected`) RingKit takes exclusive focus and sets
+    `MODE_IN_COMMUNICATION`; on **every** teardown path (decline / timeout / remote end / answer in
+    app / end) it releases focus and restores the mode — exactly once, so it can never leak and
+    leave the user's music muted. Routing uses `setCommunicationDevice` on Android 12+ and the
+    legacy speakerphone / Bluetooth SCO APIs below that. Proximity blackout is handled natively
+    while on the earpiece, so `setProximityMonitoring` is a successful no-op there.
+
+<Note>
+    **Bluetooth on Android 12+:** listing or selecting a specific Bluetooth device needs the
+    runtime `BLUETOOTH_CONNECT` permission — request it before offering a Bluetooth route.
+    Without it RingKit still routes to earpiece / speaker. (`MODIFY_AUDIO_SETTINGS`, needed for the
+    audio mode and route, merges in automatically and is auto-granted.)
+</Note>
 
 ## Outgoing calls
 
@@ -59,7 +72,8 @@ await RingKit.reportCallConnected({ callId });
 
 `startCall` reports the call to CallKit / self-managed Telecom, so the OS shows the in-call UI,
 writes a call-log entry, and RingKit owns the audio session. It emits `callStarted` when the OS
-accepts the call.
+accepts the call. On Android it places a **self-managed** Telecom call, which needs
+`MANAGE_OWN_CALLS` — already merged in by the plugin.
 
 ## When to turn it off
 

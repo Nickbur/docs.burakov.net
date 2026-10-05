@@ -111,11 +111,11 @@
                     },
                     {
                         "group": "Platform setup",
-                        "pages": ["ringkit/ios", "ringkit/android"]
+                        "pages": ["ringkit/ios", "ringkit/android", "ringkit/hms"]
                     },
                     {
                         "group": "Guides",
-                        "pages": ["ringkit/reliability", "ringkit/audio", "ringkit/configuration"]
+                        "pages": ["ringkit/reliability", "ringkit/audio", "ringkit/configuration", "ringkit/testing"]
                     },
                     {
                         "group": "Reference",
@@ -123,7 +123,7 @@
                     },
                     {
                         "group": "Choosing RingKit",
-                        "pages": ["ringkit/comparison", "ringkit/license"]
+                        "pages": ["ringkit/comparison", "ringkit/migration", "ringkit/license"]
                     },
                     {
                         "group": "Help",

@@ -1,0 +1,89 @@
+---
+title: "Huawei / non-GMS (HMS Push)"
+description: "Ring on Huawei and other devices without Google Mobile Services — deliver the wake message with HMS Push and hand it to the same RingKit entry point."
+---
+
+Huawei devices without Google Mobile Services can't receive FCM. RingKit is
+**push-transport-agnostic**, so HMS Push plugs into the same native entry point as raw FCM or
+OneSignal: you deliver the wake message with HMS Push and hand its data to
+`RingKitIncomingCall.present(...)`. No RingKit changes are needed — and RingKit deliberately does
+not bundle the Huawei SDK, so your GMS builds stay clean.
+
+<Steps>
+    <Step title="Add HMS to your app (not the plugin)">
+        Project `build.gradle`:
+
+        ```gradle
+        buildscript {
+            repositories { maven { url 'https://developer.huawei.com/repo/' } }
+            dependencies { classpath 'com.huawei.agconnect:agcp:1.9.1.300' }
+        }
+        allprojects { repositories { maven { url 'https://developer.huawei.com/repo/' } } }
+        ```
+
+        App `build.gradle`:
+
+        ```gradle
+        apply plugin: 'com.huawei.agconnect'
+        dependencies { implementation 'com.huawei.hms:push:6.12.0.300' }
+        ```
+
+        Put your `agconnect-services.json` (from AppGallery Connect) in the app module.
+    </Step>
+    <Step title="Add a messaging service that hands calls to RingKit">
+        ```kotlin
+        import com.huawei.hms.push.HmsMessageService
+        import com.huawei.hms.push.RemoteMessage
+        import net.burakov.ringkit.RingKitConfig
+        import net.burakov.ringkit.RingKitIncomingCall
+        import net.burakov.ringkit.RingKitPayload
+
+        class AppHmsMessagingService : HmsMessageService() {
+
+            override fun onMessageReceived(message: RemoteMessage) {
+                val data = message.dataOfMap ?: return
+                val config = RingKitConfig.load(applicationContext)
+                val callIdKey = config.payloadKeys["callId"] ?: "callId"
+                if (data[callIdKey].isNullOrEmpty()) return          // not a call push
+
+                val info = RingKitPayload.extract(data, config)
+                RingKitIncomingCall.present(applicationContext, info, config)
+            }
+
+            override fun onNewToken(token: String) {
+                // Register this HMS push token with your VoIP control plane so it can wake
+                // the device (the HMS equivalent of RingKit's `registration` event).
+            }
+        }
+        ```
+
+        For a **cancel** push (`type == cancelType`), branch on
+        `RingKitPayload.isCancel(data, config)` and call
+        `RingKitIncomingCall.dismiss(applicationContext, callId)` instead of `present(...)` — see
+        [Remote cancel](/ringkit/configuration#remote-cancel).
+    </Step>
+    <Step title="Register the service in your app manifest">
+        ```xml
+        <service
+                android:name=".AppHmsMessagingService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        ```
+    </Step>
+    <Step title="Send the wake message">
+        Send an HMS Push **data** message (through AppGallery Connect or the HMS Push REST API)
+        carrying the same call fields as FCM — `callId`, `handle`, `hasVideo`, `chatId`, or your
+        own names remapped with [`payloadKeys`](/ringkit/configuration#payload-mapping). Everything
+        downstream — Telecom, the full-screen fallback, the silent-failure watchdog, answer
+        routing — is identical to the GMS path.
+    </Step>
+</Steps>
+
+<Note>
+    The full-screen fallback matters even more here: some Huawei ROMs are strict about
+    self-managed Telecom, so keep `androidFullScreenFallback: true` (the default) or force it with
+    `androidForceFullScreen: true`. See [Android reliability](/ringkit/reliability).
+</Note>

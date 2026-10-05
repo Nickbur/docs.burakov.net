@@ -14,9 +14,11 @@ screen:
 | **Android** | A high-priority FCM data message → self-managed Telecom `ConnectionService`, with a full-screen-intent fallback for OEMs where Telecom is unreliable |
 | **Web / desktop** | A safe no-op (`isAvailable()` is `false`) — fall back to in-app ringing |
 
-It works with the push you already send (raw FCM/APNs, OneSignal, or SIP), owns the in-call
-audio session so calls "just work", and ships an Android reliability layer for the strict-OEM
-long tail.
+It works with the push you already send (raw FCM/APNs, OneSignal, SIP, or HMS on Huawei), owns
+the in-call audio session so calls "just work", and ships an Android reliability layer for the
+strict-OEM long tail.
+
+**Requires** Capacitor 8, iOS 14+, Android 8+ (API 26).
 
 <CardGroup cols={2}>
     <Card title="Quickstart" icon="rocket" href="/ringkit/quickstart">
@@ -36,6 +38,12 @@ long tail.
     </Card>
     <Card title="API reference" icon="code" href="/ringkit/api">
         Every method and event, with payloads.
+    </Card>
+    <Card title="Testing" icon="flask" href="/ringkit/testing">
+        Test senders for the killed-app path and the device matrix.
+    </Card>
+    <Card title="Migrating" icon="right-left" href="/ringkit/migration">
+        Coming from another incoming-call plugin.
     </Card>
 </CardGroup>
 

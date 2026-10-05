@@ -97,8 +97,14 @@ the same names in your app's `res/values-<lang>/strings.xml`:
 
 The native Telecom call screen is localized by the OS and needs nothing.
 
+## Testing the wake path
+
+Swipe the app away, then send a real high-priority data message with the ready-made
+`example/scripts/send-fcm-android.mjs` sender — commands and the device matrix are on the
+[Testing](/ringkit/testing) page.
+
 <Note>
     Huawei / non-GMS devices can't receive FCM. RingKit is push-agnostic — deliver the wake
-    message with HMS Push and call the same `present(...)` entry point. See the HMS section on
-    the [Reliability](/ringkit/reliability) page.
+    message with HMS Push and call the same `present(...)` entry point. Full wiring:
+    [Huawei / non-GMS](/ringkit/hms).
 </Note>

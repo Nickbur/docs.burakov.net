@@ -40,7 +40,22 @@ static — on a killed app the JS layer isn't alive to configure the call):
 
 Every key is documented in [Configuration](/ringkit/configuration).
 
-## 3. Wire the call lifecycle
+## 3. Platform setup
+
+- **iOS** — add the **Push Notifications** capability and **Background Modes** → **Voice over
+    IP** (and **Audio** for the call media), declare the microphone usage string, and send VoIP
+    pushes to the token from the `registration` event with a **VoIP Services** APNs key or
+    certificate (topic = your bundle id + `.voip`). RingKit reports the call from its PushKit
+    delegate automatically. Full detail: [iOS setup](/ringkit/ios).
+- **Android** — RingKit's permissions and components merge in automatically. Request the runtime
+    **notifications** permission (Android 13+) before calls arrive, and deliver a
+    **high-priority FCM data message** (at minimum `callId`) to wake the app: either declare
+    RingKit's opt-in `RingKitMessagingService` (if you don't already have an FCM service), or call
+    `RingKitIncomingCall.present(...)` from your existing handler (OneSignal, your own FCM, SIP).
+    Full detail: [Android setup](/ringkit/android). Huawei without Google services:
+    [HMS Push](/ringkit/hms).
+
+## 4. Wire the call lifecycle
 
 <Warning>
     Attach listeners **before** `register()`. The iOS VoIP token and an Android cold-start
@@ -72,7 +87,7 @@ async function setupCalls() {
 }
 ```
 
-## 4. Present a call
+## 5. Present a call
 
 From a foreground/background push handler, present the native screen yourself. From a **killed**
 app RingKit presents it for you (iOS PushKit delegate / Android FCM service — see the platform
@@ -85,12 +100,15 @@ await RingKit.reportIncomingCall({ callId, handle: 'Ada Lovelace', hasVideo: fal
 await RingKit.endCall({ callId });
 ```
 
-## 5. Try it without a push server
+If the caller hangs up before the callee answers, a cancel push dismisses the ring even on a
+killed device — see [Remote cancel](/ringkit/configuration#remote-cancel).
+
+## 6. Try it without a push server
 
 Clone the plugin's `example/` app and tap **Simulate incoming call** — it exercises
 `reportIncomingCall` → native UI → `callAnswered`/`callEnded` on both platforms with no push
 infrastructure. For the killed-app path, use the ready-made test-push senders in
-`example/scripts/`.
+`example/scripts/` — see [Testing](/ringkit/testing).
 
 <Note>
     Gating your media start on the audio session is what prevents the iOS dead-microphone bug —
@@ -121,5 +139,11 @@ infrastructure. For the killed-app path, use the ready-made test-push senders in
     </Card>
     <Card title="API reference" icon="code" href="/ringkit/api">
         Methods and events.
+    </Card>
+    <Card title="Android reliability" icon="signal" href="/ringkit/reliability">
+        Ringing on strict OEMs (MIUI / EMUI / ColorOS).
+    </Card>
+    <Card title="Migrating" icon="right-left" href="/ringkit/migration">
+        Coming from another incoming-call plugin.
     </Card>
 </CardGroup>

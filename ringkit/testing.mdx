@@ -1,0 +1,74 @@
+---
+title: "Testing"
+description: "Exercise the native call UI without a push server, then prove the killed-app path on real devices with the ready-made test-push senders."
+---
+
+Native call flows can't be meaningfully unit-tested, so testing RingKit is two layers: the call
+UI without any push infrastructure, then the real wake-from-killed path on devices.
+
+## 1. Foreground — no push server
+
+Run the plugin's `example/` app and tap **Simulate incoming call**. It exercises
+`reportIncomingCall` → the native call UI → `callAnswered` / `callEnded` on both platforms with no
+push infrastructure. Its `example/www/call-audio.js` is also the reference wiring for the audio
+gate and the mute / speaker / hold / end controls (see [In-call audio](/ringkit/audio)).
+
+## 2. Killed-app path — real pushes
+
+The plugin ships two zero-dependency Node scripts (Node 18+) in `example/scripts/` that send a
+real wake-up push. Read the device token from the `registration` event (or your logs), then:
+
+<Tabs>
+    <Tab title="iOS — VoIP push">
+        PushKit VoIP pushes **do not fire on the iOS Simulator** — use a real device. You need an
+        APNs **Auth Key** (`.p8`), its Key ID + your Team ID, the app bundle id, and the device's
+        **VoIP** token. Use `APNS_ENV=sandbox` for a development build, `prod` for TestFlight /
+        App Store.
+
+        ```bash
+        APNS_KEY_PATH=./AuthKey_XXXXXXXXXX.p8 \
+        APNS_KEY_ID=XXXXXXXXXX \
+        APNS_TEAM_ID=YYYYYYYYYY \
+        APNS_BUNDLE_ID=com.example.app \
+        APNS_DEVICE_TOKEN=<voip-token> \
+        node send-voip-ios.mjs
+        ```
+
+        It sends topic `<bundle>.voip` with `apns-push-type: voip` and the default `raw` payload
+        (top-level `callId` / `handle` / `hasVideo` / `chatId`). Swipe the app away first — the
+        call screen must appear with the app terminated.
+    </Tab>
+    <Tab title="Android — high-priority FCM">
+        You need a Firebase **service-account** JSON (Project settings → Service accounts →
+        Generate new private key) and the device FCM token.
+
+        ```bash
+        GOOGLE_APPLICATION_CREDENTIALS=./service-account.json \
+        FCM_DEVICE_TOKEN=<fcm-token> \
+        node send-fcm-android.mjs
+        ```
+
+        It sends `android.priority = HIGH` with the call fields in `data`, which is what earns the
+        background window RingKit needs. For it to reach RingKit, either declare
+        `RingKitMessagingService` or forward the data to `RingKitIncomingCall.present(...)` from
+        your own handler — see [Android setup](/ringkit/android). Swipe the app away first to prove
+        the killed-app path.
+    </Tab>
+</Tabs>
+
+## 3. Device matrix
+
+Verify on at least a recent **Pixel** (clean Android), one **Samsung**, one **Xiaomi / MIUI**
+device (the strictest background limits) and an **iPhone**. On each, test three states —
+**locked screen**, **unlocked / backgrounded**, and **fully killed** — and confirm that answering
+resumes your call and declining emits `callEnded`.
+
+OEM-specific behaviour (MIUI / EMUI / ColorOS) and what to tell users is on the
+[Android reliability](/ringkit/reliability) page; non-GMS Huawei devices need
+[HMS Push](/ringkit/hms).
+
+## Automated tests (if you modify the source)
+
+- **JS** — the plugin's `npm run build` runs Vitest: the web/desktop no-op contract.
+- **Android** — `./gradlew :nickbur-ringkit:testDebugUnitTest`, run from a host app that includes
+    the plugin: payload mapping.

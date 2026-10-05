@@ -1,0 +1,70 @@
+---
+title: "Migrating to RingKit"
+description: "Move your call wiring over from another Capacitor incoming-call plugin — concept mapping, steps, and payload shape."
+---
+
+RingKit is a clean-room plugin, not a drop-in fork, so migration is a small, deliberate rewrite of
+your call wiring. This page maps the common concepts; check your old plugin's exact names against
+RingKit's type definitions (`dist/esm/definitions.d.ts` in the package) and the
+[API reference](/ringkit/api).
+
+## From `@capgo/capacitor-callkit-voip` or a community fork
+
+These plugins registered for VoIP and reported the call from native on push — the concepts map
+directly:
+
+| Old concept | RingKit |
+|-------------|---------|
+| `register()` / VoIP registration | `register()` — but **attach listeners first** (see below) |
+| `registration` event → VoIP token | `registration` event → `{ token, platform, apsEnvironment? }` |
+| Incoming call reported from native on push | Same on iOS (RingKit's own PushKit delegate). On Android you now get a real hybrid Telecom / full-screen path — declare `RingKitMessagingService` or call `RingKitIncomingCall.present(...)` (see [Android setup](/ringkit/android)) |
+| Answered / ended callbacks | `callAnswered` / `callEnded` events with `{ callId, chatId?, hasVideo? }` |
+| `endCall(...)` | `endCall({ callId })` |
+| (usually none) | `getReliabilityInfo()` + battery / autostart helpers, `getActiveCalls()`, `setMuted(...)`, the in-call audio module |
+
+<Steps>
+    <Step title="Swap the package">
+        Remove the old plugin, then install RingKit from the private repository your license gives
+        you access to (Capacitor 8):
+
+        ```bash
+        npm i github:Nickbur/ringkit#v1.0.0
+        npx cap sync
+        ```
+    </Step>
+    <Step title="Add the static config">
+        Add the `plugins.RingKit` block to `capacitor.config` — see
+        [Configuration](/ringkit/configuration).
+    </Step>
+    <Step title="iOS">
+        Keep your **Push Notifications** + **Background Modes → Voice over IP** capabilities;
+        RingKit registers its own `PKPushRegistry`. Point your VoIP push at the token from the
+        `registration` event ([iOS setup](/ringkit/ios)).
+    </Step>
+    <Step title="Android">
+        Choose your push route — RingKit's opt-in FCM service, or
+        `RingKitIncomingCall.present(...)` from your existing handler
+        ([Android setup](/ringkit/android)).
+    </Step>
+    <Step title="Replace your listeners">
+        Attach them **before** `register()`, so the iOS token and an Android cold-start answer
+        aren't missed.
+    </Step>
+    <Step title="Verify">
+        Use the ready-made test-push senders — see [Testing](/ringkit/testing).
+    </Step>
+</Steps>
+
+## From `@capgo/capacitor-incoming-call-kit`
+
+That plugin gives you the call *screen*; you already wired push yourself. To gain the full cycle,
+replace `showIncomingCall(...)` with RingKit's `register()` + `reportIncomingCall(...)` (or the
+native `present(...)` on Android for the killed-app path), and move your PushKit / FCM token
+handling onto RingKit's `registration` event so the wake-from-killed path is owned end to end.
+
+## Payload shape
+
+If your backend already sends OneSignal-shaped pushes, set `payloadPreset: "onesignal"`.
+Otherwise send the call fields directly (`callId`, `handle`, `hasVideo`, `chatId`) or remap your
+own names with `payloadKeys` — see [Payload mapping](/ringkit/configuration#payload-mapping). No
+backend change is required beyond matching one of those shapes.

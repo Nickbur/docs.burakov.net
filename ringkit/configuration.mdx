@@ -20,6 +20,9 @@ reads this config to brand and present the call.
 }
 ```
 
+The TypeScript type of this block is `RingKitConfig` (exported by the plugin), so a
+`capacitor.config.ts` gets autocompletion and type-checking for every key below.
+
 ## Config keys
 
 | Key | Type | Default | Notes |
@@ -30,7 +33,7 @@ reads this config to brand and present the call.
 | `handleType` | `generic` \| `phoneNumber` \| `emailAddress` | `generic` | CallKit handle type |
 | `ringtoneName` | string | system default | iOS: a bundled sound file. Android: a `raw` resource name (fallback path) |
 | `iconName` | string | — | iOS: template image asset. Android: notification small-icon drawable |
-| `accentColorHex` | string | — | Android full-screen UI accent |
+| `accentColorHex` | string | — | Android full-screen UI accent, e.g. `"#0A84FF"` |
 | `androidFullScreenFallback` | boolean | `true` | Ring via full-screen intent when Telecom is unavailable |
 | `androidForceFullScreen` | boolean | `false` | Always use the full-screen path (skip Telecom) |
 | `androidChannelName` | string | `Incoming calls` | Notification channel name |

@@ -60,7 +60,7 @@ iOS terminates the app), so the call screen shows from a killed state.
 ### apsEnvironment routing
 
 The `registration` event carries `apsEnvironment` (`development` | `production`), read from the
-embedded provisioning profile. Use it to route the VoIP token through the matching APNs gateway
+embedded provisioning profile — App Store builds ship none, so they report `production`. Use it to route the VoIP token through the matching APNs gateway
 (or the right OneSignal `test_type`) — **a sandbox token routed as production never rings.**
 
 ### OneSignal
@@ -80,5 +80,5 @@ the emitted VoIP token with your OneSignal VoIP app.
 
 Read the VoIP token from `registration`, then run the ready-made
 `example/scripts/send-voip-ios.mjs` sender with your `.p8` key (topic `<bundle>.voip`,
-`apns-push-type: voip`). The call screen must appear with the app terminated. See the
-plugin's `docs/TESTING.md` for the full device matrix.
+`apns-push-type: voip`). The call screen must appear with the app terminated. Exact commands and
+the full device matrix: [Testing](/ringkit/testing).

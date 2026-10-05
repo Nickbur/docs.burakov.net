@@ -15,7 +15,17 @@ does, so you can pick the right tool.
 | **Android** | ✅ Telecom + fallback + watchdog | ⚠️ full-screen notification | ⚠️ custom full-screen intent | ❌ |
 | **OEM reliability helpers** | ✅ | ❌ | ❌ | ❌ |
 | **Provider-agnostic payload** | ✅ | ❌ | ❌ | ❌ |
+| **In-call audio session (dead-mic fix)** | ✅ | ❌ | ❌ | ❌ |
 | **License** | Commercial (private repo), $99/yr/app | MPL-2.0 (free) | MIT (free) | MIT (free) |
+| **Support** | Private-repo issues (best-effort) | Community | None | None |
+
+<Note>
+    Exact packages compared: `@capgo/capacitor-incoming-call-kit`; the community
+    `capacitor-incoming-call-kit` by olarewajuakeemope (a `flutter_callkit_incoming`-style port);
+    `@capgo/capacitor-callkit-voip`. Its iOS-only forks — `kin9aziz/capacitor-plugin-callkit-voip`
+    (npm, last published 2023) and `bfinecz/capacitor-callkit-voip` (GitLab, last updated 2021) —
+    behave like it and are effectively unmaintained.
+</Note>
 
 ## When to choose which
 
@@ -36,5 +46,5 @@ The honest line: the hard, perishable part of VoIP calling on mobile isn't the c
 plenty of plugins draw one. It's making the phone *ring reliably from a killed app across the
 Android OEM zoo, year after year*. That's what RingKit is for.
 
-Coming from another plugin? The plugin's `docs/MIGRATION.md` maps the common concepts and the
-migration steps.
+Coming from another plugin? [Migrating to RingKit](/ringkit/migration) maps the common concepts
+and the migration steps.
