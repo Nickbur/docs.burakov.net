@@ -83,8 +83,9 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
 
 <AccordionGroup>
     <Accordion title="Android build fails">
-        Use **JDK 21** (Android Studio's bundled JBR), SDK 36, and `npm run build:native` (it excludes
-        the pre-compressed web assets that break Android's packager).
+        Use **JDK 21** (Android Studio's bundled JBR) and SDK 36. "Duplicate resources" on `*.js.gz`
+        means `!*.gz:!*.br` went missing from `ignoreAssetsPattern` in `android/app/build.gradle` — it
+        keeps the web build's pre-compressed copies out of the APK.
     </Accordion>
     <Accordion title="iOS project has no .xcworkspace">
         Correct — Capacitor 8 generates an **SPM**-based project. Needs Xcode 26+.
@@ -93,8 +94,8 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
         They can't — test CallKit / VoIP pushes on a **physical device**.
     </Accordion>
     <Accordion title="Can't inspect the WebView on a device">
-        By design — WebView debugging is **off by default** so release builds aren't inspectable. Build
-        that install with `npm run build:native:debug` to enable it, and never ship it.
+        By design for release builds — Capacitor makes only debug builds inspectable. Install the app
+        with Run from Android Studio / Xcode (a debug build) to use the inspector.
     </Accordion>
 </AccordionGroup>
 

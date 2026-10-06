@@ -105,8 +105,7 @@ the API's `sessions.device_id`.
 npm install
 npm run serve          # Ionic dev server (web, port 8100)
 npm run serve:desktop  # Tauri desktop dev (auto-matches Vite's HTTP/HTTPS scheme)
-npm run build          # Prettier check + ESLint + vue-tsc + unit tests (TZ=UTC) + vite build
-npm run build:native   # build + cap sync (iOS / Android)
+npm run build          # Prettier check + ESLint + vue-tsc + unit tests (TZ=UTC) + vite build + cap sync (iOS / Android)
 ```
 
 Copy `env/.env.example` → `.env` and point `VITE_BACKEND_URL` at the backend. Add any new var
@@ -114,9 +113,10 @@ to `src/vite-env.d.ts` too — `vite/client` has an index signature, so a typo i
 error, it just reads `undefined`.
 
 <Warning>
-    **WebView debugging is off by default.** Release builds from `npm run build:native` are **not**
-    inspectable via `chrome://inspect` / Safari Web Inspector. To debug on a device build with
-    `npm run build:native:debug` — and never ship a build made that way.
+    **WebView debugging follows the build type** — Capacitor's default, so `capacitor.config.ts`
+    deliberately leaves `webContentsDebuggingEnabled` unset: debug builds (Run from Android Studio /
+    Xcode) are inspectable via `chrome://inspect` / Safari Web Inspector, release builds (signed
+    bundle / Archive) are not.
 </Warning>
 
 ## Environment
@@ -143,12 +143,14 @@ The `VITE_REVENUECAT_*` billing variables are covered in [Billing](/shipwide/bil
 
 | Target | Requirement |
 |--------|-------------|
-| Both | Node **22+** |
+| Both | Node **24.16+** |
 | iOS | Xcode **26+**, target 15. Cap 8 generates an **SPM**-based project (no CocoaPods `.xcworkspace`). |
 | Android | SDK **36** (min 24), JDK **21**, Gradle 8.14.3 / AGP 8.13. |
 | Desktop | Rust stable; `src-tauri/icons/` generated from `public/pwa-512.png` via `npx tauri icon`. |
 
-Use `npm run build:native` for iOS/Android — it sets `SHIPWIDE_NATIVE=1` so the pre-compressed
-`.gz`/`.br` web assets aren't bundled into the native WebViews (dead weight there, and they break
-Android's asset packager). Plain `npm run build` keeps them for the web/PWA deploy. The `ios/`
-and `android/` projects are **committed**.
+One `npm run build` serves every target: the web/PWA deploy gets pre-compressed `.gz`/`.br`
+assets for the HTTP server, and the last step (`cap sync --inline`) copies the bundle into `ios/`
+and `android/` — open Android Studio / Xcode right after it. Android drops the `.gz`/`.br` copies
+at packaging (`ignoreAssetsPattern` in `android/app/build.gradle`; AGP would otherwise fail on
+duplicate assets), iOS carries them unused, and the Tauri desktop build only compiles and skips
+them. The `ios/` and `android/` projects are **committed**.

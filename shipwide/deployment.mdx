@@ -39,9 +39,10 @@ description: "Ship each part to production — keeping secrets on the server."
 
 - **Web / PWA**: `npm run build` → static output (keeps pre-compressed `.gz`/`.br` assets). Serve
     from any static host / CDN. Its origin must be in the API's `CORS_ORIGINS`.
-- **iOS / Android**: `npm run build:native` (sets `SHIPWIDE_NATIVE=1` so compressed assets aren't
-    bundled into the WebView), then open the committed `ios/` / `android/` projects in Xcode /
-    Android Studio to archive and submit.
+- **iOS / Android**: the same `npm run build` (its `cap sync` step copies the bundle into the
+    native projects; Android skips the `.gz`/`.br` copies at packaging) — run it after
+    `npm run switch_to_prod` (production backend), then open the committed `ios/` /
+    `android/` projects in Xcode / Android Studio to archive and submit.
 - **Desktop**: Tauri bundles from `src-tauri/` (Rust stable). Icons via `npx tauri icon`.
 
 ## Admin (`shipwide_admin`)
