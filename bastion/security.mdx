@@ -1,57 +1,76 @@
 ---
 title: "Security & encryption"
-description: "How Bastion's end-to-end encryption works — verifying contacts with safety numbers, backing up your key, and what the server can and can't see."
+description: "How Bastion's end-to-end encryption works — verifying contacts with safety numbers, backing up and replacing your key, high-security chats, and what the server can and can't see."
 ---
 
-Bastion is **end-to-end encrypted by default**. There's no toggle to forget: every message, file and call is sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — only ever handles ciphertext.
+Bastion is **end-to-end encrypted by default**. There's no toggle to forget: every chat message, file and call is sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — only ever handles ciphertext.
+
+<Note>
+    Two things are deliberately not end-to-end encrypted, and the apps say so: **public topics** (meant to be searchable by your organization — private topics are encrypted) and **messages posted by bots** (a webhook integration has no key; its messages are marked as not encrypted).
+</Note>
 
 ## The building blocks
 
-Bastion's encryption is built on **vetted, widely-audited cryptography** (X25519 key exchange, XChaCha20-Poly1305 for content, Argon2id for your passphrase). You don't have to think about any of that day to day — it's the foundation the features below stand on.
+Bastion's encryption is built on **vetted, widely-audited cryptography** (X25519 key exchange, XChaCha20-Poly1305 for content, Argon2id for your passphrase). High-security chats use the **MLS** messaging-security standard on top of certificates your organization issues to each device. You don't have to think about any of that day to day — it's the foundation the features below stand on.
 
 ## Verify who you're talking to
 
-End-to-end encryption protects you from everyone except an attacker who can quietly swap keys in transit. To close that gap, every conversation has a **safety number** both sides can compare:
+End-to-end encryption protects you from everyone except an attacker who can quietly swap keys in transit. To close that gap, every contact has a **safety number** both sides can compare:
 
 <Steps>
     <Step title="Open the chat info">
-        From a chat's header, open its info page and find a member's safety number.
+        From a chat's header, open its info page, tap a member and choose **Compare safety number**.
     </Step>
     <Step title="Compare it">
-        Compare the number in person, over a call, or through another trusted channel.
+        Scan their QR code with your camera (or from a photo of it), or compare the 60-digit number in person, over a call or through another trusted channel.
     </Step>
     <Step title="You're verified">
-        If they match, no one is in the middle. If they don't, stop and investigate.
+        A scanned match marks them verified automatically; after comparing by eye, tap **Mark as verified**. If the numbers don't match, stop and investigate.
     </Step>
 </Steps>
+
+Verified contacts show a badge. If a contact's key ever changes, the badge turns into **key changed since you verified**, and the **Security** screen shows a warning until you compare the new number or dismiss it. Bastion also checks that every key it fetches was really issued by the key directory, and that your own key history hasn't been tampered with — anything suspicious appears there too.
 
 ## Your key, your backup
 
 Your identity key lives on **your device**. From the **Security** screen you can:
 
-- **Back it up** with a passphrase you choose, and download or copy the backup.
-- **Restore it** on a new phone, laptop or browser — same account, same history, across every device you use.
+- **Back it up** with a passphrase you choose — download the backup file, copy it, or **keep it on the server**. The server copy is sealed with your passphrase, so the server can't open it; you can see when it was stored and delete it any time.
+- **Restore it** on a new phone, laptop or browser from the file or the server copy — same account, same history, across every device you use.
+- See whether your current key is **backed up**. If it isn't, signing out warns you first and offers to back it up — signing out removes the key from that device.
 
-The Security screen shows whether your current key is backed up. If it isn't, signing out warns you first and offers to back it up — signing out removes the key from that device.
+If you've turned on the [app lock](#lock-the-app), backing up and replacing your key ask for your fingerprint, face or device passcode first.
 
 <Warning>
-    The backup is protected by your passphrase and the server never has it. If you lose both the passphrase and every signed-in device, that key can't be recovered — by design. Keep the backup somewhere safe.
+    The backup is protected by your passphrase and only you know it. If you lose both the passphrase and every signed-in device, that key can't be recovered — by design. Keep the backup somewhere safe.
 </Warning>
+
+### Replace your key
+
+Worried your key was exposed? **Replace your key** on the Security screen issues a new one, and your device re-seals every chat it can open to the new key straight away; the rest come back as other members come online. Back up the new key afterwards — the old backup holds your previous key.
 
 ### Lost your key? Start over
 
 No backup and no signed-in device left? On the **Security** screen, choose **Start over with a new key**. Your account gets a new key, and your conversations come back on their own: as soon as another member of a chat or topic is online, their app hands the conversation to your new key — history included. Until then, the chat shows that it's waiting for access, and messages you can't open yet are marked as such.
 
 <Note>
-    Starting over can't recover anything only your old key could open — for example, a conversation where no one else still has access. Your old backup won't work with the new key, so back up the new one.
+    Starting over can't recover anything only your old key could open — for example, a conversation where no one else still has access. Your old backup holds the old key, so back up the new one.
 </Note>
+
+## High-security chats
+
+For the most sensitive conversations, [high-security chats](/bastion/chat#high-security-chats) add **forward secrecy and post-compromise security**: keys move forward with every message and membership change, so a key stolen later can't open earlier messages and a removed person or device can't read what comes next. Each of your devices gets its own short-lived certificate from your organization, and members' devices show as verified in the chat's info page. If you lose a device, remove it under **Devices in high-security chats** on the Security screen — it's dropped and its certificates are revoked at once.
+
+## Lock the app
+
+In **Settings**, turn on **Lock the app with biometrics** to cover Bastion with a lock screen when it starts and after a chosen time away (1, 5, 15 or 60 minutes). On phones it uses your fingerprint or face with the device passcode as fallback; on the web and desktop, your device's built-in authenticator. Phones can also **block screenshots** and hide the app's content in the app switcher.
 
 ## What the server can and can't see
 
 - **Can't see:** your message text, file contents, or call media — all end-to-end encrypted.
 - **Can't act as you anywhere else:** with the Bastion apps or the web app at app.burakov.net, an organization's server never receives your sign-in. It only gets a short-lived pass that works on that organization's server alone — so even a compromised server can't use your account elsewhere, and signing out cuts it off within minutes. (A web app an organization serves from its own domain is that organization's code, so it routes your sign-in through that organization's server.)
-- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata (the "envelope", not the content). Message sizes are padded so even encrypted length reveals little. Identity and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy) for the full picture of what metadata is visible and how **metadata-minimal mode** narrows it further.
+- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata (the "envelope", not the content). Message sizes are padded so even encrypted length reveals little. Identity, the public-key directory and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy) for the full picture of what metadata is visible and how **metadata-minimal mode** narrows it further.
 
 ## History that follows you
 
-Bastion deliberately keeps your history available to your new devices and to teammates you add — the way a team chat should work. That's a conscious trade-off in favor of a usable team tool, and it's why the key backup above matters.
+In regular chats, Bastion deliberately keeps your history available to your new devices and to teammates you add — the way a team chat should work. That's a conscious trade-off in favor of a usable team tool, and it's why the key backup above matters. When forward secrecy matters more than shared history, use a high-security chat.

@@ -17,10 +17,10 @@ A single `docker compose` setup brings up everything the platform needs, so you'
 
 <CardGroup cols={2}>
     <Card title="Bastion node" icon="server">
-        The API and real-time layer for chat, calls, keys and uploads.
+        The API and real-time layer for chat, calls, topics, uploads and the AI assistant.
     </Card>
     <Card title="Database & cache" icon="database">
-        PostgreSQL for durable data, Redis for presence and real-time fan-out.
+        PostgreSQL for durable data (including the AI assistant's encrypted search index), Redis for presence and real-time fan-out.
     </Card>
     <Card title="File storage" icon="box-archive">
         S3-compatible object storage for encrypted attachments (bundled, or bring your own).
@@ -29,27 +29,41 @@ A single `docker compose` setup brings up everything the platform needs, so you'
         Carries encrypted call audio, video and screen share — on your infrastructure.
     </Card>
     <Card title="Background worker" icon="gears">
-        A separate worker process delivers notifications and fans messages out to large channels, so it never competes with the API for responsiveness.
+        A separate worker process delivers notifications, fans messages out to large channels and keeps the AI assistant's index current, so it never competes with the API for responsiveness.
     </Card>
 </CardGroup>
+
+## Your organization's credentials
+
+The node identifies itself to the control plane with your organization's **ID** and **secret**. You get them after buying the Self-hosted plan on [bastion.burakov.net](https://bastion.burakov.net/pricing):
+
+1. Open **[Your organizations](https://bastion.burakov.net/account/)** and sign in with the email you bought with.
+2. Choose **Get credentials**. The ID and secret appear with a ready `.env` snippet — the secret is shown **once**, and we never email it.
+3. Lost the secret, or someone saw it who shouldn't have? **Rotate secret** issues a new one. The old one stops working immediately — the node turns read-only and members can't connect until the new secret is in `.env` and the node has restarted.
 
 ## Bring it up
 
 <Steps>
+    <Step title="Pull the image">
+        ```bash
+        docker pull registry.burakov.net/bastion-node:latest
+        ```
+    </Step>
     <Step title="Generate config and secrets">
         ```bash
-        npm run setup      # strong, unique secrets + your domains, written into the environment
+        npm run setup      # strong, unique secrets + your domains, written into .env
         ```
+        Then add your organization's `BASTION_ORG_ID` and `BASTION_ORG_SECRET` to `.env`.
     </Step>
     <Step title="Start the stack">
         ```bash
         docker compose --profile prod up -d
         ```
-    </Step>
-    <Step title="Register your organization">
-        Create the organization once, then invite members from the [admin panel](/bastion/administration).
+        On start, the node proves its public address and fetches its license. Then invite members from the [admin panel](/bastion/administration).
     </Step>
 </Steps>
+
+Updating is the same pull: `docker pull registry.burakov.net/bastion-node:latest`, then `docker compose --profile prod up -d`.
 
 ## How members connect
 
@@ -79,9 +93,19 @@ Organization-level privacy (metadata-minimal mode) is toggled from the [admin pa
 - The **database and file storage bind to localhost** — never exposed to the open internet. Only the web app and media server are reachable from outside.
 - **Fail-closed secrets:** if a required secret is missing, the stack refuses to start rather than booting with a weak default.
 
+## Licensing and your subscription
+
+The node runs on a signed license that it refreshes with the control plane about once a day; it can't be forged or extended on the server. What happens as the subscription changes:
+
+- **Active** — fully writable. Modules you add or remove on your organization page reach the node at its next license refresh (or at once after a restart).
+- **Control plane unreachable** — the node keeps working on its current license, with an extra 14-day grace once it expires, so an outage never takes your team offline.
+- **A renewal payment fails** — everything keeps working for 7 days while the payment is retried. Update the payment method from your organization page (**Manage subscription**).
+- **Cancelled or unpaid past the grace** — the node turns **read-only**: members can still sign in and read, nothing new can be sent. After 14 more days it also stops admitting sign-ins.
+- **Nothing is ever deleted.** Renewing from your organization page restores full use, with the same organization, ID and secret.
+
 ## What still depends on the control plane
 
-Identity (passwordless sign-in), the directory of which organizations you belong to, push notifications and licensing are brokered by the shared control plane, so accounts work across every app and across devices. Your **content** — messages, files and calls — never leaves your node; only that identity and licensing traffic goes to the control plane. See [Accounts & privacy](/bastion/accounts-and-privacy).
+Identity (passwordless sign-in), the directory of which organizations you belong to, the public encryption-key directory, push notifications and licensing are brokered by the shared control plane, so accounts work across every app and across devices. Your **content** — messages, files and calls — never leaves your node; only that identity and licensing traffic goes to the control plane. See [Accounts & privacy](/bastion/accounts-and-privacy).
 
 <Note>
     Don't want to run any of this? The **managed** option is the exact same stack, operated for you. See [Pricing](/bastion/pricing).

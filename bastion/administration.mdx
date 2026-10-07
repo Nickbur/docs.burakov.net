@@ -1,47 +1,67 @@
 ---
 title: "Administration"
-description: "Run your organization from the Bastion admin panel — members, roles, audit log, retention and modules."
+description: "Run your organization from the Bastion admin panel — members and roles, moderation, chats, audit log, retention, branding, modules and working with other organizations."
 ---
 
-Every Bastion node comes with a separate **admin panel** for the organization's owner and admins. It runs alongside the node and signs in with the same passwordless email flow.
+Every Bastion node comes with a separate **admin panel** for the organization's owner and admins. It runs alongside the node and signs in with the same passwordless email flow. Its dashboard shows member and conversation counts and the node's **license** — its state, how long it's valid and which modules it includes.
 
 ## Members and roles
 
 Invite people by email and manage who can do what:
 
-- **Owner** — full control of the organization.
-- **Admin** — manage members, chats and settings.
-- **Member** — use chat and calls.
+- **Owner** — full control of the organization (the person who bought it).
+- **Admin** — manage members, chats and settings in this panel.
+- **Moderator** — moderates every chat and topic of the organization from the app; no access to this panel.
+- **Member** — uses chat, calls and the organization's modules.
 
-Inviting, removing and restoring members, and changing roles, all happen here. An invited person gets an email, signs in to Bastion with that address and accepts the invitation on the **Organizations** screen — nobody joins an organization without accepting. Until then the invitation is listed under **Pending invitations**, where you can withdraw it.
+Inviting (with a role), removing and restoring members, and changing roles all happen here, with search and paging for large teams. An invited person gets an email, signs in to Bastion with that address and accepts the invitation on the **Organizations** screen — nobody joins an organization without accepting. Until then the invitation is listed under **Pending invitations**, where you can withdraw it.
 
-Removing a member cuts their access immediately — including any session that's open right now — and the organization disappears from their app; you can restore them later. Members can also leave on their own; they then show as **left** and need a new invitation to come back. Certain actions (like adding members to a chat) are limited to owners and admins.
+Removing a member cuts their access immediately — including any session that's open right now — and the organization disappears from their app; restore them later to bring them back. Members can also leave on their own; they then show as **left** and need a new invitation to come back.
+
+<Tip>
+    Want everyone at your company to find the organization without an invitation? Add your **e-mail domains** on the **Organization** page — anyone signed in with a verified address at those domains sees your organization under **You can join** in the app.
+</Tip>
+
+## Moderation
+
+Members can report a message to the organization's moderators, with a reason, a note and — if they choose — the message text (otherwise moderators see no content). The **Reports** queue lives here and, for owners, admins and moderators, on the **Moderation** screen in the app. From a report you can **delete the message for everyone**, or mark the report **resolved** or **dismissed** (and reopen it later); in the app you can also jump to the message in chats you're in. Every decision is recorded in the audit log.
+
+Your organization's owner, admins and moderators can also moderate every chat and topic they're in — delete messages, pin, close polls, and in topics remove or ban members — without being given a role in each one.
+
+## Chats
+
+See every group and channel with its members and message count, and:
+
+- **Create a channel** for the whole organization. Open it once in the Bastion app to set up its encryption — the server never holds the key.
+- **Archive** a chat (read-only for everyone) or **unarchive** it.
+- **Delete** a chat with its history and files — type its name to confirm.
+
+Direct chats belong to their two participants and can't be archived or deleted here.
 
 ## Audit log
 
-Administrative and security-relevant events are recorded in an **audit log** you can review — who joined and with which role, role changes, removals and similar actions — so there's an accountable record of what happened in the organization.
+Administrative and security-relevant events are recorded in an **audit log** — who joined and with which role, invitations, role changes and removals, chat changes, moderation decisions, settings and retention changes, AI activity, and **sign-ins** (the first time each session reaches your node). Filter by category and page back through history; names are shown for people and chats.
 
-## Retention
+## Organization
 
-Set a **retention policy** so old messages are automatically deleted after a chosen period. A background job sweeps expired content on a schedule, keeping the organization to the data it actually needs.
+- **Branding:** a display name, an accent colour and a logo, shown on the organization card in everyone's app.
+- **Modules:** switch calls, high-security chats, Topics or the AI assistant off for your organization (only modules your plan includes are listed). Chat is always on.
+- **Working with other organizations:** allow guests from other organizations into chats your members invite them to (optionally only from organizations on your allowlist), allow your own members to join other organizations' chats, and choose whether your people can be found by name across the network. Guests are off by default. Copy your **organization ID** here to share with partners for their allowlist.
+- **Self-join e-mail domains** (see the tip above).
 
-## Privacy controls
+## Settings
 
-Turn on **metadata-minimal mode** to minimize the metadata the node emits: it switches off typing indicators and delivery/read receipts, and forces notifications to their most generic form. It's enforced on the server for everyone in the organization — see [Accounts & privacy](/bastion/accounts-and-privacy).
+- **Retention:** delete messages automatically after a chosen number of days (0 keeps everything). The node sweeps expired content on a schedule, and the apps remove it from devices too.
+- **Metadata-minimal mode:** switches off typing indicators, read and delivery status and online status, and forces notifications to their most generic form — enforced on the server for everyone in the organization. See [Accounts & privacy](/bastion/accounts-and-privacy).
+- **AI assistant** (when the module is on): whether new shared chats include the assistant by default, and whether chat admins may turn it off — both enforced on the server. Set up the assistant's worker here the first time.
 
-## Channels
-
-A **channel** is a persistent room. By default any member can post; an owner or admin can switch a channel to **admins-only posting** (announcements) — members can still reply in comment threads. The toggle lives on the channel's info page.
-
-## Modules
-
-Bastion is modular. The base module is **chat + calls**; the admin settings are where an organization's enabled capabilities are managed as more modules become available.
+Every saved change reaches members' apps right away.
 
 <Note>
-    The admin panel is **content-blind** where it counts: because messages and calls are end-to-end encrypted, administration is about people, roles and policy — not reading conversations.
+    The admin panel is **content-blind** where it counts: because messages and calls are end-to-end encrypted, administration is about people, roles and policy — not reading conversations. If your subscription lapses and the node turns read-only, you can still remove and restore members and withdraw invitations.
 </Note>
 
 ## Platform vs. organization admin
 
 - **Organization admin** (this panel) — you, running your own node.
-- **Platform admin** — a separate, content-blind view used to manage organizations and licensing at the platform level. It can see that an organization exists and its plan, never its messages.
+- **Platform admin** — a separate, content-blind view used to manage organizations, plans and licensing at the platform level. It can see that an organization exists, its plan and its node's health, never its messages.

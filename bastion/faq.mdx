@@ -10,23 +10,38 @@ description: "Platforms, encryption, self-hosting, pricing and the honest limits
     <Accordion title="I'm in more than one organization. Do I need a separate app for each?">
         No — it's one app for every organization. After you sign in, Bastion lists the organizations you belong to; pick one, and switch any time from the side menu or **Settings → Organization**. Each organization's chats stay on its own server, and a notification from another organization offers to switch you there.
     </Accordion>
+    <Accordion title="Can I talk to people in other organizations?">
+        Yes, if both organizations allow it. From a chat's info page, invite someone from another organization by their exact username or email; they get a notification and a single-use invitation valid for 7 days. Guests only ever see the chats they're invited to, and each organization's admin decides whether its members may join, or host, cross-organization chats. See [Chat](/bastion/chat#managing-a-chat).
+    </Accordion>
+    <Accordion title="Which languages does Bastion speak?">
+        The apps, the admin panel and the website are available in English, Russian, German, French, Spanish, Italian and Dutch. Emails and the checkout are in English or Russian.
+    </Accordion>
     <Accordion title="Is it really end-to-end encrypted?">
-        Yes. Messages, files and calls are sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — only ever handles ciphertext. You can verify a contact with their [safety number](/bastion/security).
+        Yes. Messages, files and calls are sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — only ever handles ciphertext. You can verify a contact with their [safety number](/bastion/security). Two things are deliberately not end-to-end encrypted and are labelled as such: public topics (meant to be searchable by your organization) and messages posted by bots. For the most sensitive conversations, [high-security chats](/bastion/chat#high-security-chats) add forward secrecy.
     </Accordion>
     <Accordion title="What can the server operator see?">
         Not your content. The control plane brokers identity, push and licensing, so it sees sign-in and delivery metadata and which plan an organization is on — never message text or call media. See [Accounts & privacy](/bastion/accounts-and-privacy).
     </Accordion>
     <Accordion title="Can people see who I talk to and when?">
-        Encryption hides *what* you say, not that a conversation happens: your node can see the "envelope" — who's talking to whom and when — which is inherent to delivering messages (and on a self-hosted node, it's your own server). Bastion narrows the rest: message sizes are padded, notifications are generic by default, there's no link-preview or contact-sync leak, and an admin can enable **metadata-minimal mode** to switch off typing and receipts too. See [Accounts & privacy](/bastion/accounts-and-privacy).
+        Encryption hides *what* you say, not that a conversation happens: your node can see the "envelope" — who's talking to whom and when — which is inherent to delivering messages (and on a self-hosted node, it's your own server). Bastion narrows the rest: message sizes are padded, notifications are generic by default, there's no link-preview or contact-sync leak, and an admin can enable **metadata-minimal mode** to switch off typing, receipts and online status too. See [Accounts & privacy](/bastion/accounts-and-privacy).
     </Accordion>
     <Accordion title="Do I have to self-host?">
-        No. You can run your own node, or use the managed option — the same stack, operated for you, one organization per instance. See [Pricing](/bastion/pricing).
+        No. You can run your own node, or use the managed option — the same stack, operated for you, one organization per instance, ready within one business day. See [Pricing](/bastion/pricing).
     </Accordion>
     <Accordion title="How is it priced?">
-        Flat per server, not per seat — unlimited members. Self-hosted is $99/month, managed from $249/month, optional modules +$29/month each, and annual billing saves two months. There is no free tier.
+        Flat per server, not per seat — unlimited members. Self-hosted is $99/month, managed $249/month, optional modules +$29/month each; yearly billing gives two months free. There is no free trial.
+    </Accordion>
+    <Accordion title="How do I buy, and where do I get my organization's credentials?">
+        On [bastion.burakov.net](https://bastion.burakov.net/pricing): sign in with your email, pick a plan and pay through Paddle. Your organization is created as soon as the payment clears. A self-hosted node's organization ID and secret are on **[Your organizations](https://bastion.burakov.net/account/)** — the secret is shown once and never emailed; you can rotate it there any time. See [Self-hosting](/bastion/self-hosting#your-organizations-credentials).
+    </Accordion>
+    <Accordion title="What happens if a payment fails or I cancel?">
+        A failed renewal keeps everything working for 7 days while the payment is retried. A cancelled subscription runs to the end of its paid period. After that the server turns read-only, and 14 days later it stops admitting sign-ins — but nothing is deleted, and renewing from your organization page restores full use. See [Pricing](/bastion/pricing#when-a-payment-fails-or-a-subscription-ends).
     </Accordion>
     <Accordion title="What's in the base product, and what's coming?">
-        The base module is chat and calls. Bastion is modular, so more capabilities can be enabled over time. On the roadmap: an independent review of the cryptography, broader data-subject tooling (export/erase) and the first optional modules.
+        The base module is chat and calls, including high-security chats. Optional modules — Topics and the AI assistant — can be added at checkout or later, without re-deploying. On the roadmap: an independent review of the cryptography.
+    </Accordion>
+    <Accordion title="Can I export or delete my data?">
+        Yes. In **Account settings** you can export your account data and your data from every organization server you use, erase your data on those servers, or delete your account. See [Accounts & privacy](/bastion/accounts-and-privacy#your-data-rights).
     </Accordion>
     <Accordion title="Can I lose access to my messages?">
         Your key lives on your device and can be backed up with a passphrase. If you lose both the passphrase and every signed-in device, that key can't be recovered — the server never had it. You can still [start over with a new key](/bastion/security#lost-your-key-start-over): teammates' apps hand your shared conversations to the new key, history included. Keep your backup safe.

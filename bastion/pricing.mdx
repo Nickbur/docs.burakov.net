@@ -1,6 +1,6 @@
 ---
 title: "Pricing"
-description: "Flat per-server pricing for Bastion — self-hosted, managed, optional modules and enterprise."
+description: "Flat per-server pricing for Bastion — self-hosted, managed, optional modules and enterprise — and how billing works."
 ---
 
 Bastion is priced **per server, not per seat** — bring your whole organization without watching a counter.
@@ -9,26 +9,47 @@ Bastion is priced **per server, not per seat** — bring your whole organization
 
 <CardGroup cols={2}>
     <Card title="Self-hosted" icon="server">
-        **$99 / month.** You run the node on your own infrastructure. Unlimited members.
+        **$99 / month** or **$990 / year.** You run the node on your own infrastructure. Unlimited members.
     </Card>
     <Card title="Managed" icon="cloud">
-        **From $249 / month.** The same single-tenant stack, operated for you — one organization per instance.
+        **$249 / month** or **$2,490 / year.** The same single-tenant stack, operated, updated and backed up for you — one organization per instance, ready within one business day.
     </Card>
-    <Card title="Extra module" icon="puzzle-piece">
-        **+$29 / month** per optional module, on top of your base plan.
+    <Card title="Extra modules" icon="puzzle-piece">
+        **+$29 / month** or **+$290 / year** per module, on any plan: **Topics** (posts, comments and polls) and the **AI assistant** (private answers across your chats and topics, running inside your own deployment).
     </Card>
     <Card title="Enterprise" icon="building">
-        **From $1–3k / month.** Larger deployments and bespoke needs — get in touch.
+        **$1–3k / month, custom.** Larger deployments, custom terms and modules — get in touch.
     </Card>
 </CardGroup>
 
 <Note>
-    Paying **annually** saves two months compared with month-to-month.
+    Paying **yearly** gives you two months free compared with month-to-month. Prices are in US dollars; sales tax or VAT is added where it applies.
 </Note>
 
 ## What's included
 
-Every plan includes the base module — **encrypted chat and calls** — for an unlimited number of members. There's no per-seat billing and no free tier: pricing is flat per server so the cost is predictable as your team grows.
+Every plan includes the base module — **encrypted chat and calls, including high-security chats** — for an unlimited number of members. There's no per-seat billing and no free trial: pricing is flat per server so the cost is predictable as your team grows.
+
+## Buying
+
+Plans are bought on [bastion.burakov.net](https://bastion.burakov.net/pricing): sign in with your email (a one-time code, no password), pick the plan, billing period and modules, name your organization and pay. Payment is processed by **Paddle**, our Merchant of Record, which also issues your invoices.
+
+Your organization is created the moment the payment clears, owned by the email you bought with. **[Your organizations](https://bastion.burakov.net/account/)** is where you then:
+
+- get the self-hosted node's **credentials** (organization ID and secret — the secret is shown once) and **rotate** the secret;
+- see the **license** and server status — last check-in, version, address — and, for managed, the deployment status;
+- **manage the subscription** — payment method, invoices and cancellation, through Paddle's customer portal;
+- **change modules** — the price difference is prorated and charged or credited right away;
+- **renew** an organization whose subscription ended, keeping its ID, secret and data.
+
+## When a payment fails or a subscription ends
+
+- A failed renewal keeps everything working for **7 days** while the payment is retried — update the payment method from your organization page.
+- Cancelling stops the next renewal; the paid period runs to its end.
+- After that the server turns **read-only** (members can sign in and read), and 14 days later it stops admitting sign-ins.
+- **Nothing is deleted.** Renewing restores full use.
+
+Refunds within 14 days of purchase — see the [Refund Policy](https://bastion.burakov.net/refund/).
 
 ## Self-hosted vs. managed
 

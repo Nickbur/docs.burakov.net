@@ -1,17 +1,27 @@
 ---
 title: "Calls"
-description: "Encrypted audio and video calls in Bastion — one-to-one and group, with screen sharing and native incoming-call screens."
+description: "Encrypted audio and video calls in Bastion — one-to-one and group, with screen sharing, native incoming-call screens and calls in high-security chats."
 ---
 
 Bastion has **encrypted audio and video calls** built in — one-to-one or as a group, with screen sharing. The media runs through a server that lives inside your own node, so the call itself never travels through anyone else's cloud.
 
 ## Starting a call
 
-Open a chat and tap the **call** button, or start one from the Calls tab. Choose audio or video; you can turn the camera on and off during the call, and share your screen.
+Open a chat and tap the **call** or **video** button, or start one from the **Calls** tab. Calling a chat rings everyone in it (bots and the AI assistant are never rung). If a call is already going on in that chat, you join it instead of ringing everyone again — a banner in the chat offers **Join** too.
 
 <Note>
     If your microphone or camera isn't available, the call still connects — you join muted or with the camera off, rather than failing to connect at all.
 </Note>
+
+## During a call
+
+- **Mute**, turn the **camera** on or off (an audio call can become a video call), **flip** between front and back cameras, and switch the **speaker** on phones.
+- **Share your screen** from the web app and the desktop app.
+- **Pick devices** — microphone, camera and, where the browser allows, speakers.
+- **Add people:** open the participants list and ring chat members who aren't in the call yet.
+- **Keep using the app:** leave the call screen and a small bar stays on top of every page with mute and hang-up; tap it to go back.
+
+The header shows the call's state — ringing, the running timer, reconnecting after a network drop — and each participant's connection quality. A lock badge confirms your media is encrypted, and a participant whose media isn't encrypted is flagged.
 
 ## Incoming calls that actually ring
 
@@ -19,19 +29,25 @@ A call is only useful if you notice it. Bastion rings you like a real phone:
 
 <Steps>
     <Step title="On your phone">
-        Incoming Bastion calls use the native system call screen on iOS and Android — they ring on the lock screen, before you've opened the app.
+        Incoming Bastion calls use the native system call screen on iOS and Android — they ring on the lock screen, before you've opened the app. Being online on a computer doesn't stop your phone from ringing.
     </Step>
     <Step title="On web and desktop">
-        A full-screen ringer with accept and decline does the same job in the browser and the desktop app.
+        A full-screen ringer with accept and decline does the same job in the browser and the desktop app, with a system notification when the tab is in the background. A second call while you're ringing waits in line; during a call it shows as **call waiting**, which you can decline or take by ending the current call.
     </Step>
     <Step title="Answer or decline">
-        Accept to join the call; decline to send it away. If the caller cancels first, the ring dismisses itself.
+        Accept to join the call; decline to send it away. If the caller cancels first, the ring dismisses itself. Unanswered calls stop ringing after 45 seconds.
     </Step>
 </Steps>
 
+## Missed calls and history
+
+The **Calls** tab lists your recent calls — including chats hosted by other organizations you take part in — answered, missed or declined, with a one-tap **call back**, and shows a badge for calls you missed. A chat's info page lists that chat's recent calls with their duration.
+
 ## What's encrypted
 
-Audio, video and screen sharing are encrypted end to end between participants, with a call key derived from the chat's own encryption. The media server that carries the streams runs on your node, so calls stay on infrastructure you control — and if a device can't establish end-to-end encryption for the call, Bastion **won't connect it** rather than fall back to unencrypted media.
+Audio, video and screen sharing are encrypted end to end between participants, with a call key derived from the chat's own encryption — so calls inherit the protection of the chat they belong to. The media server that carries the streams runs on your node, and if a device can't establish end-to-end encryption for the call, Bastion **won't connect it** rather than fall back to unencrypted media.
+
+**High-security chats** can be called too. Their call key comes from the chat's current high-security key, so every participant's device must be up to date with the chat's membership; if the membership changes during the call, the call ends and can be started again with the new key.
 
 <Note>
     On a self-hosted node, calls need the bundled media server to be running and reachable — see [Self-hosting](/bastion/self-hosting).

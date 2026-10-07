@@ -1,70 +1,125 @@
 ---
 title: "Chat"
-description: "Encrypted messaging in Bastion — direct and group chats, threads, replies, reactions, pinned messages and file attachments."
+description: "Encrypted messaging in Bastion — direct chats, groups, channels and high-security chats, with threads, mentions, polls, files, notifications and moderation."
 ---
 
 Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your device and only opened on the recipients'. The server only ever relays ciphertext. See [Security](/bastion/security) for how that works.
 
-## Direct and group chats
+## Kinds of chat
 
-Start a **one-to-one** chat with a teammate or create a **group** with several members. Open **New chat**, pick who to include, and start typing. New members you add later receive the shared history they're meant to see.
+<CardGroup cols={2}>
+    <Card title="Direct" icon="user">
+        A private conversation between exactly two people. Starting one with someone you already have a direct chat with simply reopens it.
+    </Card>
+    <Card title="Group" icon="users">
+        A named chat for several people. Members you add later receive the shared history.
+    </Card>
+    <Card title="Channel" icon="bullhorn">
+        A persistent room. Everyone can post by default; its admins can limit top-level posts to admins (announcements) — members can still reply in threads.
+    </Card>
+    <Card title="High-security" icon="shield-halved">
+        Chats with forward secrecy and per-device certificates, for your most sensitive conversations — see [High-security chats](#high-security-chats).
+    </Card>
+</CardGroup>
+
+Open **New chat**, pick the kind, choose people from your organization's directory and start typing.
+
+## Writing messages
+
+- **Formatting:** messages support Markdown — bold, lists, links, quotes and code blocks with syntax highlighting. Links open in your browser, and images from the web are never loaded automatically, so a link can't be used to track you.
+- **Mentions:** type `@` to pick a member. They're highlighted and notified even if they only want notifications for mentions.
+- **Drafts** are saved encrypted and follow you to your other devices.
+- **Polls:** a question with 2–10 options — single or multiple choice, optionally anonymous, with an optional deadline. The author or a moderator can close a poll early.
+- **Voice messages** of up to five minutes.
+- **Files, photos and videos:** encrypted on your device before they leave, with a thumbnail and upload progress. Large files upload in resilient chunks, so a dropped connection retries the affected piece instead of restarting the whole transfer. Images open full screen with zoom, videos play inline.
+
+Messages appear the moment you send them and wait in an outbox while you're offline. If the server permanently refuses one (for example, a file that's too large), it shows why and lets you discard it.
 
 ## Working with a message
 
-Long-press (or right-click) a message for its actions:
+Long-press, right-click or use the **⋯** on a message for its actions:
 
 <CardGroup cols={2}>
-    <Card title="Reply" icon="reply">
-        Quote a message inline so the context travels with your answer.
-    </Card>
-    <Card title="Reply in thread" icon="comments">
-        Branch a focused side-conversation off any message without derailing the main chat.
+    <Card title="Reply & thread" icon="reply">
+        Quote a message inline, or branch a focused thread off it. Swipe a message right to reply quickly.
     </Card>
     <Card title="React" icon="face-smile">
-        Add an emoji reaction from the picker; tap again to remove yours.
+        Add an emoji reaction; tap it again to remove yours. See who reacted with what.
     </Card>
-    <Card title="Edit & delete" icon="pen">
-        Fix or remove something you sent — edits are marked, deletes remove it for everyone.
+    <Card title="Forward" icon="share">
+        Send a copy to another chat you can post in, marked with who wrote it.
+    </Card>
+    <Card title="Save" icon="bookmark">
+        Keep it in **Saved messages**, across every chat and organization, on all your devices.
+    </Card>
+    <Card title="Edit" icon="pen">
+        Fix a text message you sent. Edited messages are marked, and anyone in the chat can view the earlier versions.
+    </Card>
+    <Card title="Delete" icon="trash">
+        **Delete for me** hides it on all your devices; **delete for everyone** removes your own message for the whole chat.
     </Card>
     <Card title="Pin" icon="thumbtack">
-        Pin key messages to the top bar so the whole chat can find them.
+        Pin key messages to the bar at the top of the chat. Tap a pinned item to jump to it.
     </Card>
-    <Card title="Attach files" icon="paperclip">
-        Send images, video and files — encrypted the same way as messages.
+    <Card title="Report" icon="flag">
+        Send someone else's message to your organization's moderators, with a reason and, if you choose, its text.
     </Card>
 </CardGroup>
 
 ## Threads
 
-A message with replies shows how many it has — for example **3 replies · 2 new**. Tap it to open the thread. Inside a thread, replies work like chat messages: react, copy, edit or delete your own, and attach files — changes show up for everyone instantly.
+A message with replies shows how many it has — for example **3 replies · 2 new**. Tap it to open the thread. Inside a thread, replies work like chat messages: react, save, edit or delete your own, mention people and attach files — changes show up for everyone instantly.
 
 You **follow** a thread when you wrote the message it started from, or once you reply in it. For threads you follow:
 
 - New replies count toward the chat's unread badge and show as **new** on the message until you open the thread.
 - You get a notification for each new reply, and tapping it opens the thread directly.
 
-Threads you don't follow stay quiet: you still see their reply count, but they never add to your unread badge or notify you. Muting a chat silences its thread notifications too.
+Threads you don't follow stay quiet: you still see their reply count, but they never add to your unread badge or notify you.
 
-## Sending and delivery status
+## Notifications
 
-Messages appear the moment you send them. If one fails to go out, it's flagged with a **one-tap retry** rather than lost. As it travels you see its status — **sent**, then **delivered** when it reaches a recipient's device, then **seen** once read — and a typing indicator shows when someone's replying.
+For each chat, choose to be notified about **every message**, **only mentions**, or **never** — and whether notifications make a sound. The choice applies on all your devices and is respected by the server, so muted chats really stay silent. Swipe a chat in the list to mute it or mark it as a **favourite** (favourites stay at the top).
+
+## Delivery, read status and presence
+
+As a message travels you see its status — **sent**, then **delivered** when it reaches a recipient's device, then **seen** once read — and a typing indicator shows when someone's replying. Direct chats show whether the other person is online or when they were last seen; groups show how many members are online.
 
 <Note>
-    An organization can switch off typing indicators and delivery/read receipts for maximum privacy — see [Accounts & privacy](/bastion/accounts-and-privacy).
+    An organization can switch off typing indicators, read and delivery status and online status for maximum privacy — see [Accounts & privacy](/bastion/accounts-and-privacy).
 </Note>
 
-## Attachments
+## Search and saved messages
 
-Use the paperclip in the composer to send an image, a video or any file. It's encrypted on your device before it leaves, stored as ciphertext, and decrypted only for the people in the chat. Images and videos preview inline — videos play right in the chat — and large files upload in **resilient chunks**, so a dropped connection retries the affected piece instead of restarting the whole transfer. Other files appear as a download chip.
-
-## Search
-
-Because the server only holds ciphertext, search runs **on your device**: Bastion decrypts your recent messages locally and searches those. Open search from the chats list, type a term, and jump straight to a hit — a match in a thread reply opens its thread.
+Because the server only holds ciphertext, search runs **on your device**: Bastion decrypts your chats locally and keeps building a search index of their full history in the background. Search across everything from the chats list, or inside one chat from its header, and jump straight to a hit — a match in a thread reply opens its thread. **Saved messages** in the side menu collects everything you've saved.
 
 ## Managing a chat
 
-Open a chat's **info** page (from the header) to see its members, add people, and check per-member **safety numbers** to confirm no one has been impersonated — see [Security](/bastion/security).
+Open a chat's **info** page from its header to:
 
-<Note>
-    Adding a member seals the chat's current key to them so they can read the history the group shares. Only owners and admins can add members to a chat.
-</Note>
+- see members with their roles and online status, and compare **safety numbers** to confirm no one has been impersonated — see [Security](/bastion/security);
+- rename the chat and edit its description;
+- **add members** from your organization — the chat's key is sealed to them so they can read the shared history;
+- create **invite links** that expire (after a day, a week, a month or never) and allow a set number of uses — copy, share or revoke them any time;
+- **invite someone from another organization** — find them by their exact username or e-mail (or by name, if their organization is listed network-wide); they get a notification and a single-use invitation that expires after 7 days, and their organization's guest policy still applies;
+- choose your notification level, browse the chat's photos, videos and files, and see its recent calls;
+- add **bots** — webhook integrations that post into the chat (bot messages are marked as not encrypted);
+- turn the [AI assistant](/bastion#whats-included) on or off for the chat, if your organization uses it;
+- **archive** the chat (it becomes read-only for everyone), **leave** it, or **delete** it with its history and files.
+
+### Roles
+
+| Role | Can |
+|---|---|
+| Member | Read and post, react, reply, save, forward, delete their own messages, report others' messages, leave |
+| Moderator | + pin, delete others' messages, close polls, manage bots |
+| Admin | + rename, add members, invite links, channel posting policy, AI assistant, archive, make members moderators, remove members |
+| Owner | + any role change, transfer ownership, remove admins, delete the chat |
+
+Both people in a direct chat can pin; a direct chat has no roles and can't be renamed, archived or extended. If the owner leaves, ownership passes to the longest-standing admin; the last person to leave deletes the chat. Your organization's moderators, admins and owner can moderate every chat they're in — see [Administration](/bastion/administration#moderation).
+
+## High-security chats
+
+High-security chats add **forward secrecy and post-compromise security** on top of end-to-end encryption: keys move forward with every change, so a key stolen later can't open earlier messages, and a removed member or device is locked out of what comes next. Every device has its own certificate from your organization, and Chat info shows each member's devices as verified, not trusted or waiting to be admitted.
+
+To keep that guarantee, high-security chats are text-only (replies and mentions included), don't support threads, edits, invite links, bots or the AI assistant, and only owners and admins add members. Calls work — see [Calls](/bastion/calls). A new device of an existing member is admitted automatically by another member's app.
