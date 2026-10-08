@@ -1,6 +1,6 @@
 ---
 title: "Troubleshooting"
-description: "Fixes for the common snags — SmartScreen and Gatekeeper warnings, missing shells, PATH problems, and build errors."
+description: "Fixes for the common snags — SmartScreen and Gatekeeper warnings, missing shells, PATH problems, timeouts, Cronch's own log, and build errors."
 ---
 
 ## "Windows protected your PC" (SmartScreen)
@@ -19,19 +19,32 @@ A copy you build yourself and run locally is not quarantined, so Gatekeeper does
 
 ## A rule shows "shell missing"
 
-The rule names a shell that isn't installed on this machine, so Cronch won't run it. Either install that shell, or edit the rule to use one Cronch detected (or **Direct**). This commonly happens after importing rules created on a different computer — see [Commands & shells](/cronch/commands-and-shells).
+The rule names a shell that isn't installed on this machine, so its runs fail with a "shell not found" message. Either install that shell, or edit the rule to use one Cronch detected (or **Direct**). This commonly happens after importing rules created on a different computer — see [Commands & shells](/cronch/commands-and-shells). If you just installed the shell, restart Cronch so it detects it.
 
 ## "It runs in my terminal, but not on a schedule"
 
-Almost always an **environment** issue: the scheduled job can't find a tool that's on your `PATH` in a terminal. Cronch already resolves your login environment to avoid this, but if a job still can't find something:
+Almost always an **environment** issue: the scheduled job can't find a tool that's on your `PATH` in a terminal. Cronch reads your login environment from your shell's startup files when it starts — so after changing them, restart Cronch. If a job still can't find something:
 
 - Use the **full path** to the program in the command, or
 - Set the needed variable on the rule (the **Environment variables** field), or
 - Set the rule's **Working directory** if the script expects to run from a specific folder.
 
+## A run shows "TimedOut"
+
+The run was still going when the rule's **Timeout** ran out (5 minutes for new rules), so Cronch stopped it. Raise the timeout for long jobs, or set it to `0` for no limit — see [Commands & shells](/cronch/commands-and-shells#timeout).
+
 ## A job didn't run while the machine was asleep or off
 
-That's expected — a tray app can't run while it isn't running. When Cronch next starts, a rule with **Catch up if missed** enabled runs once to make up for it. If it didn't, check that catch-up is on for that rule. See [Schedules](/cronch/schedules).
+That's expected — nothing can run while the computer sleeps or Cronch isn't running. As soon as it can, a rule with **Catch up if missed** enabled runs once to make up for it; with catch-up off, the missed run is skipped. Check the rule's setting, and look for a `catch-up` run in its history. See [Schedules](/cronch/schedules).
+
+## Cronch's own log
+
+When something about Cronch itself misbehaves, its log file says what it did — which shells it found, every run it started and finished, and any error:
+
+- **Windows** — `%APPDATA%\burakov\Cronch\data\cronch.log`
+- **macOS** — `~/Library/Application Support/net.burakov.Cronch/cronch.log`
+
+It's capped at about 1 MB; the previous file is kept as `cronch.log.1`.
 
 ## Build errors (building from source)
 

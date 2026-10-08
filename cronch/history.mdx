@@ -10,14 +10,14 @@ A scheduler you can't inspect is a scheduler you can't trust. Cronch records **e
 For each run of a rule, Cronch stores:
 
 - **When** it started and finished.
-- **Status** — Success, Failed, or Running (for one still in progress).
+- **Status** — Success, Failed, TimedOut (stopped by the rule's [timeout](/cronch/commands-and-shells#timeout)), Cancelled (stopped because Cronch quit), or Running (still in progress).
 - **Exit code** returned by the command.
-- **What triggered it** — the schedule, a manual **Run now**, or a catch-up.
+- **What triggered it** — `schedule`, `manual` (**Run now**), `catch-up` (making up for a [missed run](/cronch/schedules#catch-up-runs-missed-while-the-machine-was-off-or-asleep)), or `queued` (a run that waited for the previous one).
 - **Captured output** — everything the job wrote to standard output and standard error.
 
 ## The log viewer
 
-Open a rule's **Logs** to see its runs. The most recent are listed on the left; select one and its captured **stdout** and **stderr** appear on the right. When a command fails, this is where the reason usually is — the error the job printed is right there, long after 3 a.m. has passed.
+Open a rule's **Logs** to see its runs. The most recent are listed on the left; select one and its captured **stdout** and **stderr** appear on the right. The view updates live, and the run you selected stays selected as new runs arrive. When a command fails, this is where the reason usually is — the error the job printed is right there, long after 3 a.m. has passed.
 
 At a glance in the main list, each rule also shows its **last** result and **next** scheduled time, so you can see the whole picture without opening anything.
 

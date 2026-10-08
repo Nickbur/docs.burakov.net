@@ -12,7 +12,7 @@ There are two ways to get Cronch. Download a ready-made build, or build it from 
         Download the build for your system from the [Cronch download page](https://burakov.net/projects/cronch/download) — a `.exe` for Windows, a `.dmg` for macOS (Apple Silicon or Intel).
     </Step>
     <Step title="Open it">
-        Run the app. A window opens and a clock icon appears in your system tray (Windows) or menu bar (macOS).
+        Run the app. A window opens and the Cronch icon — a green loop arrow — appears in your system tray (Windows) or menu bar (macOS).
         <Warning>
             Because Cronch runs commands on a schedule and starts at login, an unsigned build can trip Windows SmartScreen or macOS Gatekeeper. See [Troubleshooting](/cronch/troubleshooting) for the one-time click that gets you past it.
         </Warning>
@@ -34,7 +34,7 @@ Cronch is open source. If you'd rather build it yourself (or you're on a platfor
         ```bash
         cargo build --release
         ```
-        The binary lands at `target/release/cronch` (or `cronch.exe` on Windows). For a quick try-out, `cargo run` builds a debug copy and starts it straight away, with logs printed to the terminal. The full step-by-step, including how to install the toolchain, is in `BUILD.md` in the repository.
+        The binary lands at `target/release/cronch` (or `cronch.exe` on Windows). For a quick try-out, `cargo run` builds a debug copy and starts it straight away, with logs printed to the terminal; it runs as a separate *Cronch-Dev* app with its own rules and data, and never turns on launch at login by itself. The full step-by-step, including how to install the toolchain, is in `BUILD.md` in the repository.
     </Step>
 </Steps>
 
@@ -59,7 +59,7 @@ Cronch is open source. If you'd rather build it yourself (or you're on a platfor
 </Steps>
 
 <Tip>
-    Want to check it works right away? Select the rule and click **Run now**, then open its **Logs** to see the captured output. A manual run doesn't affect the schedule.
+    Want to check it works right away? Click **Run now** on the rule, then open its **Logs** to see the captured output. A manual run doesn't affect the schedule.
 </Tip>
 
 ## Next

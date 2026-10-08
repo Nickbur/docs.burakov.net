@@ -21,7 +21,7 @@ Your rules export to a single **JSON** file. That file is useful for:
 - **Backing up** your setup, or keeping it in version control.
 - **Sharing** a set of rules with someone else.
 
-Importing adds the rules from the file to Cronch.
+Importing adds the rules from the file to Cronch; it never changes or replaces a rule you already have. If a rule from the file already exists here (say, you import your own backup), it's added as a copy with **(copy)** after its name. Imported rules start fresh: no last run, no status — their history stays on the machine where they ran.
 
 ## Launch at login, explained
 
@@ -33,8 +33,10 @@ Cronch lives in the system tray (Windows) or menu bar (macOS). Right-click its i
 
 - **Add rule…** — jump straight to creating a rule.
 - **Open Cronch** — bring the main window forward.
-- **Pause all / Resume all** — stop every rule from firing, then resume. Handy during maintenance or a noisy deploy. (The same toggle is in the app header.)
+- **Pause all / Resume all** — stop every rule from firing on schedule, then resume. Handy during maintenance or a noisy deploy. A pause lasts until you resume, even across restarts, and runs waiting in a queue are dropped; **Run now** still works. When you resume, rules with **Catch up if missed** run once for what they missed (see [Schedules](/cronch/schedules)). The same toggle is in the app header.
 - **Quit** — actually exit Cronch. Remember: while it's quit, nothing is scheduled.
+
+Left-clicking the icon opens the window too, and so does opening Cronch again while it's already running — from the Start menu on Windows; on macOS from Finder, Launchpad, Spotlight or its Dock icon. A window you only minimized comes back exactly as you left it.
 
 <Note>
     **Closing the window does not quit Cronch** — it hides it to the tray, where it keeps running. Use **Quit** from the tray menu when you really want to stop it.

@@ -1,6 +1,6 @@
 ---
 title: "Commands & shells"
-description: "How Cronch runs your command — the shell, the working directory, environment variables, and what happens when a run overlaps the next."
+description: "How Cronch runs your command — the shell, the working directory, environment variables, timeouts, and what happens when a run overlaps the next."
 ---
 
 A rule runs one command. Cronch's job is to run it the way you'd run it yourself, and to record what happened.
@@ -11,29 +11,39 @@ Type the command, or the path to a script, exactly as you would in a terminal. C
 
 ## The shell
 
-When you create a rule, Cronch has already scanned your machine and listed the shells that are installed:
+When you create a rule, Cronch has already scanned your machine and listed the shells that are installed — looking in the same `PATH` your terminal uses, so a shell installed with Homebrew is found even when Cronch was started at login:
 
 - **Windows** — PowerShell, `pwsh`, `cmd`, Git Bash and WSL, when present.
 - **macOS** — `zsh`, `bash`, `sh` and `fish`, when present.
 
+Your command reaches the shell exactly as you typed it — quotes included, so `"C:\Program Files\App\app.exe" --flag` works in `cmd` just as it does in a Command Prompt window.
+
 You also get two special choices:
 
 - **Custom…** — point at any shell binary and give the argument template to use. The template must contain `{cmd}`, which Cronch replaces with your command (the default is `-c {cmd}`).
-- **Direct (no shell)** — run an executable straight, with no shell involved. The command line is split into program and arguments without shell interpretation — handy when you want to avoid a shell's quoting rules entirely.
+- **Direct (no shell)** — run an executable straight, with no shell involved. The command line is only split into program and arguments, following the platform's usual rules: shell-style quoting on macOS, and Windows command-line rules on Windows — backslashes in paths are kept as they are; put a path that contains spaces in double quotes.
 
 <Note>
-    If a rule names a shell that isn't installed on the current machine, Cronch marks it **shell missing** and does not run it, rather than failing in a confusing way. This makes rules portable: move them to another computer and you'll see at a glance what it can and can't run.
+    If a rule names a shell that isn't installed on the current machine, Cronch marks it **shell missing** in the rule list, and if it comes due anyway, the run fails with a clear "shell not found" message instead of running something else. Editing the rule keeps that shell selected until you pick another. This makes rules portable: move them to another computer and you'll see at a glance what it can and can't run.
 </Note>
 
 ## Working directory
 
-By default, jobs run from your home directory. Set a **Working directory** on the rule to run from somewhere specific — useful for scripts that expect to be run from their project folder.
+By default, jobs run from your home directory. Set a **Working directory** on the rule to run from somewhere specific — useful for scripts that expect to be run from their project folder. If that folder doesn't exist when the rule runs, the run fails with a "working directory not found" message.
 
 ## Environment variables
 
-Jobs inherit your **real login environment**, so scheduled commands see the same `PATH` you'd have in a terminal, and tools like `node`, `python` and `git` are found. (This matters most on macOS, where jobs launched at login can otherwise get a stripped-down `PATH`.)
+Jobs inherit your **real login environment**, so scheduled commands see the same `PATH` you'd have in a terminal, and tools like `node`, `python` and `git` are found. On macOS Cronch reads it from your shell's own startup files (such as `.zprofile` and `.zshrc`, where tools like nvm or pyenv set themselves up) — this matters because apps started at login otherwise get a stripped-down `PATH`. The environment is read once, when Cronch starts.
 
 You can add extra variables per rule — one `KEY=VALUE` per line — for anything a specific job needs, like an API token or a config flag.
+
+## Timeout
+
+Each rule has a **Timeout**: if a run is still going after that many seconds, Cronch stops it — together with everything it started — and records the run as **TimedOut**. New rules get **5 minutes**; set it higher for long jobs such as backups (up to 7 days), or to `0` for no limit.
+
+If your command starts a program in the background and exits (for example a server started with `&`, or `start` on Windows), Cronch records the run as finished as soon as the command itself exits; the program keeps running. Output it prints after that point isn't recorded, and the run's stderr says so.
+
+Deleting a rule also stops any run of it that is still going.
 
 ## Overlap: when a run isn't finished yet
 
@@ -42,7 +52,7 @@ If a rule comes due while its previous run is still going, its **overlap policy*
 | Policy | What it does | Good for |
 | --- | --- | --- |
 | **Skip** *(default)* | Don't start a second run; leave the current one alone. | Backups, anything that must not run twice at once. |
-| **Queue** | Wait for the current run to finish, then run the pending one. | Jobs where every occurrence should eventually run, in order. |
+| **Queue** | Wait for the current run to finish, then run the pending one (unless the rule was switched off or everything was paused in the meantime). | Jobs where every occurrence should eventually run, in order. |
 | **Parallel** | Start the new run immediately, alongside the current one. | Short, independent tasks that are safe to overlap. |
 
 Set it per rule, so each job gets the behaviour that fits it.

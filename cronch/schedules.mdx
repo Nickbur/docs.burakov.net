@@ -7,14 +7,26 @@ Every rule has one schedule, chosen from three modes. Pick the mode that matches
 
 ## Interval
 
-Run every *N* seconds, minutes, hours or days. The simplest option — "every 15 minutes", "every 6 hours" — with no cron syntax to remember. Set the number and the unit, and Cronch counts from when the rule starts.
+Run every *N* seconds, minutes, hours or days. The simplest option — "every 15 minutes", "every 6 hours" — with no cron syntax to remember. Set the number and the unit, and Cronch counts from when the rule starts. The rhythm is kept: an hourly rule that started at 10:17 keeps running at a quarter past, even after the computer was off for a while.
 
 ## Cron
 
-For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month" — use a cron expression.
+For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month" — use a cron expression. Cronch follows standard cron:
 
-- **5 fields** (`minute hour day-of-month month day-of-week`) is standard cron; seconds are assumed to be `0`. Example: `0 9 * * *` runs at 09:00 every day.
-- **6 fields** adds a leading seconds field for finer timing.
+- **5 fields** — `minute hour day-of-month month day-of-week`; seconds are assumed to be `0`.
+- **6 fields** — adds a leading seconds field for finer timing.
+- **Day of week** — `0`–`7`, where both `0` and `7` are Sunday (`1` is Monday), or names like `MON-FRI`.
+- **Day of month and day of week together** — a day that matches *either* one fires, just like classic cron.
+
+| Expression | Runs |
+| --- | --- |
+| `0 9 * * *` | Every day at 09:00 |
+| `0 9 * * 1-5` | Weekdays (Monday–Friday) at 09:00 |
+| `*/15 * * * *` | Every 15 minutes |
+| `0 0 1 * *` | At midnight on the 1st of every month |
+| `30 0 9 * * MON` | Mondays at 09:00:30 (6 fields, with seconds) |
+
+Expressions are evaluated in your local time, including daylight-saving changes.
 
 <Tip>
     New to cron? Start from the example in the field (`0 9 * * *`) and change one part at a time. Interval mode is often easier for "every so often" jobs; cron shines for "at this clock time".
@@ -22,16 +34,20 @@ For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month"
 
 ## Once
 
-Run a single time at a specific date and time — `YYYY-MM-DD HH:MM`, in your local time. Useful for a one-off reminder script or a delayed task. After it runs, the rule is done.
+Run a single time at a specific date and time — `YYYY-MM-DD HH:MM`, in your local time. The time must be in the future when you save the rule. Useful for a one-off reminder script or a delayed task. After it runs, the rule is done.
 
-## Catch-up: jobs missed while the machine was off
+## Catch-up: runs missed while the machine was off or asleep
 
-Computers sleep and shut down, so a scheduled time can pass while Cronch isn't running. Each rule has a **Catch up if missed** option (on by default) that decides what happens next:
+Computers sleep and shut down, so a scheduled time can pass while Cronch can't run anything. A run that is more than **five minutes late** counts as **missed** — whether Cronch wasn't running, the computer was asleep, or everything was paused. (A run that is only slightly late, for example because the system was busy, simply runs.)
 
-- **On** — when Cronch next starts, a rule that came due while it was away runs **once**, right away. Multiple missed occurrences are **coalesced** into that single catch-up run, so a weekend of hourly jobs doesn't fire dozens of times at once.
+Each rule has a **Catch up if missed** option (on by default) that decides what happens to a missed run:
+
+- **On** — as soon as Cronch can (when it starts, the computer wakes, or you resume), the rule runs **once**, right away. Multiple missed occurrences are **coalesced** into that single catch-up run, so a weekend of hourly jobs doesn't fire dozens of times at once.
 - **Off** — the missed occurrences are skipped; the rule simply waits for its next scheduled time.
 
-A **Once** schedule that was missed always runs on the next start — that's the whole reason you set it.
+A missed **Once** schedule follows the same option: with catch-up on it runs as soon as Cronch can; with catch-up off its moment has passed, and the rule is marked **Expired**.
+
+Catch-up runs are labelled **catch-up** in the rule's [history](/cronch/history).
 
 <Note>
     Cronch re-checks its schedule continuously, so clock changes and sleep/wake are handled without relying on operating-system power events. You don't need to configure anything for this.

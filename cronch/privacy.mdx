@@ -13,9 +13,9 @@ Cronch is built to be trustworthy with the one thing a scheduler needs: the abil
 
 ## Where your data lives
 
-Everything Cronch knows — your rules, their settings, and the full run history with captured output — is stored in a single local **SQLite database** on your computer:
+Everything Cronch knows — your rules, their settings, and the full run history with captured output — is stored in a single local **SQLite database** on your computer, next to Cronch's own log file (`cronch.log`, which records what Cronch did — not your jobs' output):
 
-- **Windows** — under `%APPDATA%\burakov\Cronch`.
+- **Windows** — under `%APPDATA%\burakov\Cronch\data`.
 - **macOS** — under `~/Library/Application Support/net.burakov.Cronch`.
 
 Nothing in there is copied off the machine. Exporting your rules writes a JSON file exactly where you choose, and importing reads one you point at — those are ordinary local files.
