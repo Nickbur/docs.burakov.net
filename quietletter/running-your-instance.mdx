@@ -1,10 +1,10 @@
 ---
 title: "Running your instance"
-description: "Configuration, delivery, backups and the API of a self-hosted Lastward core."
+description: "Configuration, delivery, backups and the API of a self-hosted Quietletter core."
 ---
 
-This page is for whoever runs a **Lastward core** instance — the open-source server from
-[Self-hosting](/lastward/self-hosting). It covers how to run and configure it, what it sends and
+This page is for whoever runs a **Quietletter core** instance — the open-source server from
+[Self-hosting](/quietletter/self-hosting). It covers how to run and configure it, what it sends and
 when, how to keep it safe, and the API it speaks.
 
 ## What your instance is
@@ -12,19 +12,19 @@ when, how to keep it safe, and the API it speaks.
 - **Single-tenant.** One instance serves one owner. There are no accounts, sign-ups, plans or
     limits — every feature is unlocked.
 - **The same protocol as the hosted service.** The core is a second, independent implementation
-    of the protocol the Lastward cloud speaks, so the Lastward app connects to it unchanged.
+    of the protocol the Quietletter cloud speaks, so the Quietletter app connects to it unchanged.
 - **Content-blind.** It stores ciphertext and a passphrase-wrapped content key — never your
     passphrases or plaintext. The only exceptions are items you deliberately mark *readable*, and
     public pages, which are plaintext by nature. It knows only what the firing engine needs: the
     check-in rhythm, the deadline, recipient addresses, action types and state.
 - **AGPL-3.0.** Anyone who hosts a modified version for others must share its source — the
-    strongest trust signal for software that holds secrets. The Lastward apps are licensed
+    strongest trust signal for software that holds secrets. The Quietletter apps are licensed
     separately.
 
 ## Running it
 
 With Docker, `docker compose up --build` is all it takes (see the
-[quick start](/lastward/self-hosting#quick-start)). It starts PostgreSQL and the server, applies
+[quick start](/quietletter/self-hosting#quick-start)). It starts PostgreSQL and the server, applies
 the database migrations, and serves on `http://localhost:8080`. The firing engine runs inside the
 server every `SWEEP_INTERVAL_SECONDS` (60 by default), so no external scheduler is needed.
 
@@ -36,8 +36,8 @@ server every `SWEEP_INTERVAL_SECONDS` (60 by default), so no external scheduler 
 ### Without Docker
 
 You need **Node.js 24.16 or newer** and your own PostgreSQL database. Put your settings in `.env`
-(it is read automatically) — at least `DATABASE_URL` and `OWNER_TOKEN`, which the migration step
-checks too.
+(start from `env/env.prod`; it is read automatically) — at least `DATABASE_URL` and `OWNER_TOKEN`,
+which the migration step checks too.
 
 ```bash
 npm install
@@ -51,20 +51,23 @@ To drive the firing engine from cron instead of the built-in interval, set
 
 ## Configuration
 
-`.env.example` lists every setting. The server refuses to start when a value is invalid.
+`env/env.prod` lists every setting with a short explanation — copy it to `.env` and fill in its
+`REPLACE_ME` values. The server refuses to start when a value is invalid, so an unfilled owner
+token, public URL or owner email stops it at boot.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `DATABASE_URL` | — (required) | PostgreSQL connection string. |
 | `OWNER_TOKEN` | — (required, 16+ chars) | The owner's bearer token for the owner API. |
 | `PUBLIC_URL` | `http://localhost:8080` | Public base URL (no trailing slash) used in release and public-page links. |
+| `DOCS_URL`, `PRIVACY_URL`, `TERMS_URL` | Quietletter's own | Footer links on the public pages. Running an instance for other people? Point the privacy and terms links at your own documents. |
 | `SWEEP_INTERVAL_SECONDS` | `60` | How often the built-in sweep runs; `0` turns it off (use cron). |
 | `FIRE_RETENTION_DAYS` | `90` | How long encrypted payloads and release links are kept after a switch fires. |
 | `OWNER_EMAIL` | — | Where your check-in warning emails go. Empty = warnings are console-only. |
 | `SMTP_HOST` | — | SMTP server for outgoing mail. Unset = mail is printed to the console. |
 | `SMTP_PORT`, `SMTP_SECURE` | `587`, `false` | SMTP port, and whether to use TLS from the first byte. |
 | `SMTP_USER`, `SMTP_PASS` | — | SMTP credentials, if your server needs them. |
-| `MAIL_FROM` | `Lastward <no-reply@lastward.local>` | Sender of every email. |
+| `MAIL_FROM` | `Quietletter <no-reply@quietletter.local>` | Sender of every email. |
 | `EMAIL_DEV_MODE` | `false` | `true` prints mail to the console even when SMTP is configured. |
 | `HOST`, `PORT` | `0.0.0.0`, `8080` | Where the server listens. |
 | `NODE_ENV`, `LOG_LEVEL` | `production`, `info` | Runtime mode and log verbosity. |
@@ -93,7 +96,7 @@ token — they are protected by their unguessable link instead.
     before you rely on the instance** — in console mode a fired switch reaches the log, not your
     recipients.
 - **Push and SMS are console-only.** The core ships no push or SMS provider, so those warning
-    steps are written to the log, where you can wire up a provider of your own. In the Lastward
+    steps are written to the log, where you can wire up a provider of your own. In the Quietletter
     app, check-in reminders still fire on your device.
 
 ## How a switch fires
@@ -112,11 +115,13 @@ window. Each sweep:
 5. Deletes expired release links, and the payloads of switches that fired more than
     `FIRE_RETENTION_DAYS` ago.
 
-A fired switch can't be checked in again — the API answers `already_fired`.
+Your latest action always wins: the sweep moves a switch to grace or fires it only if it is still
+exactly as the sweep read it, so a check-in, disarm or edit that lands mid-sweep is never
+overridden. A fired switch is final — checking it in or disarming it answers `409 already_fired`.
 
 ## Public pages (self-host only)
 
-Lastward has five action types: `message`, `file`, `secret`, `private_page` and `public_page`.
+Quietletter has five action types: `message`, `file`, `secret`, `private_page` and `public_page`.
 The hosted service refuses `public_page` — a truly public page is plaintext by nature and would
 make the host a publisher. **Your instance accepts it.**
 
@@ -136,9 +141,12 @@ by the retention purge: a published page is meant to stay up.
     instance elsewhere. Because payloads are ciphertext, the dump is safe to keep offsite:
 
     ```bash
-    docker compose exec db pg_dump -U lastward lastward > lastward-backup.sql
+    docker compose exec db pg_dump -U quietletter quietletter > quietletter-backup.sql
     ```
 
+- **Keep an export too.** **Settings → Backup & transfer → Export switches** in the app (or
+    `GET /v1/switches/export`) saves every live switch to one file that imports into another
+    instance or into the hosted service — see [Move your switches](/quietletter/self-hosting#move-your-switches).
 - **Publish your own shutdown protocol.** If you will ever stop running an instance, give your
     recipients advance notice on more than one channel, a final export, and a pointer to the
     core's repository so they can keep the switches alive themselves. "A service outlives its
@@ -157,8 +165,11 @@ as `{ "code": "...", "message": "..." }`.
 | Method & path | Purpose |
 | --- | --- |
 | `GET /v1/switches` | List all switches with their recipients and actions. |
+| `GET /v1/switches/export` | Every live switch, payloads included, as one export file (see below). |
+| `POST /v1/switches/import` | Recreate the switches of an export file; answers with what was imported and what was skipped. |
 | `GET /v1/switches/:id` | One switch. |
 | `PUT /v1/switches/:id` | Create or replace a switch by its client-generated UUID, with nested recipients and actions. The server computes the deadline; the state fields are read-only. |
+| `PUT /v1/switches/:id/regional` | Fill in the time zone and language a switch saved by an older app is missing (`{ timezone, locale }`); only missing values are written and the deadline never moves. |
 | `DELETE /v1/switches/:id` | Delete a switch and everything under it (idempotent). |
 | `POST /v1/switches/:id/checkin` | Proof of life: resets the deadline and re-activates the switch. |
 | `POST /v1/switches/:id/disarm` | Turn the switch off; a later check-in turns it back on. |
@@ -177,7 +188,66 @@ and 168 hours. The floors are enforced when you save and again when the sweep ru
 A **payload** is either zero-knowledge — `mode: "zk"` with `ciphertext`, `wrappedKey`, `salt`,
 `nonce` and `algo` (or a `blobRef` for a large file) — or `mode: "readable"` with
 `readableContent`, which is allowed only for a `message` or a `public_page`. A `public_page` must
-be readable; `file`, `secret` and `private_page` are always zero-knowledge.
+be readable; `file`, `secret` and `private_page` are always zero-knowledge. `ciphertext` holds up
+to 2,000,000 characters — the app keeps files to 1 MB so they always fit.
+
+### Export file
+
+The export is plain JSON that the hosted service produces and accepts in exactly the same shape:
+
+```json
+{
+    "format": "quietletter-export",
+    "schemaVersion": 1,
+    "exportedAt": "2026-10-09T12:00:00.000Z",
+    "source": "self-host",
+    "switches": [
+        {
+            "id": "…", "title": "…", "state": "active",
+            "cadence": { "value": 30, "unit": "day" }, "grace": { "value": 14, "unit": "day" },
+            "warnings": [{ "offsetHours": 0, "channels": ["push", "email"] }],
+            "warningPhone": null, "timezone": "Europe/Kyiv", "locale": "en",
+            "lastCheckinAt": "…", "createdAt": "…",
+            "recipients": [{ "id": "…", "email": "…", "phone": null, "name": "…" }],
+            "actions": [{ "id": "…", "type": "secret", "sortOrder": 0, "config": { "mode": "zk" },
+                          "payload": { "mode": "zk", "ciphertext": "…", "wrappedKey": "…", "salt": "…",
+                                       "nonce": "…", "algo": "…", "blobRef": null, "size": 42,
+                                       "readableContent": null, "schemaVersion": 1 } }]
+        }
+    ]
+}
+```
+
+- **Exported:** every switch that hasn't fired, with its recipients, actions and payloads exactly
+    as stored — zero-knowledge payloads stay ciphertext. Release links, the delivery log and
+    published public pages are history, not setup, and stay behind. `payload` is `null` for an
+    action whose content was never uploaded.
+- **Time zone + language:** `timezone` is the zone the check-in rhythm follows; `locale` is the
+    language of that switch's emails. Both are optional: files without them still import (a missing
+    zone is filled in the next time the app opens the list). The hosted service writes and reads
+    `timezone` only — it sends emails in the language you use the app in.
+- **Imported:** each switch is checked against the same rules as `PUT /v1/switches/:id` (the
+    48-hour grace floor, push + email warnings, the zero-knowledge rules). Its timer starts at the
+    moment of import — nothing can fire early — and a `disarmed` switch stays disarmed.
+- **Idempotent:** ids are kept, so a switch that already exists is skipped (`exists`), and an id
+    already used by another switch is skipped as a `conflict`. Invalid entries are skipped as
+    `invalid` without failing the rest; everything that is imported is written in one transaction.
+- **Versioned:** a file with a higher `schemaVersion` than the server knows is refused with
+    `unsupported_export_version`; anything else that isn't an export gets `invalid_export_file`.
+    Unknown fields are ignored. A payload that points at an external blob (`blobRef`) can't be
+    imported. The import body may be up to 50 MB.
+
+The import answers with one result per switch, in file order:
+
+```json
+{ "imported": 1, "skipped": 1, "results": [
+    { "id": "…", "title": "For my family", "status": "imported" },
+    { "id": "…", "title": "Old switch", "status": "skipped", "reason": "exists" }
+] }
+```
+
+The hosted service applies its plan limits to an import and skips switches with a public page
+(`self_host_only`); your instance accepts them.
 
 ### Public routes (no token)
 
@@ -185,6 +255,7 @@ be readable; `file`, `secret` and `private_page` are always zero-knowledge.
 | --- | --- |
 | `GET /v1/release/:token` | The content-blind bundle a recipient of a **fired** switch decrypts in the browser. 404 for an unknown or expired link, or a switch that hasn't fired. |
 | `GET /release/:token` | The ready-made release page the fire emails link to: shows readable content right away and decrypts encrypted items in the browser. |
+| `GET /vendor/libsodium-sumo.js`, `GET /vendor/libsodium-wrappers.js` | The libsodium build the release page decrypts with, served by your instance — the page loads nothing from a CDN. |
 | `GET /p/:slug` | A published public page. |
 | `GET /health`, `GET /v1/health` | Liveness check (the app uses it when you connect an instance). |
 
@@ -195,7 +266,7 @@ envelope `algo = "xchacha20poly1305-argon2id-v1"` (libsodium):
 
 ```
 KEK        = crypto_pwhash(32, passphrase, salt, INTERACTIVE, INTERACTIVE, ARGON2ID13)
-contentKey = crypto_secretbox_open(wrappedKey[24:], wrappedKey[:24], KEK)
+contentKey = crypto_aead_xchacha20poly1305_ietf_decrypt(wrappedKey[24:], wrappedKey[:24], KEK)
 plaintext  = crypto_aead_xchacha20poly1305_ietf_decrypt(ciphertext, nonce, contentKey)
 ```
 

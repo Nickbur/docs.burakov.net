@@ -1,0 +1,92 @@
+---
+title: "Install scripts"
+description: "Why npm skips dependency install scripts, what the kit ships with, and how to approve or deny a new one."
+---
+
+Each of the four repos has an `allowScripts` field in its `package.json`. It tells npm which
+dependencies may run an install script. This page explains why it's there, what the kit ships with,
+and what to do when you add a dependency that has a script.
+
+## Why the field exists
+
+Recent npm (11.19 and later — bundled with current Node 24 releases and the `node:24-*` Docker images)
+no longer runs dependencies' **install scripts** by default: `preinstall`, `install`, `postinstall`,
+`prepare` for `file:` / git dependencies, and the implicit `node-gyp rebuild` for packages that ship a
+`binding.gyp`. A script runs only if the project's `allowScripts` allows that package. Your project's
+own scripts still run as usual.
+
+An install script is code that runs on `npm install` with your user's rights — your SSH keys, `.env`
+files and CI tokens included. Hijacked packages have abused exactly that, which is why npm now asks you
+to opt in package by package. Older npm versions ignore the field and run every script, so it's safe
+whatever npm your machine or CI uses.
+
+The install never fails because of it. It finishes and then lists what it skipped:
+`npm warn install-scripts … not yet covered by allowScripts`.
+
+## What the kit ships with
+
+Every dependency script in the kit is **denied**, because none is needed:
+
+| Package | What its script does | Why it can stay off |
+|---------|----------------------|---------------------|
+| `esbuild` | Checks its platform binary | The binary comes from the optional `@esbuild/<platform>` package. |
+| `@parcel/watcher` | Compiles from source when no prebuilt exists | Prebuilt packages cover macOS, Windows and Linux (glibc and musl/Alpine). |
+| `fsevents` | `node-gyp rebuild` | macOS-only and already ships a prebuilt binary; never installed on Linux. |
+
+| Repo | `allowScripts` |
+|------|----------------|
+| backend | `esbuild`, `fsevents` → `false` |
+| app | `@parcel/watcher`, `esbuild`, `fsevents` → `false` |
+| admin | `@parcel/watcher`, `fsevents` → `false` |
+| website | `@parcel/watcher`, `esbuild`, `fsevents` → `false` |
+
+A fresh `npm install` of each repo therefore finishes with no warning. The repos don't commit
+`package-lock.json` (it's in `.gitignore`), so every install resolves versions anew; the denials name
+the package, not a version, and so keep holding as versions move.
+
+## When you add a dependency with a script
+
+If an install ends with "not yet covered by allowScripts":
+
+1. `npm install-scripts ls` — see which packages are undecided.
+2. Look at what the script does: `npm view <pkg>@<version> scripts`, or
+    `node_modules/<pkg>/package.json` and the files it runs.
+3. Record a decision:
+    - The package needs its script (it downloads or compiles something it can't work without — `sharp`,
+        which `@capacitor/assets` uses for icon generation, is the classic example):
+        `npm install-scripts approve <pkg>`, then `npm rebuild <pkg>`. The approval is pinned to the
+        version you reviewed (`"sharp@x.y.z": true`).
+    - It doesn't (it only checks, optimises or prints something): `npm install-scripts deny <pkg>`.
+4. Commit `package.json` so everyone — and your CI and Docker builds — gets the same decision.
+
+**After upgrading an approved package,** the new version is unreviewed and its script is skipped.
+Review it, run `npm install-scripts approve <pkg>` again (the pin moves to the new version) and
+`npm rebuild <pkg>`.
+
+**`npm install-scripts prune`** removes entries for packages that are no longer installed.
+
+**A package that isn't installed on your machine** (for example `fsevents` on Linux) can't be denied
+with the command — it answers `ENOMATCH`. Add `"<pkg>": false` to `allowScripts` by hand; that is what
+the command would write.
+
+**A native module fails after a fresh install** (`Could not load the … module`, a missing `.node`
+file): its script was needed. Approve it and `npm rebuild` it.
+
+Don't silence the warning with `npm install-scripts approve --all` or
+`--dangerously-allow-all-scripts` — both switch the protection off.
+
+## Docker, servers and CI
+
+- The Dockerfiles copy `package*.json` and run `npm install`. Without a committed lockfile that is
+    `package.json` alone, so each image build resolves dependencies afresh and applies the same
+    `allowScripts`. Current `node:24-*` images enforce it; an older base image ignores it and runs
+    everything, which also works.
+- Nothing in the backend or admin image needs a dependency script.
+- Watch build logs for `npm warn install-scripts`: a fresh resolve pulled in a package with a script
+    that has no decision yet. Decide it (above), commit `package.json`, rebuild.
+- npm only warns about packages it actually installed on that machine. To see every platform's
+    packages, resolve `package.json` in an empty directory and look for `"hasInstallScript": true` in the
+    `package-lock.json` it writes.
+- To make an undecided script **fail** the install instead of warning — useful in CI — set
+    `strict-allow-scripts=true` in the repo's `.npmrc`, or pass `--strict-allow-scripts` to the install.
+    Explicit denials are never affected.

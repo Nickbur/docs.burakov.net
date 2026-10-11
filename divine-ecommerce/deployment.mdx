@@ -3,29 +3,36 @@ title: "Deployment"
 description: "Take the store to production and keep it healthy."
 ---
 
-The same Docker stack that runs locally runs in production, with a production Compose override and a production `.env`.
+The same Docker stack that runs locally runs in production, with a production Compose override (`docker-compose.prod.yml`) and a production `.env`. The override bakes the application code into the PHP image, publishes only nginx (`APP_PORT`), keeps PostgreSQL and Redis inside the Docker network, and keeps runtime data on the host so it survives image rebuilds: uploads (`public/storage`), plugins with their on/off state (`plugins/`), logs (`src/Logs`) and sessions (`src/Temp/session`).
 
 ## Before you deploy
 
 <Steps>
     <Step title="Configure the production environment">
-        Base a production `.env` on `.env.prod`. Set `APP_ENV=prod` and **`APP_DEBUG=false`**, a real `APP_URL`, strong database and Redis credentials, and your SMTP settings for outgoing mail.
+        ```bash
+        npm run switch_to_prod
+        ```
+        This copies `env/env.prod` to `.env`. Check **`APP_DEBUG=false`**, a real `APP_URL`, a strong `DB_PASS` and your SMTP settings for outgoing mail.
     </Step>
     <Step title="Build assets for production">
         ```bash
+        make npm-install
         make npm-build
         ```
-        This type-checks and builds the front-end bundles. The development profiler is excluded from production builds automatically.
+        This type-checks and builds the front-end bundles into `public/` — they are not stored in git, so build them before the image. The development profiler is excluded from production builds automatically.
     </Step>
     <Step title="Start the production stack">
         ```bash
         make prod-build
         make prod-up
         ```
-        `make prod-logs` follows the logs; `make prod-down` stops it.
+        `make prod-logs` follows the logs; `make prod-down` stops it. Rebuild the image (`make prod-build`) after every code update.
     </Step>
     <Step title="Migrate and seed">
-        Run the migrations against the production database. Seed only the data you actually want live — the demo seeders are for development.
+        ```bash
+        make migrate
+        ```
+        Seed only the data you actually want live — the demo seeders are for development.
     </Step>
 </Steps>
 
@@ -34,7 +41,8 @@ The same Docker stack that runs locally runs in production, with a production Co
 - `APP_DEBUG=false` — no verbose errors or profiler in production.
 - Change the demo administrator password (or don't seed the demo admin at all).
 - Put the store behind HTTPS (a reverse proxy such as Caddy or nginx with TLS).
-- Set up backups of the PostgreSQL volume.
+- Make `public/storage`, `plugins`, `src/Logs` and `src/Temp/session` writable by the PHP container's user (`www-data`, uid 82).
+- Set up backups of the PostgreSQL volume and of `public/storage` (uploaded media).
 - Configure real SMTP so order and account emails are delivered.
 
 ## Scheduled jobs

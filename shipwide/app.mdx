@@ -43,8 +43,9 @@ src/
 
 The app shell is three coordinated pieces — **reskin** them, don't recreate them:
 
-- **Side menu** (`views/core/SideMenu.vue`) — the drawer: your nav items plus Settings, Privacy,
-    Terms and **Log out**. On desktop (≥1105px) it docks permanently via `ion-split-pane`.
+- **Side menu** (`views/core/SideMenu.vue`) — the drawer: your nav items plus Settings and
+    **Log out**. Documentation, Privacy and Terms live on the About page. On desktop (≥1105px) it
+    docks permanently via `ion-split-pane`.
 - **Bottom tab bar** (`views/core/BottomTabBar.vue`) — a **per-page `<ion-footer>`**: add
     `<BottomTabBar />` inside each main/section page. It is intentionally NOT a global fixed
     element — placing it per page lets Ionic manage safe-area, keyboard and the drawer backdrop
@@ -77,6 +78,16 @@ both); on the web the `theme-color` meta follows too.
     Capacitor pads the web view itself and the bars fall back to the OS window colour.
 </Warning>
 
+## Account time zone + language — kept in sync
+
+`accountStore.syncDeviceProfile()` keeps the account's `timezone` on the device's IANA zone
+(`getDeviceTimezone()` in `helpers/ui/dateFormatter.ts`) and its `locale` on the app's UI
+language: one `PATCH /v1/account/me` with only what changed, a no-op when both match. It runs
+after sign-in, on every start / resume (a trip may have moved the device) and after a language
+change; a failure just retries on the next one. Every date the app renders uses that zone, and
+anything you build server-side (scheduled emails, reminders) can read both from the account. The
+API accepts IANA names (plus the fixed `UTC ±HH:MM` offset older builds sent).
+
 ## Session storage — encrypted, non-exportable key
 
 `services/localStorage/core/secure_storage.ts` is a transparent **AES-GCM over IndexedDB** layer:
@@ -89,6 +100,26 @@ both); on the web the `theme-color` meta follows too.
 
 It keeps tokens out of plaintext at rest. It is **not** an XSS defence — real device-binding is
 the API's `sessions.device_id`.
+
+## App lock & screenshot protection (iOS / Android)
+
+Settings → **Privacy & security**, shown only in the native builds:
+
+- **Lock with Face ID / fingerprint** — `helpers/security/biometricLock.ts` + `views/core/AppLock.vue`
+    (`@capgo/capacitor-native-biometric`). A signed-in app with the lock on starts behind a
+    full-screen lock and locks again after 5 minutes in the background (`APP_LOCK_AFTER_MS`).
+    Turning it on or off needs a successful check. iOS falls back to the device passcode; Android
+    accepts enrolled biometrics only. **Log out** on the lock screen is the way out when the check
+    can't pass. It is a gate, not a vault — nothing is stored with the biometric APIs.
+    `verifyBiometric(reason)` is exported for your own confirmations (e.g. before a sensitive action).
+- **Block screenshots** — `helpers/security/privacyProtection.ts`
+    (`@capacitor-community/privacy-screen`): screenshots and screen recordings come out blank and
+    the app-switcher preview is hidden. Keep `PrivacyScreen.preventScreenshots: true` in
+    `capacitor.config.ts` — without it iOS hides only the preview, not screenshots.
+
+Both are `settingsStore` flags (`fingerprintFaceIdProtection`, `preventScreenshots`), reset on
+logout. Native config is in place: `NSFaceIDUsageDescription` in `Info.plist` (reword it for your
+app) and `USE_BIOMETRIC` in `AndroidManifest.xml`.
 
 ## Offline-first data & self-hosted instances
 
@@ -105,10 +136,11 @@ the API's `sessions.device_id`.
 npm install
 npm run serve          # Ionic dev server (web, port 8100)
 npm run serve:desktop  # Tauri desktop dev (auto-matches Vite's HTTP/HTTPS scheme)
-npm run build          # Prettier check + ESLint + vue-tsc + unit tests (TZ=UTC) + vite build + cap sync (iOS / Android)
+npm run build          # Prettier check + ESLint + vue-tsc + unit tests (TZ=UTC, pinned in vitest.config.ts) + vite build + cap sync (iOS / Android)
 ```
 
-Copy `env/.env.example` → `.env` and point `VITE_BACKEND_URL` at the backend. Add any new var
+`npm run switch_to_dev` copies `env/env.dev` → `.env`, which points `VITE_BACKEND_URL` at the local
+backend (`http://localhost:3001`). Add any new var
 to `src/vite-env.d.ts` too — `vite/client` has an index signature, so a typo is not a type
 error, it just reads `undefined`.
 
@@ -135,6 +167,8 @@ error, it just reads `undefined`.
 | `VITE_SENTRY_DSN` | Error tracking. Optional — empty disables Sentry. |
 | `VITE_ONESIGNAL_APP_ID` | Push. Optional. (The REST **key** is a server secret — never a `VITE_*`.) |
 | `VITE_LEGAL_PRIVACY_URL` · `VITE_LEGAL_TERMS_URL` | Privacy / Terms links. Optional — placeholders if unset. |
+| `VITE_DOCS_URL` | Your user guide — the "Documentation" item on the About page. Optional — a placeholder if unset. |
+| `VITE_DEVELOPER_URL` | Your website, shown on About as "Developed by …". Optional — empty hides the row. |
 | `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Store links, per platform. |
 
 The `VITE_REVENUECAT_*` billing variables are covered in [Billing](/shipwide/billing).

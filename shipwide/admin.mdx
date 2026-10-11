@@ -23,8 +23,8 @@ support tickets, uploads, push, audit, ops).
 
 ```bash
 npm install
-npm run switch_to_dev        # env/env.dev → .env (points at localhost:3000)
-npm run serve                # http://localhost:5174
+npm run switch_to_dev        # env/env.dev → .env (points at localhost:3001)
+npm run serve                # http://localhost:5176
 ```
 
 Vite inlines `VITE_*` at build time → switch to prod **before** building. The API must allow
@@ -78,10 +78,11 @@ src/
 
 | Variable | Default | Notes |
 |----------|---------|-------|
-| `VITE_API_URL` | `http://localhost:3000` | The API this panel administers |
+| `VITE_API_URL` | `http://localhost:3001` | The API this panel administers |
 | `VITE_CLIENT_ID` | `admin` | Storage namespace / session label |
 | `VITE_BRAND` | `Shipwide` | Header and footer — set to your product name |
 | `VITE_SITE_URL` | — | Linked from the footer; empty hides the link |
+| `VITE_DOCS_URL` | — | Your documentation, linked from the footer; empty hides the link |
 
 ## Deployment
 

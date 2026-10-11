@@ -25,20 +25,20 @@ variable is collected in [Configuration](/shipwide/configuration).
     </Step>
     <Step title="Start Postgres + Redis">
         ```bash
-        docker compose up -d db redis  # or: docker compose up --build for everything
+        docker compose up -d db redis  # Postgres :5433 + Redis :6380 (or: docker compose up --build for everything)
         ```
     </Step>
     <Step title="Migrate, seed, serve">
         ```bash
         npm run db:migrate
         npm run seed                   # test/review accounts (no-op if TEST_ACCOUNTS is empty)
-        npm run serve                  # http://localhost:3000
+        npm run serve                  # http://localhost:3001
         ```
     </Step>
 </Steps>
 
-Check it: `curl http://localhost:3000/v1/health`. Interactive API reference:
-`http://localhost:3000/docs`. The minimum env is `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`
+Check it: `curl http://localhost:3001/v1/health`. Interactive API reference:
+`http://localhost:3001/docs`. The minimum env is `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`
 (≥32 chars) — `env.dev` sets them.
 
 <Note>
@@ -51,7 +51,7 @@ Check it: `curl http://localhost:3000/v1/health`. Interactive API reference:
 ```bash
 cd shipwide_app
 npm install
-cp env/.env.example .env           # then set VITE_BACKEND_URL=http://localhost:3000
+npm run switch_to_dev              # env/env.dev → .env (points at :3001)
 npm run serve                      # Ionic dev server (web) — http://localhost:8100
 ```
 
@@ -64,8 +64,8 @@ open the `ios/` / `android/` project — see [App](/shipwide/app).
 ```bash
 cd shipwide_admin
 npm install
-npm run switch_to_dev              # env/env.dev → .env (points at :3000)
-npm run serve                      # http://localhost:5174
+npm run switch_to_dev              # env/env.dev → .env (points at :3001)
+npm run serve                      # http://localhost:5176
 ```
 
 Sign in with the `ADMIN_LOGIN` / `ADMIN_PASSWORD` you set in the **API's** env, or an emailed
@@ -79,11 +79,21 @@ agreement.
 cd shipwide_website
 npm install
 npm run switch_to_dev              # env/env.dev → .env
-npm run serve                      # http://localhost:4321
+npm run serve                      # http://localhost:4334
 ```
 
 It's all placeholder content — see [Website](/shipwide/website) and
 [Customization](/shipwide/customization) to make it yours.
+
+## Ports
+
+Each part has its own fixed port — API `3001`, app `8100`, admin `5176`, website `4334`, Postgres
+`5433`, Redis `6380` — so the kit runs next to whatever else you have locally. The admin and the
+website use `strictPort`: a taken port stops them with an error. The app's `ionic serve` instead
+moves to the next free port, so if it comes up elsewhere, something is already on 8100. To change
+a port, edit the part's `vite.config.ts` / `astro.config.mjs` (for the app also the `--port` in its
+`serve` script; for the API `PORT` in its env) together with the env values that point at it
+(`VITE_BACKEND_URL`, `VITE_API_URL`, `CORS_ORIGINS`, `ADMIN_URL`).
 
 ## Code quality (all four parts)
 

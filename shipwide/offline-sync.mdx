@@ -229,8 +229,8 @@ pending, but the tab keeps working locally.
     <Step title="App — navigation and i18n">
         In `src/views/core/BottomTabBar.vue`, remove the Notes `<router-link>` and remove
         `documentTextOutline` from its icon import. In `src/views/core/SideMenu.vue`, remove the
-        `/notes` entry from `menuItems`, but keep the `documentTextOutline` import; the Terms item
-        still uses it. Delete `src/i18n/locales/*/notes.json` and the `notes` key in each
+        `/notes` entry from `menuItems` and the `documentTextOutline` import. Delete
+        `src/i18n/locales/*/notes.json` and the `notes` key in each
         `src/i18n/locales/*/navigation.json`.
     </Step>
     <Step title="API — delete the module">
@@ -284,11 +284,12 @@ pending, but the tab keeps working locally.
     into the merge and wipe the cache.
 6. **Migrations only grow, and their numbers are global:** never edit a shipped step; add a new
     one with a higher version. Version numbers are unique across **all** entities, and a collision
-    throws at startup.
+    throws at startup — `services/offline/register.test.ts` imports `register.ts` the way the app
+    boots, so `npm run build` catches a collision before it ships.
 7. **A tie keeps the local edit** (`>=` in the merge). This is intentional; don't tighten it to
     `>`.
-8. **Unit tests:** `npm run build` runs the `*.test.ts` files next to the code (Vitest, `TZ=UTC`).
-    Tests ship for the offline layer (registry, write queue, cache ownership, sync gate), for
+8. **Unit tests:** `npm run build` runs the `*.test.ts` files next to the code (Vitest, `TZ=UTC` pinned in `vitest.config.ts`).
+    Tests ship for the offline layer (registry, migration-version uniqueness, write queue, cache ownership, sync gate), for
     token refresh, and for the Pro gate.
 
 ## Gate it behind Pro

@@ -8,7 +8,7 @@ Divine eCommerce is its own modular PHP framework, not a fork of an existing sho
 ## The stack
 
 - **PHP 8.5** on a custom framework built from PSR components: Laminas Diactoros (PSR-7), League Route, PHP-DI (PSR-11), Twig, Doctrine DBAL, Monolog and Phinx for migrations.
-- **PostgreSQL** for data, **Redis** for cache, sessions and throttling.
+- **PostgreSQL** for data; sessions are stored as files. A **Redis** container ships with the stack for future caching — the app doesn't use it yet.
 - **Front end**: Vite + TypeScript, UIkit, htmx and Alpine.js — progressive enhancement over server-rendered HTML.
 
 ## Layout

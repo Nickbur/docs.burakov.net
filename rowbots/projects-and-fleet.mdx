@@ -1,0 +1,94 @@
+---
+title: "Projects & your fleet"
+description: "Workspaces, projects and repositories, the onboarding interview, the constitution, and your team."
+---
+
+## Workspaces and projects
+
+A **workspace** is your Rowbots account space: its plan, budget, team, keys and compute. Inside it, each
+**project** is one product — made of one or more git repositories. Your plan sets how many projects can be
+active at once (see [Budget & plans](/rowbots/budget)).
+
+Rowbots looks at the whole workspace as one **fleet**: it ranks work across all your products and spends
+the budget wherever it does the most good, instead of treating each repository on its own.
+
+## Connecting repositories
+
+Rowbots works with repositories on **GitHub, GitLab, Gitea or any self-hosted git server**:
+
+- **GitHub and GitLab.com** connect through an app with narrow, revocable permissions — enough to push a
+  branch and open a pull request, nothing more.
+- **Self-hosted and other hosts** connect through a service-account token and a deploy key.
+
+Rowbots never asks for a broad personal access token.
+
+### Who appears as the author
+
+| Mode | Commits and pull requests appear as |
+|---|---|
+| **Bot** (default) | `rowbots[bot]` — fully transparent |
+| **On your behalf** | your own name and email |
+
+Rowbots detects your commit and branch conventions from the repository history and follows them.
+
+### Work that spans several repositories
+
+When a change touches more than one repository (for example an API and the app that calls it), you get a
+**linked set of pull requests with a merge order**. You can accept the set as one action, and Rowbots
+merges them in the right order — always respecting your branch protection and required reviews.
+
+## The onboarding interview
+
+Before Rowbots acts on its own, it interviews you — one question at a time, each with a recommended
+answer you can accept or change.
+
+- **For an existing product**, it reads the code and docs first and turns what it finds into candidate
+  answers, so you mostly confirm instead of type.
+- **For a new product**, it helps you shape the vision: it asks, researches feasibility and proposes
+  options until the plan is complete.
+
+Mechanical setup — repositories, compute, model keys, the budget cap, notification channels — is done
+through ordinary forms. The interview can be paused and resumed, and shows how much is confirmed.
+**Autonomy stays off until the constitution is confirmed.**
+
+## The constitution
+
+The constitution is **your judgment, written down**: product invariants, taste and principles, how to
+prioritize across your fleet, and what to ignore. It is the only thing Rowbots treats as binding, and the
+only thing that authorizes it to act on its own.
+
+- **Nothing unconfirmed enters it.** Existing READMEs, comments and feedback are treated as hints to ask
+  you about, never as truth — and Rowbots never edits your existing docs.
+- **It grows with you.** Every escalation you answer is written back into it, so Rowbots asks less over
+  time.
+- **It follows the code.** A read-only copy lives in your repository (below). Editing that copy by hand
+  doesn't change the rules — it becomes a proposal Rowbots will confirm with you.
+
+## The `.rowbots/` directory
+
+Rowbots keeps what belongs to each repository in a `.rowbots/` directory that arrives through an ordinary
+pull request, so you review it like any other change:
+
+```text
+.rowbots/
+    constitution.md   # read-only copy of the confirmed rules
+    recipe.yaml       # how to build, test and run this repository
+    docs/             # documentation Rowbots maintains for itself
+    checks/           # permanent checks: graduated exams and regression guards
+```
+
+The **recipe** tells the sandbox how to work with your project: the environment image, setup steps,
+services it needs (such as Postgres or Redis), the build, test and run commands, a health URL and key
+routes, and any extra network hosts it may reach. You confirm it during onboarding.
+
+## Your team
+
+| Role | Can |
+|---|---|
+| **Owner** (one per workspace) | everything, including billing, keys, compute and deleting the workspace |
+| **Admin** | edit the constitution, answer escalations, set budgets, batch-merge, manage members |
+| **Member** | add tasks, ideas and feedback, comment; sees everything, but doesn't decide or merge |
+| **Viewer** | read-only — handy for an agency's client |
+
+Members and viewers can be limited to specific projects. Paid plans include unlimited members. Everyone
+signs in with their email — a one-time code, no password.

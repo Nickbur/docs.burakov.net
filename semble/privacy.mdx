@@ -19,13 +19,16 @@ people in the meeting and is never stored.
 
 ## When the AI is on
 
-To power Kai, meeting audio and text go to these processors — and only while Kai is on:
+To power Kai, meeting audio and text go to these processors — only while Kai is on, and for a
+summary when the host asks for one:
 
 | Processor | What it does |
 |---|---|
 | Deepgram | Speech-to-text — transcribes what people say |
 | OpenAI | Text-to-speech — gives Kai its voice |
 | OpenRouter → Anthropic (Claude) | Writes Kai's answers and the summary |
+| OpenRouter → OpenAI | Indexes the shared documents and each question, so Kai finds the right passages |
+| OpenRouter → Google (Gemini) | The private tone mirror — only for people who switch it on |
 
 Payments for credits go through **Paddle**; Semble never sees card details. We never sell your
 data, and we never use meeting content to train models.

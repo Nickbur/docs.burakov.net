@@ -97,7 +97,7 @@ RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
 | `purge` | physically delete accounts past the soft-delete window (daily cron) |
 | `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
 | `encrypt:backfill [-- --dry-run]` | encrypt TOTP secrets stored before `DATA_ENCRYPTION_KEY` was set, or re-encrypt them after a key rotation (prod: `node dist/scripts/encryptAtRest.js`) |
-| `re-install-npm` | clean reinstall |
+| `re-install-deps` | clean reinstall |
 | `setup-https` | local mkcert cert pair for HTTPS dev — see [HTTPS in dev](/shipwide/https-dev) |
 | `license-check` | production-dependency licences → `licenses.json` (gitignored) |
 

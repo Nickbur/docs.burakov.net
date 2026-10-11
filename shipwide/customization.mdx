@@ -44,7 +44,8 @@ neutrals, **Golos Text** display font). Here's how to make each part yours.
 - **Icons**: desktop `src-tauri/icons/` is generated from `public/pwa-512.png` via
     `npx tauri icon`; replace the PWA/app icons in `public/`.
 - **Links**: `VITE_STORE_*_URL` (About "Update" button, per platform), `VITE_LEGAL_PRIVACY_URL`
-    / `VITE_LEGAL_TERMS_URL`.
+    / `VITE_LEGAL_TERMS_URL`, `VITE_DOCS_URL` (your user guide), `VITE_DEVELOPER_URL` (About
+    "Developed by …").
 - **Screens**: the account / sessions / settings screens are stubs — build your product screens
     on the composables and api layer the kit provides.
 - **Dark theme overrides**: Ionic's own dark palette sets the surface colours
@@ -56,7 +57,7 @@ neutrals, **Golos Text** display font). Here's how to make each part yours.
 
 ## Admin
 
-- `VITE_BRAND` (header/footer name) and `VITE_SITE_URL` (footer link). `core/` never names the
+- `VITE_BRAND` (header/footer name), `VITE_SITE_URL` and `VITE_DOCS_URL` (footer links). `core/` never names the
     product — you rebrand by editing `.env`, not code.
 - Shares the site's design tokens; recolour via the same accent ramp.
 

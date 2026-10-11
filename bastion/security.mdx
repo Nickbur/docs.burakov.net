@@ -68,7 +68,7 @@ In **Settings**, turn on **Lock the app with biometrics** to cover Bastion with 
 ## What the server can and can't see
 
 - **Can't see:** your message text, file contents, or call media — all end-to-end encrypted.
-- **Can't act as you anywhere else:** with the Bastion apps or the web app at app.burakov.net, an organization's server never receives your sign-in. It only gets a short-lived pass that works on that organization's server alone — so even a compromised server can't use your account elsewhere, and signing out cuts it off within minutes. (A web app an organization serves from its own domain is that organization's code, so it routes your sign-in through that organization's server.)
+- **Can't act as you anywhere else:** with the Bastion apps or the web app at app.bastion-chat.com, an organization's server never receives your sign-in. It only gets a short-lived pass that works on that organization's server alone — so even a compromised server can't use your account elsewhere, and signing out cuts it off within minutes. (A web app an organization serves from its own domain is that organization's code, so it routes your sign-in through that organization's server.)
 - **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata (the "envelope", not the content). Message sizes are padded so even encrypted length reveals little. Identity, the public-key directory and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy) for the full picture of what metadata is visible and how **metadata-minimal mode** narrows it further.
 
 ## History that follows you

@@ -1,0 +1,77 @@
+---
+title: "Feeding it work"
+description: "Tasks, ideas, feedback and errors — how Rowbots triages them, when it pushes back, and what it does when nothing is queued."
+---
+
+## One inbox for everything
+
+Hand Rowbots whatever you have, in your own words and language:
+
+- **Tasks** — "add CSV export to the reports page".
+- **Ideas** — half-formed is fine; Rowbots turns them into a plan or a proposal.
+- **Feedback and bug reports** — from you, your team or your users.
+- **Signals** — errors, store reviews, support messages, uptime alerts.
+
+You and your team add work directly in the workspace inbox. Further channels plug into the same inbox:
+
+| Source | Examples |
+|---|---|
+| Owner & team | the dashboard inbox (text, screenshots, files), a per-workspace email address, a Telegram bot, issues labelled `rowbots` |
+| Errors & crashes | Sentry, a generic webhook |
+| Store reviews | Google Play, App Store Connect |
+| Support | forwarded email from any help desk, a generic webhook |
+| Product metrics & uptime | PostHog, Uptime Kuma, Better Stack, a generic webhook |
+
+<Note>
+    During early access the inbox is open first; the external channel connectors are being enabled step
+    by step.
+</Note>
+
+## Triage
+
+Every item is deduplicated, interpreted and ranked against your
+[constitution](/rowbots/projects-and-fleet#the-constitution) into one backlog. Ranking by the priorities
+you set is automatic; changing those priorities is your call.
+
+## Rowbots pushes back
+
+A senior who never pushes back isn't helping. Your own requests are triaged too:
+
+- **When something conflicts with your priorities**, Rowbots says so, with reasoning — for example, "this
+  takes 60% of the month's budget; your constitution says the other project matters more — confirm or
+  override?"
+- **A subjective bad bet** gets strong pushback and a recorded forecast. You can override it by
+  explicitly acknowledging the warning.
+- **Something objectively broken** — harmful, incoherent, or a violation of a confirmed invariant — is
+  refused outright. You can't override reality.
+
+The rule is simple: **Rowbots refuses what is broken, not what is unusual.**
+
+## Input from strangers is handled safely
+
+Reviews, support messages and error reports often contain text written by people you don't know. That
+text is read only by a triage step with **no tools, no code and no secrets**, which turns it into a
+structured summary. Raw outside text never reaches the agents that write code.
+
+Outside input can start only **maintenance-level work** — a bug, a security issue, a performance
+problem. A feature request from the public becomes a **proposal** for you to accept or decline.
+
+## When nothing is queued
+
+With no tasks waiting, Rowbots keeps your existing products healthy. It works through a fleet-wide list
+of maintenance work in this order:
+
+1. security
+2. correctness and bugs
+3. cost savings
+4. technical debt and performance
+5. test coverage
+6. polish
+
+Each item has an estimated value and cost. Rowbots works top-down only **while the value is worth the
+cost and the budget allows** — below that line it genuinely stops. Maintenance never adds features or
+changes product direction; that always takes a task from you.
+
+<Tip>
+    Always-on maintenance is part of the paid plans. On Free, Rowbots works only on the tasks you give it.
+</Tip>

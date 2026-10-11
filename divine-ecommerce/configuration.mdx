@@ -1,18 +1,18 @@
 ---
 title: "Configuration"
-description: "Environment variables for the app, database, cache and mail."
+description: "Environment variables for the app, database, templates, mail and payments."
 ---
 
-All configuration lives in a single `.env` file at the project root. Copy `.env.example` to `.env` and edit it. When running in Docker, host names like `DB_HOST` and `REDIS_HOST` match the Compose service names (`postgres`, `redis`).
+All configuration lives in a single `.env` file at the project root, generated from one of the two settings files in `env/`: `env/env.dev` for local development or `env/env.prod` for production (`npm run switch_to_dev` / `npm run switch_to_prod`, or copy the file by hand). Both files list the same keys in the same order. Docker Compose passes `.env` to the PHP containers; the production image itself ships without it. When running in Docker, `DB_HOST` matches the Compose service name (`postgres`).
 
 ## Application
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `APP_ENV` | `dev` | Environment: `local`, `dev` or `prod`. |
-| `APP_DEBUG` | `true` | Verbose errors and the Clockwork profiler toolbar. **Set to `false` in production.** |
+| `APP_ENV` | `dev` | `dev` or `prod`. `prod` marks the session cookie `Secure`; `dev` builds newsletter links from `APP_URL`. |
+| `APP_DEBUG` | `true` | Verbose errors, Kint dumps and the Clockwork profiler. **Set to `false` in production.** |
 | `APP_PORT` | `8080` | Host port nginx is published on. |
-| `APP_URL` | — | Public base URL, used to build absolute links (e.g. payment callbacks). |
+| `APP_URL` | — | Public base URL for absolute links (password reset, newsletters, payment callbacks). |
 
 ## Database
 
@@ -23,21 +23,32 @@ All configuration lives in a single `.env` file at the project root. Copy `.env.
 | `DB_NAME` | `divine` | Database name. |
 | `DB_USER` / `DB_PASS` | `divine` | Credentials. |
 | `DB_PORT` | `5432` | Database port inside the network. |
-| `DB_EXTERNAL_PORT` | `5432` | Port mapped to your host machine. |
+| `DB_EXTERNAL_PORT` | `5432` | Port the database is published on locally (the production stack doesn't publish it). |
+| `REDIS_EXTERNAL_PORT` | `6379` | Port the bundled Redis container is published on locally (the production stack doesn't publish it; the app doesn't use Redis yet). |
 
 <Note>
     Divine eCommerce targets **PostgreSQL** — full-text search and the boolean-safe write layer are built around it.
 </Note>
 
-## Cache & mail
+## Templates & debugging
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `REDIS_HOST` | `redis` | Redis host (cache, sessions, throttling). |
-| `REDIS_EXTERNAL_PORT` | `6379` | Redis port mapped to your host. |
-| `MAIL_FROM_ADDRESS` | — | The address transactional email is sent from. |
+| `TWIG_AUTOESCAPE` | `html` | Twig's escaping strategy. The templates rely on `html` (trusted HTML is printed with `\|raw`) — keep it in every environment. |
+| `TWIG_AUTO_RELOAD` | `true` | Recompile templates when they change. `false` in production. |
+| `TWIG_STRICT_VARIABLES` | `false` | Fail on undefined template variables. |
+| `TWIG_OPTIMIZATIONS` | `-1` | Twig optimizer flags (`-1` = all). |
+| `CLOCKWORK_API` / `CLOCKWORK_TOOLBAR` | — / `true` | Clockwork profiler endpoint (`/api/clockwork/`, the app's route) and toolbar; active only with `APP_DEBUG=true`. |
+| `ADMINER_PORT` | `8888` | Adminer, started only with the `tools` Compose profile (local use). |
+
+## Mail
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `SMTP_HOST` / `SMTP_PORT` | `localhost` / `1025` | SMTP server for outgoing mail. |
+| `SMTP_USER` / `SMTP_PASS` / `SMTP_ENCRYPTION` | — | SMTP credentials and encryption (`tls` or `ssl`). |
+| `MAIL_FROM_ADDRESS` | `noreply@divine.local` | The address transactional email is sent from. |
 | `MAIL_FROM_NAME` | `Divine eCommerce` | The sender name shown to customers. |
-| `SMTP_HOST` / `SMTP_PORT` … | — | SMTP server for outgoing mail (see `.env.prod`). |
 
 ## Payments (optional)
 

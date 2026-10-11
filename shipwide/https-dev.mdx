@@ -37,10 +37,10 @@ it detects the pair and serves over HTTPS:
 
 | Part | Command | URL |
 |------|---------|-----|
-| `shipwide_api` | `npm run serve` | `https://localhost:3000` |
+| `shipwide_api` | `npm run serve` | `https://localhost:3001` |
 | `shipwide_app` | `npm run serve` | `https://localhost:8100` |
-| `shipwide_admin` | `npm run serve` | `https://localhost:5174` |
-| `shipwide_website` | `npm run serve` | `https://localhost:4321` |
+| `shipwide_admin` | `npm run serve` | `https://localhost:5176` |
+| `shipwide_website` | `npm run serve` | `https://localhost:4334` |
 
 The certificates are gitignored and machine-local — each developer runs `setup-https` once. They
 never ship: production TLS is terminated by your reverse proxy.
@@ -48,10 +48,11 @@ never ship: production TLS is terminated by your reverse proxy.
 ## Running the whole stack over HTTPS
 
 1. `npm run setup-https` in both `shipwide_api` and `shipwide_app`.
-2. Set the app's `VITE_BACKEND_URL=https://localhost:3000`.
+2. Set the app's `VITE_BACKEND_URL=https://localhost:3001`.
 3. Start both dev servers.
 
-The API's dev CORS already allows the HTTPS app and admin origins, so no extra config is needed.
+The API's dev CORS already allows the HTTPS app, admin and website origins, so no extra config is
+needed.
 
 ## Desktop (Tauri)
 

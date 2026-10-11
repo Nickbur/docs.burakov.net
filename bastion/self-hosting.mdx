@@ -35,9 +35,9 @@ A single `docker compose` setup brings up everything the platform needs, so you'
 
 ## Your organization's credentials
 
-The node identifies itself to the control plane with your organization's **ID** and **secret**. You get them after buying the Self-hosted plan on [bastion.burakov.net](https://bastion.burakov.net/pricing):
+The node identifies itself to the control plane with your organization's **ID** and **secret**. You get them after buying the Self-hosted plan on [bastion-chat.com](https://bastion-chat.com/pricing):
 
-1. Open **[Your organizations](https://bastion.burakov.net/account/)** and sign in with the email you bought with.
+1. Open **[Your organizations](https://bastion-chat.com/account/)** and sign in with the email you bought with.
 2. Choose **Get credentials**. The ID and secret appear with a ready `.env` snippet — the secret is shown **once**, and we never email it.
 3. Lost the secret, or someone saw it who shouldn't have? **Rotate secret** issues a new one. The old one stops working immediately — the node turns read-only and members can't connect until the new secret is in `.env` and the node has restarted.
 

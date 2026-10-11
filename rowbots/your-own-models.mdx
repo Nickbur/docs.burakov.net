@@ -1,0 +1,54 @@
+---
+title: "Your own models"
+description: "Bring your own keys for any major model provider, or run open-weight models on your own endpoint."
+---
+
+Rowbots is **provider-agnostic by design**. It doesn't resell tokens: you connect your own model keys,
+and every call is billed to you by that provider at their prices. Nothing locks you to a single lab.
+
+## Supported providers
+
+| Provider | Notes |
+|---|---|
+| **OpenRouter** | one key for a wide catalog of models |
+| **Anthropic** | Claude models through the Anthropic API |
+| **OpenAI** | the OpenAI API |
+| **Replicate** | hosted open models |
+| **Amazon Bedrock** | Claude models in your AWS account |
+| **Google Vertex AI** | Claude models in your Google Cloud project |
+| **Microsoft Foundry** | Claude models in your Azure deployment |
+| **Your own endpoint** | any OpenAI-compatible server — vLLM, Ollama, or your own |
+
+<Note>
+    An endpoint on your own network (for example `localhost`) is reachable only from a
+    [self-hosted runner](/rowbots/self-hosted-runner). With hosted compute, a custom endpoint must be
+    reachable from the internet, with its URL and key.
+</Note>
+
+## Which model does what
+
+Rowbots routes every call by **capability, cost and remaining budget**: routine, low-risk work goes to
+cheap or local models, while high-stakes reasoning gets the strongest model you've connected.
+
+| Role | Default tier |
+|---|---|
+| Translating, classifying, triage, scouting | cheap |
+| Planning and coordination | premium |
+| Writing code | mid to premium, by complexity |
+| Writing the judge's exam and soft review | premium, **from a different model family than the code writer** |
+
+The family rule keeps the judge independent: when the exam is written by a different family than the
+code, the two don't share the same blind spots. You can adjust the defaults per workspace.
+
+## Your keys stay protected
+
+- **Hosted compute:** your keys are stored encrypted with a key unique to your workspace, decrypted only
+  in memory for the job that needs them, and never logged.
+- **Self-hosted runner:** your keys live only in the runner's configuration on your machine — Rowbots
+  never receives them.
+- **Model keys never enter the sandbox** where code runs, so code under test can't read them.
+
+## Your code is never used for training
+
+Rowbots never uses your code or data to train models. Fleet memory stays inside your workspace; sharing
+anonymous, non-proprietary patterns across customers is strictly opt-in.

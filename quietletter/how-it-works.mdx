@@ -6,8 +6,16 @@ description: "Check-ins, the grace window, warnings, actions, and how a switch f
 ## The check-in loop
 
 A switch is **armed** as long as you keep checking in. Each check-in is a deliberate action —
-you confirm it with a PIN (or your device biometrics) so a check-in is never an accidental tap.
-Checking in resets the deadline to the full interval.
+you confirm it with your PIN so a check-in is never an accidental tap. On iOS and Android you
+can turn on **Settings → Privacy & security → Confirm check-ins with Face ID / fingerprint**; if
+that check fails, your PIN still works. Forgot the PIN? Reset it right in the app while you're
+signed in — it's a local confirmation step, not a second password.
+Checking in resets the deadline to the full interval. The interval follows the calendar in your
+time zone — a 30-day rhythm ends at the same local time even across a daylight-saving change — and
+warning emails show times in that zone, in the language you use Quietletter in.
+
+On iOS and Android you can also **lock the whole app** with Face ID or your fingerprint in the
+same settings section: it asks when the app opens and after 5 minutes in the background.
 
 You pick the rhythm with a **safety preset**, or set your own:
 
@@ -41,7 +49,7 @@ A switch fires one or more **actions**, delivered to the recipients you chose:
         as a normal readable email. Your choice, clearly labelled.
     </Card>
     <Card title="Encrypted file or secret" icon="file-lock">
-        Release a file, a set of credentials, or instructions. Always zero-knowledge — encrypted on
+        Release a file (up to 1 MB), a set of credentials, or instructions. Always zero-knowledge — encrypted on
         your device, opened only by your recipient with the passphrase you shared out-of-band.
     </Card>
     <Card title="Private page" icon="link">

@@ -1,0 +1,99 @@
+---
+title: "Self-hosted runner"
+description: "Run the Rowbots engine on your own machine — your code, model keys and git credentials never leave it."
+---
+
+Rowbots never runs your code on its own servers. Your code always executes on **your compute**, in one of
+two ways:
+
+| Mode | Where the engine runs | Where code executes | What Rowbots stores |
+|---|---|---|---|
+| **Self-hosted runner** | on your machine | a local, isolated sandbox on the same machine | job status, verdict summaries, pull request links, cost and usage — nothing that contains code |
+| **Managed sandbox** | Rowbots' engine workers | your own **E2B**, **Daytona** or **Modal** account, with your key | code-bearing artifacts (code index, exams, traces), encrypted with a key unique to your workspace |
+
+This page covers the self-hosted runner. It is the choice when your code, keys and secrets must stay
+inside your own perimeter, when you use a model on your own network, or when you need iOS builds.
+
+## How the runner talks to Rowbots
+
+- **Outbound only.** The runner phones home over HTTPS: it picks up jobs, sends heartbeats and reports
+  results. Rowbots never needs to reach into your network, so you don't open any ports.
+- **Its own identity.** When you enroll a runner in your workspace, you get a **runner ID and a secret,
+  shown once**. The runner trades the secret for short-lived tokens. You can revoke a runner at any time.
+- **Resumable.** Jobs are checkpointed, so a restart resumes the work or rolls it back cleanly.
+
+## What stays on your machine
+
+- your source code and the code index;
+- the judge's hidden exams and any trace that contains code;
+- your model keys and git credentials.
+
+Only job status, verdict summaries, pull request links, cost and usage, decision logs and escalations
+reach Rowbots.
+
+## Requirements
+
+- A Linux server (or a Mac — see [iOS builds](#ios-builds)) with **Docker**.
+- **gVisor** registered with Docker as the `runsc` runtime — it is what isolates the sandbox from your
+  host. See the [gVisor install guide](https://gvisor.dev/docs/user_guide/install/).
+- Enough resources for parallel sandboxes: by default each one gets 2 CPUs and 4 GB of memory.
+
+## Set it up
+
+<Steps>
+    <Step title="Enroll the runner">
+        In your workspace, add a self-hosted runner. Copy the **runner ID** and the **secret** — the
+        secret is shown only once.
+    </Step>
+    <Step title="Configure it">
+        Put the runner's settings into its `.env` file (see below): the ID and secret, your model keys,
+        and credentials for any self-hosted git server.
+    </Step>
+    <Step title="Start the stack">
+        Start it with Docker Compose. The stack has three services: the **runner**, an **egress proxy**
+        that is the sandbox network's only way out, and a local **custody database** for the code index
+        and hidden exams.
+    </Step>
+    <Step title="Check it's online">
+        The runner appears as online in your workspace. New work for your projects is now executed on
+        this machine.
+    </Step>
+</Steps>
+
+## Configuration
+
+| Setting | What it is |
+|---|---|
+| `ROWBOTS_RUNNER_ID`, `ROWBOTS_RUNNER_SECRET` | the runner's identity from enrollment |
+| `RUNNER_CONCURRENCY` | how many jobs run at once (default 2) |
+| `SANDBOX_CPUS`, `SANDBOX_MEMORY_MB`, `SANDBOX_PIDS` | resources per sandbox (defaults: 2 CPUs, 4096 MB, 1024 processes) |
+| `ROWBOTS_PROVIDERS` | your model providers as a JSON list — keys stay on this machine |
+| `ROWBOTS_GIT_CREDENTIALS` | credentials for self-hosted git servers, as a JSON list |
+
+A provider list with OpenRouter and a local Ollama looks like this:
+
+```json
+[
+    { "id": "or", "adapter": "openrouter", "apiKey": "sk-or-…" },
+    {
+        "id": "ollama",
+        "adapter": "local",
+        "baseUrl": "http://localhost:11434/v1",
+        "options": { "models": "qwen3:32b" }
+    }
+]
+```
+
+The adapters are `openrouter`, `anthropic`, `openai`, `replicate`, `bedrock`, `vertex`, `foundry` and
+`local` (any OpenAI-compatible endpoint) — see [Your own models](/rowbots/your-own-models).
+
+## iOS builds
+
+iOS apps can only be built on macOS. A runner on a Mac can run builds in a **macOS virtual machine with
+Xcode** (via Tart) instead of a Docker sandbox; you point it at the VM image and the SSH user and key
+authorized in it.
+
+<Note>
+    The sandbox never receives your model keys or git credentials. The runner pushes branches and opens
+    pull requests itself, from outside the sandbox. See [Security & privacy](/rowbots/security-and-privacy).
+</Note>

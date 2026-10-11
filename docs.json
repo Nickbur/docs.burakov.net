@@ -83,7 +83,8 @@
                             "shipwide/configuration",
                             "shipwide/customization",
                             "shipwide/deployment",
-                            "shipwide/https-dev"
+                            "shipwide/https-dev",
+                            "shipwide/install-scripts"
                         ]
                     },
                     {
@@ -132,19 +133,19 @@
                 ]
             },
             {
-                "tab": "Lastward",
+                "tab": "Quietletter",
                 "groups": [
                     {
                         "group": "Getting started",
-                        "pages": ["lastward", "lastward/how-it-works"]
+                        "pages": ["quietletter", "quietletter/how-it-works"]
                     },
                     {
                         "group": "Privacy & trust",
-                        "pages": ["lastward/zero-knowledge", "lastward/self-hosting", "lastward/running-your-instance"]
+                        "pages": ["quietletter/zero-knowledge", "quietletter/self-hosting", "quietletter/running-your-instance"]
                     },
                     {
                         "group": "Help",
-                        "pages": ["lastward/faq"]
+                        "pages": ["quietletter/faq"]
                     }
                 ]
             },
@@ -273,6 +274,32 @@
                     {
                         "group": "Billing, privacy & help",
                         "pages": ["semble/credits", "semble/privacy", "semble/faq"]
+                    }
+                ]
+            },
+            {
+                "tab": "Rowbots AI",
+                "groups": [
+                    {
+                        "group": "Getting started",
+                        "pages": ["rowbots", "rowbots/how-it-works"]
+                    },
+                    {
+                        "group": "Using Rowbots",
+                        "pages": [
+                            "rowbots/projects-and-fleet",
+                            "rowbots/feeding-work",
+                            "rowbots/verification",
+                            "rowbots/budget"
+                        ]
+                    },
+                    {
+                        "group": "Running it",
+                        "pages": ["rowbots/your-own-models", "rowbots/self-hosted-runner"]
+                    },
+                    {
+                        "group": "Help",
+                        "pages": ["rowbots/security-and-privacy", "rowbots/faq"]
                     }
                 ]
             },

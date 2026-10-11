@@ -9,6 +9,10 @@ description: "Ship each part to production — keeping secrets on the server."
     (those are inlined into the shipped bundle).
 </Warning>
 
+Image builds apply each repo's `allowScripts` (current npm skips dependencies' install scripts unless it
+allows them). The kit needs none; a `npm warn install-scripts` line in a build log means a new dependency
+needs a decision — see [Install scripts](/shipwide/install-scripts).
+
 ## Backend (`shipwide_api`)
 
 - **Docker**: the container boots `migrate → seed → serve`. Migrations + the idempotent seed run
