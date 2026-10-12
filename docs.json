@@ -1,6 +1,6 @@
 {
     "$schema": "https://mintlify.com/docs.json",
-    "theme": "mint",
+    "theme": "aspen",
     "name": "Burakov",
     "description": "Documentation for Burakov apps and developer packages.",
     "colors": {
@@ -15,13 +15,17 @@
         }
     },
     "navigation": {
-        "tabs": [
+        "products": [
             {
-                "tab": "Home",
+                "product": "All projects",
+                "icon": "house",
+                "description": "Every project at a glance",
                 "pages": ["index"]
             },
             {
-                "tab": "Finity",
+                "product": "Finity",
+                "icon": "timer",
+                "description": "Countdowns, life in weeks and a journal",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -42,7 +46,9 @@
                 ]
             },
             {
-                "tab": "Tidybook",
+                "product": "Tidybook",
+                "icon": "address-book",
+                "description": "One clean, encrypted address book",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -67,7 +73,9 @@
                 ]
             },
             {
-                "tab": "Shipwide",
+                "product": "Shipwide",
+                "icon": "rocket",
+                "description": "Multi-platform Vue starter kit",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -104,7 +112,9 @@
                 ]
             },
             {
-                "tab": "RingKit",
+                "product": "RingKit",
+                "icon": "phone-volume",
+                "description": "Native VoIP incoming calls for Capacitor",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -133,7 +143,9 @@
                 ]
             },
             {
-                "tab": "Quietletter",
+                "product": "Quietletter",
+                "icon": "heart-pulse",
+                "description": "Zero-knowledge dead man's switch",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -150,7 +162,9 @@
                 ]
             },
             {
-                "tab": "Bastion",
+                "product": "Bastion",
+                "icon": "shield-halved",
+                "description": "Self-hosted encrypted chat and calls",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -175,7 +189,9 @@
                 ]
             },
             {
-                "tab": "Cronch",
+                "product": "Cronch",
+                "icon": "clock",
+                "description": "Task scheduler for Windows and macOS",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -200,7 +216,9 @@
                 ]
             },
             {
-                "tab": "Lexiline",
+                "product": "Lexiline",
+                "icon": "eye",
+                "description": "Calm AI topic watcher",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -217,7 +235,9 @@
                 ]
             },
             {
-                "tab": "Proofday",
+                "product": "Proofday",
+                "icon": "circle-check",
+                "description": "Daily accountability journal",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -234,7 +254,9 @@
                 ]
             },
             {
-                "tab": "Sidedrop",
+                "product": "Sidedrop",
+                "icon": "share-nodes",
+                "description": "Peer-to-peer file transfer in the browser",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -255,7 +277,9 @@
                 ]
             },
             {
-                "tab": "Semble",
+                "product": "Semble",
+                "icon": "users",
+                "description": "Video meetings with an AI participant",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -278,7 +302,9 @@
                 ]
             },
             {
-                "tab": "Rowbots AI",
+                "product": "Rowbots AI",
+                "icon": "robot",
+                "description": "Autonomous software team for your products",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -304,7 +330,9 @@
                 ]
             },
             {
-                "tab": "WhySoSlow",
+                "product": "WhySoSlow",
+                "icon": "gauge-high",
+                "description": "Offline speed-limit co-driver for Kyiv",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -329,7 +357,9 @@
                 ]
             },
             {
-                "tab": "Fogline",
+                "product": "Fogline",
+                "icon": "map-location-dot",
+                "description": "Fog-of-war map of where you've been",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -350,7 +380,9 @@
                 ]
             },
             {
-                "tab": "Divine eCommerce",
+                "product": "Divine eCommerce",
+                "icon": "bag-shopping",
+                "description": "Self-hostable e-commerce engine",
                 "groups": [
                     {
                         "group": "Getting started",
@@ -371,7 +403,9 @@
                 ]
             },
             {
-                "tab": "OMOS",
+                "product": "OMOS",
+                "icon": "server",
+                "description": "Privacy-first operating system",
                 "groups": [
                     {
                         "group": "Getting started",
