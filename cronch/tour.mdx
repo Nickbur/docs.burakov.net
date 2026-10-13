@@ -1,0 +1,67 @@
+---
+title: "A tour of Cronch"
+description: "What every part of Cronch does — the header, the rule list, the rule editor, a rule's history, Settings, and the tray menu."
+mode: "wide"
+---
+
+Cronch has one window with four views — the **rule list**, the **rule editor**, a rule's **history**, and **Settings** — plus a menu on its tray icon. The window uses a dark theme and is in English.
+
+## The header
+
+Always visible at the top of the window:
+
+- **Cronch** — and **· paused** next to it while everything is paused.
+- A short **notice** that appears for a few seconds after an action — for example *Run requested*, *Rule is disabled*, or *Already running — this run was skipped*.
+- **Pause all / Resume all** — stop every rule from firing on schedule, and start them again. See [Missed runs, sleep & pausing](/cronch/catch-up#pausing-everything).
+- **Settings** — open the Settings view.
+- **+ Add rule** — open the editor for a new rule.
+
+The first time Cronch runs, a banner under the header explains that it now launches at login so your schedules keep running, with a **Got it** button to dismiss it.
+
+## The rule list
+
+The main view. Each rule is one row, in the order you created them:
+
+- **Name**, and under it a summary: the schedule (*Every 5 minutes*, *Cron: 0 9 \* \* \**, or *Once at 2026-11-01 09:00*), then the shell (its name, *custom: /path/to/shell*, or *direct*). If the rule's shell isn't installed on this computer, the summary ends with **⚠ shell missing**.
+- **Status** of the last run — see [Statuses, triggers & messages](/cronch/statuses).
+- **next:** — when it will run next (month-day and time), or **—** when the rule is off or has nothing left to run.
+- **last:** — when it last ran.
+- The **on** checkbox — switch the rule on or off without opening it.
+- **Run now** — start it immediately, without changing its schedule.
+- **Logs** — open its run history.
+- **Delete** — remove the rule after a confirmation. Its run history is deleted with it, and a run that is still going is stopped.
+
+**Click anywhere else on a row to edit the rule.** With no rules yet, the list shows a short hint to click **+ Add rule**.
+
+## The rule editor
+
+Titled **New rule** or **Edit rule**. It holds every setting of a rule — name, **Enabled**, **Catch up if missed**, command, shell, schedule, **If already running**, **Timeout**, working directory and environment variables — with **Save** and **Cancel** at the bottom. If something isn't valid, Cronch shows the reason under the form and keeps your input. Every field, its default and its limits are listed in [Rule fields & file format](/cronch/rules).
+
+## A rule's history
+
+Opened with **Logs**, titled **History — *rule name***:
+
+- **Left** — the rule's runs, newest first: the start time and status, and under it the exit code, what triggered the run and how long it took. A **search box** above the list filters the runs to those whose output contains the text you type.
+- **Right** — the selected run's captured **stdout** and **stderr**.
+
+The view refreshes live while you watch, keeps your selection when new runs arrive, and has a **Back** button. See [History & logs](/cronch/history).
+
+## Settings
+
+Launch at login, how long to keep run history, **Export rules…** / **Import rules…**, **Save settings**, a **Documentation** button that opens these docs in your browser, and **Back**. See [Settings & tray](/cronch/settings).
+
+## The tray menu
+
+Cronch's icon sits in the system tray (Windows) or menu bar (macOS). Its menu has:
+
+- **Add rule…** — open the window straight on a new rule.
+- **Run rule ▸** — a submenu with your rules; pick one to run it now, exactly like **Run now** in the window (same overlap policy; a rule that's switched off can't be run).
+- **Open Cronch** — show the window.
+- **Pause all / Resume all** — the same toggle as in the header. The icon turns **grey** while everything is paused.
+- **Quit** — exit Cronch. While it's quit, nothing runs.
+
+Clicking the icon also opens the window. Opening the window from the tray always shows the **rule list**, so a rule you were editing in a hidden window and didn't save is discarded. Starting Cronch again while it's already running (or clicking its Dock icon on macOS) simply brings the existing window back as it was.
+
+<Note>
+    **Closing the window does not quit Cronch** — it hides to the tray and keeps running your schedules. Use **Quit** from the tray menu when you really want to stop it.
+</Note>

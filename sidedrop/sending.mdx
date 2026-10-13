@@ -1,0 +1,43 @@
+---
+title: "Send files, folders and text"
+description: "What you can send with Sidedrop — files, whole folders and text snippets — how the transfer queue works, cancelling, and practical size limits."
+mode: "wide"
+---
+
+Once two devices are paired, **either** of them can send — and both can send at the same time.
+
+## Ways to send
+
+- **Drag and drop** files or whole folders onto the page. Folders are sent with everything inside,
+    keeping their structure (empty folders are skipped).
+- **Choose files** or **Choose folder** to pick them instead.
+- **Send text** opens a box where you type or paste a snippet from your clipboard — a link, a code, a
+    paragraph. Press **Ctrl + Enter** (**⌘ +
+    Enter** on a Mac) or tap **Send**. Leading and trailing spaces are trimmed. It arrives on the other
+    device as an item named `text.txt` with a preview and a **Copy** button.
+
+Sending starts immediately — the other device doesn't have to accept anything.
+
+## The queue
+
+Items you send go **one at a time, in order**. The transfers table shows each one's progress, speed and
+time left. On the sending side, an item turns **Saved** once the other device has received every byte of
+it.
+
+Either side can **Cancel** an item that's queued, running or paused.
+
+## How big can it be?
+
+Sidedrop sets no limit of its own. In practice:
+
+- In **Chrome, Edge and most desktop browsers**, received files stream to the browser's own storage on
+    disk, so multi-gigabyte files work as long as there's free space.
+- Browsers that can't do that keep the incoming file **in memory** — Sidedrop shows a warning when that's
+    the case — so very large files may not fit. Send big files **to** a desktop Chrome or Edge.
+- A **text** snippet has to fit in a single message — around 256 KB of text. Send longer text as a
+    file.
+
+<Tip>
+    Moving something large between a phone and a computer? Make the phone the **sender** and the computer
+    the receiver.
+</Tip>

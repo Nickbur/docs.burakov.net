@@ -1,29 +1,50 @@
 ---
-title: "Privacy"
-description: "Cronch has no account and no cloud. Your rules and run history live in a local database on your machine, and nothing is sent anywhere."
+title: "Data & privacy"
+description: "Cronch has no account and no cloud. Where your rules, run history and logs are stored, what's kept in plain text, and how to remove Cronch completely."
+mode: "wide"
 ---
 
-Cronch is built to be trustworthy with the one thing a scheduler needs: the ability to run commands on your machine. So it collects nothing and sends nothing.
+Cronch is built to be trustworthy with the one thing a scheduler needs: the ability to run commands on your computer. So it collects nothing and sends nothing.
 
 ## No account, no cloud, no telemetry
 
 - There is **no sign-up** and no account — you just open the app.
-- Cronch makes **no network calls of its own**. It doesn't phone home, check for anything, or report usage.
+- Cronch makes **no network calls of its own**. It doesn't phone home, check for updates, or report usage. The only time it reaches outside your computer is when you click **Documentation** in Settings, which opens this site in your browser.
 - There is **no analytics or telemetry**.
 
 ## Where your data lives
 
-Everything Cronch knows — your rules, their settings, and the full run history with captured output — is stored in a single local **SQLite database** on your computer, next to Cronch's own log file (`cronch.log`, which records what Cronch did — not your jobs' output):
+| What | Windows | macOS |
+| --- | --- | --- |
+| Data folder | `%APPDATA%\burakov\Cronch\data` | `~/Library/Application Support/net.burakov.Cronch` |
+| Rules, settings and run history (with captured output) | `cronch.db` in the data folder, plus `cronch.db-wal` / `cronch.db-shm` while it's open | Same |
+| Cronch's own log (what Cronch did, not your jobs' output) | `cronch.log` and `cronch.log.1` in the data folder | Same |
+| Launch-at-login entry | Registry value `Cronch` under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` | `~/Library/LaunchAgents/Cronch.plist` |
 
-- **Windows** — under `%APPDATA%\burakov\Cronch\data`.
-- **macOS** — under `~/Library/Application Support/net.burakov.Cronch`.
+Exporting your rules writes a JSON file exactly where you choose, and importing reads one you point at — those are ordinary local files.
 
-Nothing in there is copied off the machine. Exporting your rules writes a JSON file exactly where you choose, and importing reads one you point at — those are ordinary local files.
+<Warning>
+    The database is a plain SQLite file and isn't encrypted. **Environment variables you add to rules — including any tokens or passwords — are stored there in plain text**, as is your jobs' captured output, and they're written in plain text to an export file. Anyone who can read your user files can read them. For sensitive secrets, prefer your system's keychain or credential manager and have the script fetch them.
+</Warning>
 
 ## What runs is up to you
 
 Cronch runs the commands **you** create. If one of your jobs uploads a backup or calls an API, that job talks to the network — because you told it to. Cronch itself is just the thing that starts it on time and records the result.
 
-<Note>
-    Because Cronch collects no personal data and has no account, there's nothing to delete server-side and no data-deletion request to make — removing the app and its data folder removes everything.
-</Note>
+On macOS, Cronch also runs your login shell once when it starts, to read your environment (see [Environment & working directory](/cronch/environment)) — so your shell's startup files run at that moment.
+
+## Removing Cronch completely
+
+Because there's no account, there's nothing to delete on a server. To remove everything from your computer:
+
+<Steps>
+    <Step title="Turn off launch at login">
+        In **Settings**, untick **Launch Cronch at login** and click **Save settings**. This removes the login entry, which lives outside the data folder.
+    </Step>
+    <Step title="Quit Cronch">
+        Tray menu → **Quit**.
+    </Step>
+    <Step title="Delete the app and its data folder">
+        Delete the app, then the data folder listed above. If you skipped step 1, also delete the `Cronch` registry value (Windows) or `~/Library/LaunchAgents/Cronch.plist` (macOS).
+    </Step>
+</Steps>

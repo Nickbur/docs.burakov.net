@@ -1,0 +1,91 @@
+---
+title: "Verification recipe"
+description: "The recipe format — how Rowbots AI builds, tests and runs each repository in its sandbox, which services it starts, and which hosts it may reach."
+mode: "wide"
+---
+
+A **recipe** tells Rowbots how to work with one repository: the environment, setup, services, build, test and run
+commands, and where the app answers once it's running. The executor and the judge build their sandboxes **only** from
+the confirmed recipe.
+
+Rowbots proposes a recipe during the [onboarding interview](/rowbots/setup) from what it
+finds in the repository; an **Owner or Admin** confirms it. The confirmed recipe lives in the dashboard
+(**Connections → Repositories**), and a copy arrives in the repository as `.rowbots/recipe.yaml` by pull request. To
+change it, edit it in the dashboard — the copy in the repository follows.
+
+## Example
+
+A Vue front end with an API that needs Postgres and Redis:
+
+```yaml
+schemaVersion: 1
+stack: node
+image: standard
+workdir: .
+setup:
+    - npm ci
+services:
+    - name: postgres
+      version: "18"
+      env:
+          POSTGRES_PASSWORD: test
+    - name: redis
+env:
+    DATABASE_URL: postgres://postgres:test@127.0.0.1:5432/postgres
+build: npm run build
+test: npm test
+lint:
+    - npm run lint
+serve: npm run preview -- --port 5173
+health: http://127.0.0.1:5173/
+routes:
+    - /
+    - /login
+    - /settings
+egress:
+    - api.example.com
+web:
+    url: http://127.0.0.1:5173/
+api:
+    baseUrl: http://127.0.0.1:3000/
+    openapi: openapi.yaml
+```
+
+## Fields
+
+| Field | What it is | Default |
+| --- | --- | --- |
+| `stack` | `node`, `python`, `rust`, `go` — full check coverage — or `other` for everything else | `other` |
+| `image` | `standard` or `full` (Rowbots' sandbox images), or your own image reference, optionally pinned by digest | `standard` |
+| `workdir` | The sub-directory commands run in — for monorepos and shared repositories | `.` |
+| `setup` | Commands that prepare the sandbox, in order (up to 20) | none |
+| `services` | Up to 6 services started next to the app: `postgres`, `redis`, `mysql`, `mongodb` — each with an optional `version` and `env` | none |
+| `env` | Non-secret environment variables for every command | none |
+| `build`, `test`, `serve` | The build, test and run commands | none |
+| `lint` | Your linters (up to 10 commands) | none |
+| `health` | A URL inside the sandbox that answers once the app is up | none |
+| `routes` | Key routes the judge always checks | none |
+| `egress` | Extra hosts the sandbox may reach — a host name or `*.domain` | none |
+| `web` | Turns on the web-UI checks: the app's `url`, plus `viewports` and `themes` | off |
+| `api` | Turns on the API checks: the `baseUrl`, and an optional `openapi` document path | off |
+| `timeouts` | `setupSeconds` (30–3600) and `commandSeconds` (30–7200) | 900 / 1200 |
+
+With `web` on, pages are checked at **1280×800** and **390×844**, in **light** and **dark**, unless you list your own
+(up to 4 viewports). See [Verification](/rowbots/verification) for what each layer runs.
+
+## Network access
+
+A sandbox can reach only **package registries** and **your git host**. Every other host the build or tests need — a
+third-party API, a private registry — must be listed in `egress`, and you confirm each one.
+
+## Test secrets
+
+Some tests need a credential — a sandbox payment key, a test account's password. Store it in the dashboard and
+**attach it to the recipe**; it's then available to that repository's sandboxes as an environment variable. Test
+secrets never appear in `recipe.yaml`, and they're the only secrets that knowingly enter a sandbox — model keys and git
+credentials never do.
+
+<Tip>
+    Keep `serve` and `health` accurate: the web and API checks — and the judge's black-box exam — need the app running
+    to test it.
+</Tip>

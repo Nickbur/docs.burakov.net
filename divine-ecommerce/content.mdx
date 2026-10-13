@@ -1,0 +1,82 @@
+---
+title: "Content, menus & newsletter"
+description: "Blog articles with shoppable products, info pages, the menu builder, contact details, the home slider, and newsletter campaigns with segments in Divine eCommerce."
+mode: "wide"
+---
+
+## Blog
+
+**Information → Articles** — each article has a title, slug, excerpt, content, image, publish date, featured
+and active flags, and meta title, description and keywords.
+
+- **Shop the story:** pick products in the article form and they're shown with the article, ready to add to cart.
+- The blog lists 12 articles per page at `/blog`; each article lives at `/blog/{slug}`.
+- Readers can't comment — the storefront has no comment form.
+
+## Info pages
+
+**Information → Pages** — delivery terms, privacy policy, public offer and the like, at `/pages/{slug}`. Each page
+has a type (**page**, **privacy**, **terms** or **offer**), content, position, active flag, meta fields and a
+**Show in header** flag.
+
+## Menus
+
+**Tools → Menu Builder** manages the menus for two places in the storefront:
+
+| Location | Shown in | Notes |
+| --- | --- | --- |
+| **Header** | The top navigation | One level of sub-items. If no header menu exists, pages with **Show in header** are listed instead. |
+| **Footer** | The footer link column | |
+
+The builder also offers a **sidebar** location, but no template displays it yet.
+
+## Contact details
+
+**Settings → Contacts** holds the main phone and email, additional phones, working hours (weekdays and weekend),
+address, city, country, social links and a map embed. They appear in the header and footer, and messages sent
+through the `/contacts` form are emailed to the main email.
+
+The `/contacts` page is a static template — edit `src/App/Frontend/views/page/contacts.twig` to put your own
+stores and details on it.
+
+## Home slider
+
+**Main → Slides** — each slide has a title, subtitle, image, link and button text, an overlay position and
+style, a sort position and optional **start/end dates**, so you can schedule seasonal slides ahead of time.
+
+## Newsletter
+
+### Subscribers
+
+Shoppers subscribe from the storefront form or their account. Subscription is **double opt-in**: they get a
+confirmation email, and only after confirming do they get a welcome email and campaigns. Every campaign email
+carries a personal unsubscribe link.
+
+**Sales & Marketing → Newsletters** lists subscribers (you can delete them) and campaigns.
+
+### Campaigns
+
+<Steps>
+    <Step title="Write the campaign">
+        A subject and the message body.
+    </Step>
+    <Step title="Choose a segment">
+        Filter confirmed subscribers by signup date range, signup source, customers vs guests, buyers or non-buyers,
+        **win-back** (customers who haven't ordered for N days, 90 by default) and minimum amount spent.
+    </Step>
+    <Step title="Preview the audience">
+        **Preview** shows how many subscribers match.
+    </Step>
+    <Step title="Send or schedule">
+        Send now, or pick a time — the background worker checks every minute and sends due campaigns.
+    </Step>
+</Steps>
+
+<Warning>
+    Scheduled times are compared against the database clock, which runs in **UTC** — convert your local time when
+    scheduling.
+</Warning>
+
+Emails go out one by one while the request runs. For large lists, prefer **scheduling** over **Send now**: a long
+send started from the browser can hit the 30-second PHP time limit and stop part-way, and resending may then
+duplicate emails for the subscribers who already received it.

@@ -1,0 +1,60 @@
+---
+title: "Environment & working directory"
+description: "Which PATH and environment variables your scheduled jobs see on Windows and macOS, how to add variables per rule, and where jobs run from."
+mode: "wide"
+---
+
+"It works in my terminal but not on a schedule" is almost always about the **environment**. Here's exactly what your jobs see.
+
+## The environment jobs inherit
+
+Cronch reads your environment **once, when it starts**, and every job inherits it:
+
+- **macOS** — apps started at login normally get a stripped-down `PATH`. So Cronch asks your login shell (`$SHELL`, usually zsh) for your real environment, the same way a new terminal window would: it runs it once as a login, interactive shell, which reads your startup files such as `.zprofile` and `.zshrc` — where Homebrew, nvm, pyenv and similar tools set themselves up. That's why `node`, `python` or `git` are found in scheduled jobs too.
+- **Windows** — jobs inherit the environment Cronch itself was started with: your user and system environment variables. No shell startup files are involved.
+
+Because this happens only at startup, **restart Cronch after changing your shell startup files or your Windows environment variables** (Quit from the tray menu, then open it again).
+
+<Note>
+    Jobs run in a non-interactive shell, so your **aliases and shell functions aren't available**, and PowerShell runs with `-NoProfile`, so your PowerShell profile isn't loaded. Call the real program, or put the logic in a script.
+</Note>
+
+<Warning>
+    On macOS, Cronch gives your shell startup files five seconds to finish. If yours take longer — or wait for something, like a prompt or a terminal multiplexer that attaches automatically — Cronch falls back to a plain login shell and may miss what `.zshrc` adds to `PATH`. If even that fails, Cronch's log says it *could not read the login environment*, and jobs get only the basic environment.
+</Warning>
+
+## Variables per rule
+
+The editor's **Environment variables** field adds variables for one rule — one `KEY=VALUE` per line:
+
+```text
+API_TOKEN=abc123
+BACKUP_TARGET=/Volumes/Backup
+```
+
+- They're added on top of the inherited environment and **override** a variable with the same name.
+- Values are taken **literally**: `$HOME`, `%USERPROFILE%` or `~` inside a value are not expanded.
+- Spaces around a line are trimmed. A line without `=`, or with nothing before the `=`, is **ignored without a warning** — check your spelling if a variable seems to be missing.
+
+<Warning>
+    Rule variables are stored in plain text in Cronch's local database and appear in plain text in an export file. Treat both like any other file that holds your secrets — see [Data & privacy](/cronch/privacy).
+</Warning>
+
+<Tip>
+    With **WSL (bash)**, a Windows process can only hand variables into WSL that are listed in Windows' `WSLENV` variable — that's how WSL works. If a WSL job doesn't see a variable from its rule, set it inside the command instead (`export NAME=value && …`).
+</Tip>
+
+## Working directory
+
+By default, jobs run from your **home directory**. Set **Working directory** on the rule to run from somewhere else — useful for scripts that expect to be run from their project folder.
+
+- Use a **full path** — `~` and `%VARIABLES%` aren't expanded here.
+- If the folder doesn't exist when the rule runs, the run fails with *working directory not found: …* in its stderr.
+
+## Checklist when a job can't find something
+
+1. Use the **full path** to the program in the command (`/opt/homebrew/bin/node`, `C:\Tools\tool.exe`).
+2. Set the variable it needs in the rule's **Environment variables**.
+3. Set the rule's **Working directory** if the script uses relative paths.
+4. If you changed your shell setup or environment variables recently, **restart Cronch**.
+5. Read the run's **stderr** in [History & logs](/cronch/history) — the error is usually right there.

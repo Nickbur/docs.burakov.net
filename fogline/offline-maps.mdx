@@ -1,36 +1,30 @@
 ---
-title: "Offline maps"
-description: "Download a region once and paint it with no signal; add other regions as downloadable packs."
+title: "Regions & offline maps"
+description: "Where Fogline can paint, the two kinds of map data it uses, and downloading or deleting a region's base map."
+mode: "wide"
 ---
 
-Fogline is **offline-first**. Once you've downloaded a region, both the basemap and the road network
-live on your device — so your map paints and displays with **no mobile signal**, wherever you happen
-to travel.
+## Where Fogline paints
 
-## Download a region
+Fogline needs **road data** for an area to paint it. It's available for **Kyiv**, the **Kyiv region** and the other
+regions (oblasts) of Ukraine. Fogline picks your region automatically from your location and switches as you cross
+into another one. Outside Ukraine, nothing is painted.
 
-<Steps>
-    <Step title="Get the Kyiv & oblast pack">
-        The main pack covers **Kyiv and the surrounding oblast**. Download it once, on Wi-Fi, and you're
-        set to start painting.
-    </Step>
-    <Step title="Add other regions">
-        Other regions are available as **separate downloadable packs**. Grab the ones you travel in; skip
-        the rest.
-    </Step>
-    <Step title="Manage storage">
-        You can delete a pack any time to free space and re-download it later — your painted roads are
-        kept safe on your account regardless.
-    </Step>
-</Steps>
+## Two kinds of data
 
-<Note>
-    Map packs are **not bundled into the app** — you download them on first use — so the install stays
-    small and you only store the regions you actually travel.
-</Note>
+| Data | What it's for | How you get it |
+| --- | --- | --- |
+| **Road data** | The road stretches Fogline paints | Downloaded automatically the first time you're in a region, then kept on your phone |
+| **Base map** | Streets, labels and landscape you see under your roads | You download it per region — painting works without it |
 
-## Keeping a region fresh
+## Download a base map
 
-The road network changes slowly, so region packs are **regenerated occasionally** and you update them
-**on demand**. Each pack shows a **"data as of"** date, so you always know how fresh it is, and
-updating a pack keeps every road you've already painted.
+- On the Map screen, tap **Download** on the banner, or use **Settings → Map data**. Progress shows as a
+    percentage; when it's done, Settings says *Downloaded — available offline*.
+- **Delete** in Settings removes a region's base map to free space — your painted roads stay.
+- Downloaded maps don't update themselves; **Settings → Map data** shows the date each region's data is from
+    (*Data as of …*). Delete and download again for a newer one.
+
+If a download fails, the **Download** button comes back — try again on a stable Wi-Fi connection.
+
+Map data © OpenStreetMap contributors.

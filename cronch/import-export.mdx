@@ -1,0 +1,60 @@
+---
+title: "Import, export & moving machines"
+description: "Back up your Cronch rules to a JSON file, move them to another computer, and what to expect when you import — copies, skipped rules, missing shells and expired one-time rules."
+mode: "wide"
+---
+
+Your rules can be saved to a single **JSON** file and loaded back — on the same computer or another one. Both buttons are in **Settings**, and both act immediately (you don't need to click **Save settings**).
+
+## Export
+
+Click **Export rules…** and choose where to save. The default name is `cronch-rules.json`. Cronch confirms with *Exported N rules.*
+
+The file contains **every rule's settings** — name, command, shell, schedule, options, working directory and environment variables. It does **not** contain run history.
+
+Useful for:
+
+- **Backing up** your setup, or keeping it in version control.
+- **Moving to another computer**.
+- **Sharing** a set of rules with someone else.
+
+<Warning>
+    Environment variables are exported as plain text. If a rule holds a token or password in its variables, the export file holds it too — store and share it accordingly.
+</Warning>
+
+## Import
+
+Click **Import rules…** and pick a file. Importing only ever **adds** rules — it never changes or replaces a rule you already have:
+
+- A rule that already exists here (for example when you import your own backup) is added as a **copy**, with **(copy)** after its name.
+- Imported rules **start fresh**: no last run, no status. Their history stays on the computer where they ran.
+- A rule that isn't valid — say, an empty command or a broken cron expression — is **skipped**, and the rest are imported. The reason for each skipped rule is written to Cronch's log.
+- A **Once** rule whose time has already passed is imported as **Expired**. Imported rules never fire "for the past".
+
+Cronch then tells you the result, for example: *Imported 5 rules (1 already existed, added as copies; 1 invalid skipped).*
+
+If the file isn't a Cronch rules file at all — not valid JSON, or not in the expected shape — nothing is imported and you see *Import failed: …*.
+
+## Moving to another computer
+
+<Steps>
+    <Step title="Export on the old computer">
+        **Settings → Export rules…**, and copy the file over.
+    </Step>
+    <Step title="Install Cronch on the new one">
+        See the [Quickstart](/cronch/quickstart).
+    </Step>
+    <Step title="Import">
+        **Settings → Import rules…**
+    </Step>
+    <Step title="Check the rule list">
+        Rules whose shell isn't installed on this computer show **⚠ shell missing** — install that shell (then restart Cronch) or edit the rule to use another. Also check paths in commands and working directories, which often differ between computers.
+    </Step>
+</Steps>
+
+## Editing the file by hand
+
+You can write or edit a rules file yourself. The full format — every field, its allowed values and what's optional — is in [Rule fields & file format](/cronch/rules#the-export-file-format). Two things to watch:
+
+- If you leave out `timeout_secs`, the imported rule has **no timeout** (not the 5-minute default of the editor).
+- `overlap` must be exactly `Skip`, `Queue` or `Parallel` — anything else makes the whole import fail.

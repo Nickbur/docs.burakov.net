@@ -1,46 +1,58 @@
 ---
 title: "FAQ"
 description: "Recovery, false-fire safety, pricing, and the honest limits."
+mode: "wide"
 ---
 
 <AccordionGroup>
     <Accordion title="What if I just forget to check in for a while?">
-        Nothing fires quietly. After a missed deadline you get repeated warnings across push, email
-        (and SMS on Pro), each with a one-tap "I'm here". Only after the full grace window — never
-        less than 48 hours, and typically days or weeks — does a switch fire. It's built to tolerate
-        a forgetful week.
+        Nothing fires quietly. Your device reminds you before each deadline, and after a missed deadline
+        the switch enters its grace period and warns you by push and email (and SMS on Pro). Only after the
+        full grace period — never less than 48 hours, and typically days or weeks — does it fire. Check in
+        any time before that. See [Schedule, grace & warnings](/quietletter/how-it-works).
     </Accordion>
     <Accordion title="Can someone trigger my switch early?">
-        No. In this version a switch fires on **inactivity only** — your own missed check-ins. No
-        recipient, trustee, or support agent can fire it early.
+        No. A switch fires on **inactivity only** — your own missed check-ins. No recipient, trustee or
+        support agent can fire it early.
     </Accordion>
-    <Accordion title="What happens if I lose the passphrase?">
-        Encrypted content is **zero-knowledge**: if the passphrase is lost, that content can't be
-        recovered — not even by us. Keep it where you'd keep a will, and make sure your recipient
-        will have it. Your **account** itself is always recoverable by email, independently.
+    <Accordion title="What happens if I lose a passphrase?">
+        Encrypted content is **zero-knowledge**: if the passphrase is lost, that item can't be recovered —
+        not even by us. Keep it where you'd keep a will, and make sure your recipient will have it. Your
+        **account** itself is always recoverable by email.
+    </Accordion>
+    <Accordion title="I forgot my check-in PIN.">
+        Tap **Forgot PIN? Reset it** and set a new one. The PIN is a confirmation step on your device, not
+        a password. See [Check in](/quietletter/check-in).
+    </Accordion>
+    <Accordion title="Can I read what I saved?">
+        Readable messages, yes. Encrypted content is never shown again after saving — not even to you. To
+        change it, enter the new content with a passphrase in **Edit switch**.
     </Accordion>
     <Accordion title="Does my recipient need an account or the app?">
-        No. When a switch fires they get a link that works in any browser. For encrypted items they
-        enter the passphrase you shared; plain messages just arrive as email.
+        No. They get an email; readable messages are right in it, and encrypted items open in any browser
+        from a private link, with the passphrase you shared. See
+        [What your recipients receive](/quietletter/recipients).
     </Accordion>
     <Accordion title="What does it cost?">
-        The free plan covers one switch with a message action and the full check-in loop. **Pro
-        ($19.99/year)** adds multiple switches, encrypted files and secrets, a private recipient
-        page, and SMS warnings. There's no lifetime plan — a switch runs indefinitely, so the
-        subscription keeps it running.
+        The free plan covers one switch with message actions and the full check-in loop. **Pro
+        ($19.99/year)** adds more switches, encrypted files, secrets, private pages and SMS. If Pro ends,
+        your switches keep running and still deliver everything. See [Pricing](/quietletter/pricing).
     </Accordion>
     <Accordion title="Which platforms are supported?">
-        iOS, Android, and the web. The recipient release page is always web, so anyone can open what
-        you left them without installing anything.
+        iPhone, Android and the web. The recipient release page is always web, so anyone can open what you
+        left them without installing anything.
     </Accordion>
     <Accordion title="Can I run it myself?">
         Yes — the core is open-source (AGPL-3.0) and self-hostable. See
-        [Self-hosting](/quietletter/self-hosting).
+        [Run your own instance](/quietletter/self-hosting).
     </Accordion>
     <Accordion title="Can I move my switches between the hosted service and my own instance?">
-        Yes, in either direction. **Settings → Backup & transfer** exports every switch to one file
-        and imports it on the other side. Encrypted contents stay encrypted and open with the same
-        passphrase, and an imported switch starts its check-in timer fresh, so nothing fires early.
-        See [Move your switches](/quietletter/self-hosting#move-your-switches).
+        Yes, in either direction, with one export file. Encrypted contents stay encrypted and open with the
+        same passphrase, and an imported switch starts its timer fresh, so nothing fires early. See
+        [Back up and move your switches](/quietletter/backup-and-transfer).
+    </Accordion>
+    <Accordion title="What happens to my switches if I delete my account?">
+        They stop — they will no longer warn or fire. You can restore your account within 30 days by
+        signing in again. See [Encryption & privacy](/quietletter/zero-knowledge).
     </Accordion>
 </AccordionGroup>

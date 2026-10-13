@@ -1,36 +1,69 @@
 ---
 title: "Architecture"
-description: "How OMOS is put together — a small trusted core, with drivers, services and apps running around it in protected user space."
+description: "How OMOS is put together today — a hybrid Rust kernel, user-space services and drivers, the boot flow and the boot archive."
+mode: "wide"
 ---
 
-OMOS is built around a simple principle: keep the trusted core small, and push everything else out into protected space around it. The less code that has to be fully trusted, the fewer places a problem can start.
+OMOS uses a **hybrid kernel**: core hardware support lives in the kernel, while storage and input drivers and the
+filesystem service run as separate programs in user space, each in its own address space, talking to each other
+through [IPC channels](/omos/ipc).
 
-## The layers
+## What runs where
+
+| In the kernel | In user space |
+| --- | --- |
+| Memory management, scheduler, multicore, power | **`svc:vfs`** — the filesystem service |
+| IPC, capability handles, system calls | **`drv:virtio-blk`** — virtio block devices |
+| Interrupt controllers and timers | **`drv:nvme`** — NVMe drives |
+| ACPI and device-tree discovery, PCI configuration | **`drv:ahci`** — SATA drives |
+| Serial output, the text display, the PS/2 keyboard (x86) | **`drv:fat32`** — the FAT32 filesystem |
+| The read-only boot archive, file-path routing, the program loader | **`drv:virtio-input`** — virtio keyboards and other input |
+
+See [Kernel](/omos/kernel) and [Drivers & storage](/omos/drivers-and-storage) for each side.
+
+## Boot flow
 
 <Steps>
-    <Step title="The core">
-        A small, trusted core handles the essentials: scheduling work across your processor, managing memory, letting parts of the system talk to each other, and enforcing who is allowed to do what.
+    <Step title="UEFI firmware">
+        Starts the Limine bootloader from the ISO. OMOS requires UEFI.
     </Step>
-    <Step title="Drivers and services">
-        The parts that talk to hardware — disks, input, and more — and system services run **outside** the trusted core, in protected user space. Each gets only the narrow access it needs.
+    <Step title="Limine">
+        Loads the kernel at a randomized address (KASLR) together with the boot archive, and hands over the memory
+        map, firmware tables and display.
     </Step>
-    <Step title="Applications">
-        Your programs run further out still, each in its own protected space, able to touch only what you've granted them.
+    <Step title="Kernel start-up">
+        Sets up the CPU, interrupts, memory, the boot archive, device discovery, timers, the display and the other
+        cores.
+    </Step>
+    <Step title="Service manager">
+        Loads the six built-in services from the boot archive in a **suspended** state, creates the IPC channels
+        between them, gives each one the handles it needs, then resumes them all.
     </Step>
 </Steps>
 
-## Why the core stays small
+## How the parts are connected
 
-When a driver or service runs outside the trusted core, a fault in it stays contained — it can be stopped and restarted without bringing the whole system down. On many traditional systems a single driver runs with full trust, so one bad one can take everything with it. OMOS is deliberately built the other way.
+- The **filesystem service** receives file requests from the kernel and passes them to the **FAT32** driver.
+- **FAT32** reads and writes blocks through the **virtio block** driver.
+- The **NVMe** and **AHCI** drivers detect their disks, but no filesystem is connected to them yet.
+- The **virtio input** driver reports key events to the serial log.
+- Drivers reach their PCI devices through handles the service manager grants, matched by vendor and device ID or by
+    device class.
 
-## Everything talks through controlled channels
+## The boot archive
 
-Parts of the system don't reach into each other directly. They communicate over controlled channels, and a part can only send a message to something it has been given a handle to. That's the same idea as the [security model](/omos/security) — access is something you hold and can pass on, never something that's simply assumed.
+The ISO contains the kernel and a read-only archive (initrd) mounted at `/`:
 
-## The same shape everywhere
+```text
+/etc/version           OMOS v1.0.0 (Sirius)
+/etc/system.conf       Placeholder, not read yet
+/system/services/vfs   The filesystem service
+/system/drivers/…      virtio_blk, nvme, ahci, fat32, virtio_input
+```
 
-This structure is identical on every supported chip. The details of talking to an Intel processor, an ARM one, or a RISC-V one differ underneath, but the shape of the system above that — the core, the protected drivers and services, your apps — is the same. See [Platform support](/omos/platform-support) for what that covers today.
+Paths that aren't in the archive are forwarded to the filesystem service, and from there to the FAT32 disk.
 
-<Note>
-    Higher layers described in the vision — a graphical shell, networking, a distributed layer that pools machines — build on this foundation and are on the [roadmap](/omos/roadmap).
-</Note>
+## Written in Rust
+
+The kernel, drivers and services are written in Rust without the standard library (`no_std`), built with the
+nightly toolchain for three targets: x86_64, AArch64 and RISC-V 64.

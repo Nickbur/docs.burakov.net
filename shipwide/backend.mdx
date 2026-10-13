@@ -1,6 +1,7 @@
 ---
 title: "Backend"
 description: "shipwide_api — Fastify + Drizzle + PostgreSQL + Redis. Modules, auth, routes, scripts and ops."
+mode: "wide"
 ---
 
 The backend half of the kit — Fastify + Drizzle + PostgreSQL + Redis. Single-app: one
@@ -41,6 +42,8 @@ reset, no separate email verification.
 - Google / Apple sign-in available alongside.
 - Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
     `sessions` row; live-session check cached in Redis with a DB fallback.
+- **Refresh-token reuse detection:** a refresh token that was already rotated, presented again
+    after a short grace window for concurrent refreshes, revokes the whole session.
 
 <Note>
     Authentication is passwordless by design — there is intentionally no password, no reset,
@@ -60,7 +63,7 @@ code never creates one. Every fixed-code sign-in is logged at `warn`.
 | Sessions | `GET /v1/sessions` · `/current` · `DELETE /v1/sessions` · `/:id` · `PUT /:id` |
 | Upload | `POST /v1/upload` + chunked upload start/append/status/complete/abort · file delete/serve |
 | Push | `POST /v1/push/test` (verify delivery to the signed-in user's own devices) |
-| Support | `POST /v1/support` — the website's support form: **no session**, 5 per IP / 10 min, honeypot + fill-time bot check, emailed to `MAIL_REPLY_TO` (not stored) · signed-in tickets: `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `/:id/reply` |
+| Support | `POST /v1/support` — the website's support form: **no session**, 5 per IP / 10 min, honeypot + fill-time bot check, emailed to `MAIL_REPLY_TO` (not stored) · signed-in tickets: `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `/:id/reply`. See [Support & tickets](/shipwide/support) |
 | Notes | `GET /v1/notes` · `PUT /:id` (upsert by client id) · `DELETE /:id` (idempotent) — sync endpoints for the app's offline-first Notes example. See [Offline-first data](/shipwide/offline-sync) |
 | Subscriptions | `POST /v1/subscriptions/webhook` · `GET /me` · `POST /sync` · `GET /premium-example` — off until configured |
 | Admin | auth methods + TOTP · stats · users (role, delete/restore/purge, sessions, entitlements) · sessions · tickets · uploads · push · audit · app settings (version policy) · ops |

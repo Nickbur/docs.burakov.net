@@ -1,49 +1,47 @@
 ---
-title: "Cleanup, editing & your card"
-description: "Tidybook's automatic cleanup rules, the full contact editor and its field model, and how to share your own details as a scannable QR card."
+title: "Add, edit and find contacts"
+description: "Search your Tidybook address book, view and share a contact, edit every field, and how Tidybook tidies contacts as you save."
+mode: "wide"
 ---
 
-Beyond merging duplicates, Tidybook keeps each contact **clean and complete**, and lets you share
-your own details without handing over your whole book.
+## Find a contact
 
-## Automatic cleanup
+**Contacts** lists everyone A–Z. The search bar (*Search name, phone or email*) matches any part of a name, a phone
+number or an email address, and shows how many contacts match.
 
-Tidybook tidies as you go:
+A contact without a name is listed by its company, then email, then phone number.
 
-- **Phone numbers** are normalized to international (E.164) format, using your region for local
-    numbers, so the same number always looks — and matches — the same way.
-- **Empty and degenerate entries** (no name and no reachable field) are flagged for removal.
-- **Incomplete records** (for example, a name with no contact method) are surfaced for your review
-    rather than deleted automatically.
+## View a contact
 
-Cleanup never deletes anything on its own — it flags, and you decide.
+Tap a contact to see its phones, emails, addresses, websites, birthday and notes, and which sources it came from.
 
-## The contact editor
+- Tap a **phone number** to call it, or an **email address** to write to it.
+- **Share as vCard** sends the contact to someone through your phone's share sheet, or copies it on the web.
+- **Edit** opens the editor.
 
-Every contact is fully editable, with a high-fidelity model:
+## Add or edit
 
-- **Name** — prefix, given, additional, family, suffix, plus a display name and nickname.
-- **Organization** — company, department and title.
-- **Phones, emails, addresses, websites** — as many as you like, each with its own label
-    (mobile / home / work / …). Addresses are structured (street, city, region, postal code, country).
-- **Birthday, notes** and other dates.
+Tap **+** in **Contacts** for a new contact, or **Edit** on an existing one.
 
-When a contact came from a source with fields Tidybook doesn't model, those are **kept alongside**
-and re-emitted on export, so nothing is lost on a round-trip.
+| Section | Fields |
+| --- | --- |
+| **Name** | Name and nickname |
+| **Organization** | Company, title and department |
+| **Phones, Emails, Websites** | As many as you need, each with a label — *mobile*, *home*, *work* or your own |
+| **Addresses** | Street, city, region, postal code and country, with a label |
+| **Birthday** | A date |
+| **Note** | Free text |
 
-## Export & backup
+Tap **Save**. To remove a contact, tap **Delete contact** in the editor — with Sync on, it's removed from your other
+devices too.
 
-Export your whole book to **vCard** or **CSV** at any time. It's a plain, portable file that opens
-anywhere and belongs entirely to you — a cold backup that doesn't depend on Tidybook, the cloud, or
-any account still existing.
+## Tidying on save
 
-## Your own QR card
+Every time a contact is saved — by you, or by an import — Tidybook tidies it:
 
-Build a card from **your own** chosen details — name, phones, emails, organization, websites — and
-Tidybook renders it as a **QR code** anyone can scan with their camera to save you as a contact. No
-app required on their end, and no server involved: you're simply sharing your own data.
+- **Phone numbers** are stored in international format (E.164), using your region for numbers written without a
+    country code. The same number then always looks — and matches — the same way.
+- **Emails** are trimmed and lower-cased.
+- **Empty rows** are dropped, and repeated values within the contact are merged.
 
-<Note>
-    The QR card only ever contains the fields you choose to include. It shares your own details — never
-    anyone else's contacts.
-</Note>
+Fields that came from a source but don't appear in the editor are left untouched, so editing never loses data.

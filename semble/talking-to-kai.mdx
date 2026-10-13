@@ -1,59 +1,73 @@
 ---
-title: "Talking to Kai"
-description: "Turn Kai on, then anyone can ask — by voice, by text, or in chat — and everyone sees the answer."
+title: "Talk to Kai"
+description: "Turn Kai on, ask it by voice or text, what Kai knows and doesn't, citations, and how Kai behaves in the room."
+mode: "wide"
 ---
 
-Kai is the AI participant in every Semble room. It's **off** until the host turns it on — until
-then nothing is transcribed and nothing is sent to an AI provider.
+Kai is the AI participant in every Semble room. It's **off** until the host turns it on — until then
+nothing is transcribed and nothing is sent to an AI provider.
 
 ## Turn Kai on
 
-The host opens the **Kai** panel from the room header and presses **Enable**. Kai's tile changes
-to *Kai is listening* for everyone. Kai runs on prepaid credits for as long as it's on — see
-[Credits](/semble/credits) — and the host can turn it off at any time.
+The host opens the **Kai** tab and taps **Enable** (*Costs 3 credits per 15 min of AI time.*). Kai's tile
+changes to *Kai is listening* for everyone. The host taps **Turn off** to stop it. See [Credits](/semble/credits).
+
+<Warning>
+    **Leaving the call doesn't turn Kai off.** As the host, tap **Turn off** before you leave, or Kai keeps
+    using credits.
+</Warning>
 
 ## Ask by voice
 
-Start what you say with Kai's name:
+Start what you say with Kai's name — and keep going in the same breath:
 
-> "Kai, what did we agree the budget cap was?"
-> "Hey Kai — summarize the options on the table."
+> "Kai, what does the brief say about the budget?"
+> "Hey Kai, which option has the lowest risk?"
 > "Кай, кто отвечает за ревью безопасности?"
 
-Kai answers **out loud** so the whole room hears it, and the same answer appears as text in
-everyone's Kai panel, with its sources. Kai understands many languages — people can switch
-languages mid-meeting, and Kai answers in the language of the question.
+- The name must come **first** — "Kai" or "Кай", optionally after *hey*, *hi*, *ok* (or *эй*, *ок*).
+- A bare "Kai?" on its own is ignored — ask your question right after the name.
+- Kai answers **out loud** for everyone, and the answer appears in text in everyone's Kai tab, with who
+    asked.
+- Kai stops speaking as soon as someone starts talking.
+- Say "Kai, recap so far" to hear a recap of the recent conversation — out loud and in text.
 
 ## Ask in text
 
-Anyone — host or guest — can type a question in the Kai panel, or press **Recap so far** for a
-neutral running recap: key points, emerging decisions, and open questions, attributed to whoever
-raised them. In the **Chat** tab, start a message with `@Kai` to ask it from the conversation.
+- Type a question in the **Kai** tab (up to 4,000 characters; Enter sends) and tap **Ask Kai**.
+- Tap **Recap so far** for a short recap.
+- In **Chat**, start a message with **@Kai**.
 
-Every answer shows who asked and appears for the **whole room** — including people who join later.
+Typed questions, @Kai messages and the **Recap so far** button are answered **in text only** — not out loud.
 
-## How Kai behaves
+## What Kai knows
 
-- **Kai only answers when addressed.** It listens to keep the transcript, but it never jumps in
-    on its own.
-- **Kai never talks over people.** The moment someone starts speaking, Kai stops.
-- **Answers are neutral.** Kai stays impartial, cites what it relied on, says plainly when the
-    answer isn't in the documents or the conversation, and treats whatever is in documents or the
-    chat as information — never as instructions.
+Kai answers from two things:
+
+- the **shared documents** — the passages most relevant to the question (see
+    [Share documents with Kai](/semble/documents)), and
+- the **last few minutes** of the conversation.
+
+It has no outside knowledge and doesn't read the chat. When the answer isn't in those, it says so rather
+than inventing one. It answers in the language of the question. Because it only remembers the last few
+minutes, **Recap so far** covers the recent conversation — for the whole meeting, use the
+[summary](/semble/transcript-and-summary) afterwards.
 
 ## Citations
 
-When an answer draws on the meeting's shared documents, it shows numbered chips like
-`[1] Budget & Timeline.md`. Each number matches a mark in the answer, so everyone can see where a
-claim came from. See [Shared documents](/semble/documents).
+When an answer draws on the documents, it shows numbered chips like `[1] Budget & Timeline.md`, matching
+the numbers in the answer, so everyone can see where a claim came from. The chips list every passage Kai
+looked at, so the same document can appear more than once.
 
-## Chat
+## Good to know
 
-The **Chat** tab is a plain text chat with everyone in the room — handy for links, names, and
-notes you don't want to say out loud. Chat messages go straight to the people in the meeting and
-are never stored.
+- Everyone sees every answer. People who join later see the last 30.
+- To keep things fair, each person can ask up to 6 questions and 3 recaps a minute — more shows *A little
+    too fast — try again in a moment.*
+- Speech is transcribed for up to 6 people talking at the same moment.
+- Fair-use limits, such as a daily limit on questions to Kai, may apply.
 
 <Warning>
-    Kai's answers are generated automatically and can be incomplete or wrong. They aren't legal,
-    financial, or medical advice — check anything important yourself.
+    Kai's answers are generated automatically and can be incomplete or wrong. They aren't legal, financial or
+    medical advice — check anything important yourself.
 </Warning>

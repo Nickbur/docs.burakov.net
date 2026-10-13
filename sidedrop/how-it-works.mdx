@@ -1,49 +1,43 @@
 ---
-title: "How it works"
-description: "Pairing a room, dropping files, and what actually travels between the two devices."
+title: "Connections & reconnects"
+description: "How two browsers connect in Sidedrop — the encrypted direct connection, relays, pausing and resuming after a drop, and what ends a session."
+mode: "wide"
 ---
 
-Sidedrop connects exactly two browsers and streams your files directly between them. Here's what
-happens from opening the site to a finished transfer.
+## The connection
 
-## One room, three ways to pair
+Once two devices are paired, their browsers open a **direct, encrypted connection** to each other (a
+standard WebRTC data channel, encrypted with DTLS). Files, folders and text all travel over it, in order,
+with the receiving side confirming what it has as it goes.
 
-When you open Sidedrop, it creates a private **room** and shows it three ways at once:
+The signaling server only introduces the two browsers. It passes along the setup messages they need —
+including their network addresses — but your files, their names and sizes never go through it.
 
-- a **share link** you can send through any messenger,
-- a **short code** you can read out or type,
-- a **QR code** to scan with a phone.
+## Direct or relayed
 
-All three point at the same room. Whoever opens it becomes the second device, and the two are
-paired. A room holds exactly two — if someone else tries to join a full room, they're told it's
-busy rather than silently joining your transfer.
+Most of the time the two browsers can reach each other directly. Some networks — strict corporate or
+mobile networks — don't allow that; then Sidedrop automatically routes the connection through a **relay**
+server, which forwards the encrypted stream without being able to read it. Access to the relay uses
+short-lived credentials that work only for live Sidedrop sessions, so there's nothing for you to set up.
 
-## Symmetric by design
+## When the connection drops
 
-There's no fixed "sender" and "receiver." Once two devices are paired, **either** side can drop
-files, and both can send at the same time. That's why the same flow works phone-to-computer,
-computer-to-computer, or when you're handing something to another person.
+If the connection drops — a Wi-Fi hiccup, switching to cellular, locking your phone for a moment — the
+status changes to **Reconnecting…**, items pause, and Sidedrop rebuilds the connection on its own. Sending
+then **continues from the last piece the other side confirmed**, not from the start.
 
-## No accept step
+This works **only while both tabs stay open**. Closing or reloading either tab ends the session; nothing
+can be resumed later.
 
-Transfers start the moment you drop something — there's no "accept this file?" prompt on the
-other side. The room code is the consent: whoever you shared it with is who you meant to send to.
+## What ends a session
 
-## What travels between the devices
+- Closing or reloading a tab.
+- The other device leaving for more than about 45 seconds — your page goes back to showing your room.
+- Starting a **new room** or **joining another code**.
+- The room expiring while the devices aren't connected. A room lasts 2 hours, and every join or reconnect
+    starts the 2 hours again; a connection that's already open keeps working.
 
-Once paired, the two browsers open a **direct, encrypted channel** and the file's bytes flow
-across it in order, with the receiver confirming what it has as it goes. A live table shows each
-item with its progress, speed, ETA, and status. Files, whole folders (the structure is recreated
-on the other side), and plain text can all ride the same channel.
-
-<Note>
-    The direct channel is end-to-end encrypted. A small signaling server helps the two devices find
-    each other at the start, but never carries your files — see [Privacy](/sidedrop/privacy).
-</Note>
-
-## When the network wobbles
-
-If the connection drops for a moment or your phone switches from Wi-Fi to cellular mid-transfer,
-Sidedrop pauses and re-establishes the path, then continues **from where it stopped** rather than
-restarting. This works as long as both tabs stay open; fully closing or reloading a tab ends that
-session.
+<Tip>
+    On a phone, keep Sidedrop in the foreground during a big transfer. Switching away pauses it until you
+    come back, as long as the page is still alive.
+</Tip>

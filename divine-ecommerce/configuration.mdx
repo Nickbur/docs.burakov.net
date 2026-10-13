@@ -1,59 +1,80 @@
 ---
 title: "Configuration"
-description: "Environment variables for the app, database, templates, mail and payments."
+description: "Every .env variable in Divine eCommerce and what it really does, plus which admin settings take effect."
+mode: "wide"
 ---
 
-All configuration lives in a single `.env` file at the project root, generated from one of the two settings files in `env/`: `env/env.dev` for local development or `env/env.prod` for production (`npm run switch_to_dev` / `npm run switch_to_prod`, or copy the file by hand). Both files list the same keys in the same order. Docker Compose passes `.env` to the PHP containers; the production image itself ships without it. When running in Docker, `DB_HOST` matches the Compose service name (`postgres`).
+Configuration lives in one `.env` file at the project root, copied from `env/env.dev` (local) or `env/env.prod`
+(production) — `npm run switch_to_dev` / `npm run switch_to_prod`, or `cp`. Both templates list the same keys in the
+same order. Docker Compose passes `.env` to the PHP and worker containers; images never include it.
 
 ## Application
 
-| Variable | Default | Purpose |
+| Variable | Template value (dev / prod) | Effect |
 | --- | --- | --- |
-| `APP_ENV` | `dev` | `dev` or `prod`. `prod` marks the session cookie `Secure`; `dev` builds newsletter links from `APP_URL`. |
-| `APP_DEBUG` | `true` | Verbose errors, Kint dumps and the Clockwork profiler. **Set to `false` in production.** |
-| `APP_PORT` | `8080` | Host port nginx is published on. |
-| `APP_URL` | — | Public base URL for absolute links (password reset, newsletters, payment callbacks). |
+| `APP_ENV` | `dev` / `prod` | `prod`: **Secure** session cookie (HTTPS required), compiled DI container, errors hidden. `dev`: links in emails use `APP_URL`. Anything other than `dev`: links in emails use **Settings → Branding → Store Website**. |
+| `APP_DEBUG` | `true` / `false` | Detailed error pages, Kint dumps and the Clockwork profiler. **Always `false` in production.** |
+| `APP_PORT` | `8090` / `80` | Host port nginx is published on. |
+| `APP_URL` | local URL / your domain | Base for email links in `dev` only, and for LiqPay's return page (`/checkout/success`) and payment confirmation (`/checkout/liqpay/callback`). In production, set it to your public **HTTPS** address. |
 
-## Database
+## Database and services
 
-| Variable | Default | Purpose |
+| Variable | Default | Effect |
 | --- | --- | --- |
-| `DB_DRIVER` | `pdo_pgsql` | Doctrine DBAL driver. |
-| `DB_HOST` | `postgres` | Database host (the Compose service name in Docker). |
-| `DB_NAME` | `divine` | Database name. |
-| `DB_USER` / `DB_PASS` | `divine` | Credentials. |
-| `DB_PORT` | `5432` | Database port inside the network. |
-| `DB_EXTERNAL_PORT` | `5432` | Port the database is published on locally (the production stack doesn't publish it). |
-| `REDIS_EXTERNAL_PORT` | `6379` | Port the bundled Redis container is published on locally (the production stack doesn't publish it; the app doesn't use Redis yet). |
+| `DB_DRIVER` | `pdo_pgsql` | Doctrine DBAL driver. PostgreSQL is the only supported database. |
+| `DB_HOST` | `postgres` | The Compose service name. |
+| `DB_PORT` | `5432` | Port inside the Docker network. |
+| `DB_NAME`, `DB_USER`, `DB_PASS` | `divine`, `divine`, — | Database name and credentials. Use a strong password in production. |
+| `DB_EXTERNAL_PORT` | `5434` (dev) | Host port for PostgreSQL. Not published in production. |
+| `REDIS_EXTERNAL_PORT` | `6381` (dev) | Host port for Redis. Not published in production; the app doesn't use Redis yet. |
+| `ADMINER_PORT` | `8888` | Adminer, started only by `make up-all` (the `tools` profile). |
 
-<Note>
-    Divine eCommerce targets **PostgreSQL** — full-text search and the boolean-safe write layer are built around it.
-</Note>
+## Templates
 
-## Templates & debugging
-
-| Variable | Default | Purpose |
+| Variable | Default | Effect |
 | --- | --- | --- |
-| `TWIG_AUTOESCAPE` | `html` | Twig's escaping strategy. The templates rely on `html` (trusted HTML is printed with `\|raw`) — keep it in every environment. |
-| `TWIG_AUTO_RELOAD` | `true` | Recompile templates when they change. `false` in production. |
+| `TWIG_AUTOESCAPE` | `html` | Twig's escaping strategy. Templates are written for `html` — keep it in every environment, and run `make cache-clear` if you change it. |
+| `TWIG_AUTO_RELOAD` | `true` / `false` | Recompile templates when they change. |
 | `TWIG_STRICT_VARIABLES` | `false` | Fail on undefined template variables. |
 | `TWIG_OPTIMIZATIONS` | `-1` | Twig optimizer flags (`-1` = all). |
-| `CLOCKWORK_API` / `CLOCKWORK_TOOLBAR` | — / `true` | Clockwork profiler endpoint (`/api/clockwork/`, the app's route) and toolbar; active only with `APP_DEBUG=true`. |
-| `ADMINER_PORT` | `8888` | Adminer, started only with the `tools` Compose profile (local use). |
 
 ## Mail
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `SMTP_HOST` / `SMTP_PORT` | `localhost` / `1025` | SMTP server for outgoing mail. |
-| `SMTP_USER` / `SMTP_PASS` / `SMTP_ENCRYPTION` | — | SMTP credentials and encryption (`tls` or `ssl`). |
-| `MAIL_FROM_ADDRESS` | `noreply@divine.local` | The address transactional email is sent from. |
-| `MAIL_FROM_NAME` | `Divine eCommerce` | The sender name shown to customers. |
+| Variable | Effect |
+| --- | --- |
+| `SMTP_HOST`, `SMTP_PORT` | Your SMTP server. The templates ship `REPLACE_ME` placeholders and port `587`. |
+| `SMTP_USER`, `SMTP_PASS` | SMTP credentials. |
+| `SMTP_ENCRYPTION` | `ssl` for implicit TLS (usually port 465); anything else uses plain SMTP upgraded with STARTTLS when the server offers it. |
+| `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` | The sender of every email. Use an address on your own domain. |
 
-## Payments (optional)
+No local mail catcher is included. For local testing, point `SMTP_*` at a test inbox service, or run your own catcher
+and set `SMTP_HOST` to it.
 
-A LiqPay payment gateway is included but off by default — checkout ships with **cash on delivery** and **store pickup**. To enable online payment you need to provide `LIQPAY_*` keys and add a `payment_methods` row with `code='liqpay'`.
+## Other keys
+
+| Variable | Effect |
+| --- | --- |
+| `LIQPAY_PUBLIC_KEY`, `LIQPAY_PRIVATE_KEY` | Your LiqPay keys. With both set and the LiqPay method active in **Settings → Payments**, checkout offers online card payment — see [Online payment](/divine-ecommerce/checkout-and-orders#online-payment-liqpay). |
+| `CLOCKWORK_API`, `CLOCKWORK_TOOLBAR` | Present in the templates but not read by the code — the profiler follows `APP_DEBUG`. |
 
 <Warning>
-    Never commit real secrets to a public repository. Keep production keys in your deployment's `.env`, which is not tracked.
+    Keep production secrets in the server's `.env` only — it's ignored by git. Never commit real keys to a public
+    fork.
 </Warning>
+
+## Admin settings that take effect
+
+Store settings live in the database and are edited in **Settings**. These tabs change the storefront:
+
+| Tab | Live keys |
+| --- | --- |
+| General | Site name (also used in email subjects and page titles), site description |
+| Contacts | Main phone and email (contact-form messages are sent to this email), phones, working hours, address, city, country, social links, map embed |
+| Branding | Logo, copyright text, **Store Website** (base of email links outside `dev`) |
+| Marketing | Promo banner on/off and text |
+
+Everything on the **Store**, **Checkout**, **Locale**, **Tax** and **Loyalty** tabs — and the favicon — is
+stored but not used yet. Store-wide SEO, including the page-title template, is set in
+**Tools → Search Engine Optimization** — see [SEO & analytics](/divine-ecommerce/seo). Taxes and reward points are
+configured in **Settings → Taxes** and **Sales & Marketing → Loyalty points**. Delivery and payment methods have
+their own sections, **Settings → Delivery** and **Settings → Payments**.

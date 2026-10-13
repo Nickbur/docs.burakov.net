@@ -1,43 +1,49 @@
 ---
 title: "Offline maps"
-description: "Download a region once and drive with no signal; keep the camera list fresh when you're online."
+description: "WhySoSlow's two kinds of offline data — the road and camera data, and the downloadable base map — how regions are picked, how the data stays up to date, and downloading or deleting a map."
+mode: "wide"
 ---
 
-WhySoSlow is **offline-first**. Once you've downloaded a region, the map, the speed limits, and the
-cameras all work with **no mobile signal** — which is exactly when you don't want your driving
-display to stall.
+WhySoSlow keeps two kinds of data on your phone so it works with no signal.
 
-## Download a region
+## Road and camera data
 
-On the **Drive** screen (and in **Settings → Map data**) you can download, check, and delete offline
-map packs.
+The speed limits and cameras for **Kyiv and Kyiv Oblast** come **with the app** — they work offline from the
+start. For every other region of Ukraine, WhySoSlow downloads the data automatically the first time you're
+there with a connection, and keeps it.
 
-<Steps>
-    <Step title="Get the Kyiv & oblast pack">
-        The main pack covers **Kyiv and the surrounding oblast** — about **112 MB**. Download it once, on
-        Wi-Fi, and you're set.
-    </Step>
-    <Step title="Add other regions">
-        Other regions are available as **separate downloadable packs**. Grab the ones you drive in; skip
-        the rest.
-    </Step>
-    <Step title="Manage storage">
-        You can delete a pack any time to free space and re-download it later.
-    </Step>
-</Steps>
+Camera data refreshes on its own: WhySoSlow checks for changes when you open it online, at most once a day.
+Speed-limit data is updated a few times a year, and WhySoSlow offers the update when a newer version is
+ready. Your own fixes and markers always take priority and stay in place through updates — see
+[Fix a speed limit](/whysoslow/fix-a-limit).
+
+## The base map
+
+The map itself — streets, labels, landscape — is a separate download, about **100 MB per oblast**. Without
+it, the Drive screen still shows your speed, limits and cameras, over a plain background.
+
+WhySoSlow picks your **region automatically** from your location, and switches as you cross into another
+oblast.
+
+- **Download** — on the Drive screen, a prompt shows your current region, its size and *works offline*; tap
+    **Download** and watch the percentage. You can also download it in **Settings**. Use Wi-Fi. If the
+    download fails, the prompt shows *Download failed* with **Retry**.
+- **Delete** — in **Settings**, **Delete offline map** removes the current region's map; other regions
+    you've downloaded are listed there with **Delete** too.
+- **Update** — when a newer map is ready for a region you've downloaded (about every three months),
+    WhySoSlow offers the update. Download it on Wi-Fi.
 
 <Note>
-    The map pack is **not bundled into the app** — you download it on first use — so the app install
-    stays small and you only store the regions you actually drive.
+    You can only download the map for the region you're **in** right now. To prepare for a trip, open
+    WhySoSlow once you've arrived in the new region while you still have a connection.
 </Note>
 
-## Two update speeds
+## Data dates
 
-Map data and camera data change at very different rates, so WhySoSlow updates them separately:
+**Settings → Offline map** shows how current each kind of data is — *data as of* a date for:
 
-- **Map tiles and speed limits** change slowly. Region packs are regenerated occasionally and you
-    update them **on demand**.
-- **Cameras** change often. The camera list is **small and refreshes automatically** whenever the
-    app is online (at most once a day).
-
-Each layer shows a **"data as of"** date so you always know how fresh it is.
+| Data | How it stays current |
+| --- | --- |
+| **Base map** | A newer map is offered about every three months |
+| **Speed limits** | Updated a few times a year; WhySoSlow offers the update |
+| **Cameras** | Checked automatically, at most once a day, whenever you open the app online |

@@ -1,0 +1,67 @@
+---
+title: "Review, merge & escalations"
+description: "How Rowbots AI asks for your attention — the ranked merge queue, batch approval, linked pull requests, escalations, and notifications."
+mode: "wide"
+---
+
+You step in at exactly two points: **merging** and **answering escalations**. Rowbots spends your attention like a
+budget, so both arrive ranked by what they're worth.
+
+## The merge queue
+
+Every pull request waiting for you appears in the **Queue**, ranked by **blast radius × the judge's confidence ×
+value × cost**:
+
+| Tier | What's in it | How you handle it |
+| --- | --- | --- |
+| **Batch** | Small, safe, well-verified changes — a dependency bump, a fixed typo, a covered bug fix | Glance over the list and **approve the batch**; Rowbots merges them through your git host |
+| **Focused** | Changes with a wider blast radius or lower confidence | Open the pull request in your git host and review it like any other |
+
+It's the same merge gate either way — only the attention it takes differs. Batch merging is available to **Owners and
+Admins**, and always respects your branch protection and required reviews.
+
+Every pull request carries the judge's evidence and an honest list of what wasn't verified — see
+[Verification](/rowbots/verification).
+
+### Linked pull requests
+
+When a change spans several repositories, you get a **linked set** with a merge order — for example the API before
+the app. Accept the set as one action, and Rowbots merges each pull request in order.
+
+## Attention budget
+
+A daily **attention budget** — 30 minutes by default — caps how much Rowbots asks of you. It surfaces the
+highest-leverage items within it, and the rest waits without blocking any other work. Change the budget in
+**Settings**.
+
+## Escalations
+
+Rowbots escalates only what's yours to decide: a question about **what the product should be** that your constitution
+doesn't answer yet, or a step that **can't be undone**.
+
+- Each escalation comes with the options and Rowbots' recommendation.
+- It **never blocks**: Rowbots parks that part and keeps working on everything else.
+- Your answer is **written into the constitution**, so the same question isn't asked again.
+- If two people answer, the first answer from an Owner or Admin counts; the Owner can override it, and both are
+    recorded.
+
+### Overriding a warning
+
+When you insist on something Rowbots considers a bad bet, it records its forecast and asks you to **acknowledge the
+warning explicitly** before going ahead. Something objectively broken — harmful, incoherent or against a confirmed
+invariant — is refused outright. See [Rowbots pushes back](/rowbots/feeding-work#rowbots-pushes-back).
+
+## Notifications
+
+Choose where Rowbots reaches you in **Settings → Notifications**:
+
+| Channel | Notes |
+| --- | --- |
+| **In-app** and **email** | Always available |
+| **Telegram** | The same bot also accepts new work |
+| **Slack** | |
+| **Push** | When the dashboard is installed as an app |
+| **Your git host** | Its own pull request notifications, as usual |
+
+Batch-tier items arrive as a **digest**. High-stakes items and escalations arrive **one by one**, linked straight to
+the dashboard or the pull request. An urgent revert after a regression always notifies you at the highest tier.

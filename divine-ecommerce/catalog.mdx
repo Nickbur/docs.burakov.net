@@ -1,0 +1,97 @@
+---
+title: "Set up your catalog"
+description: "Categories, brands, products, options and SKUs, cross-variants, specifications, images, stock and catalog filters in Divine eCommerce."
+mode: "wide"
+---
+
+A good order to build a catalog in: **categories and brands → option types and specifications → products →
+filters**. Everything here lives under **Products** in the admin.
+
+## Categories and brands
+
+- **Product Categories** form a tree. Each category has a name, slug, parent, position, active flag, description,
+    image and meta title/description.
+- **Brands** have a name, slug, website, position, active flag, description and logo.
+
+Images and logos come from the **File Manager**: pick an existing file right in the form, or upload a new one there.
+
+## Products
+
+Each product has:
+
+| Field | Notes |
+| --- | --- |
+| Name, slug, SKU | The slug becomes `/product/{slug}`. |
+| Status | **Draft** (default), **Inactive** or **Active**. Only Active products are visible and buyable. |
+| Price, compare-at price, cost price | A compare-at price above the price shows the product as on sale and lists it on `/special`. |
+| Quantity | Stock for a product without options. |
+| Brand, categories, featured | A product can sit in several categories. Featured products appear on `/featured`. |
+| Short and full description | |
+| Images | The product's gallery — see [Images](#images). |
+| Warranty and returns | Warranty in months and return window in days, shown on the product page. |
+| Dimensions and weight | Stored for your records. |
+| Meta title, description, keywords | Used for the product page's title and description. |
+
+## Options and SKUs
+
+Use options when one product comes in combinations that differ in price or stock — colour × storage, size ×
+colour.
+
+1. Create the axes once in **Option Types** (for example *Colour* with its values).
+2. In the product form, attach the option types the product uses and mark which are required.
+3. Fill in the **SKU matrix**: one row per combination, each with its own code, price, compare-at price, quantity,
+    image, active flag — and pick the default row.
+
+Shoppers must pick a combination before adding to cart. Listings show the cheapest active SKU's price.
+
+## Cross-variants
+
+Cross-variants link **separate products** that are versions of each other — the same phone in three colours, each
+with its own page, photos and description. In each product's form, create a group (choosing its axis, *Color* by
+default) or pick an existing one, and enter this product's value on that axis. The product page then shows a
+switcher across the group.
+
+Use **options** when the versions share one page; use **cross-variants** when each deserves its own.
+
+## Specifications
+
+- **Specification Groups** organise the spec table on the product page (for example *Display*, *Battery*).
+- **Specifications** are the attributes themselves: type **text**, **number**, **yes/no** or **select**, an
+    optional unit, and two flags — **filterable** (can become a catalog filter) and **comparable** (shown on the
+    compare page).
+
+Fill the values per product in the product form.
+
+## Images
+
+- **Gallery** — in the product form, add images from the File Manager, set their order and alt text, and mark one
+    as **primary**. Listing cards use the primary image; the product page shows the whole gallery.
+- **SKU images** — each SKU can have its own image, shown when that combination is chosen.
+- **Thumbnails** — smaller versions for listings and galleries are generated automatically, so upload one
+    full-size image.
+
+## Stock
+
+- Stock is a quantity per product, or per SKU when the product has options.
+- Adding to cart is capped at what's in stock, counting what's already in the cart.
+- Placing an order re-checks stock, so the last unit can't be sold twice, then takes the items out of stock;
+    cancelling before shipment puts them back. See
+    [Checkout, orders & returns](/divine-ecommerce/checkout-and-orders#stock).
+
+## Filters
+
+**Catalog Filters** controls the filter panel on every listing:
+
+- Turn individual facets on or off — brand, option types, filterable specifications, in stock, on sale, price and
+    rating.
+- Rename and reorder them.
+- **Rebuild** the filter index.
+
+<Tip>
+    After you make a specification filterable, or change many products at once, press **Rebuild** (or run
+    `make reindex-facets`) so the filter counts are correct.
+</Tip>
+
+## Bundles
+
+Product sets are covered in [Loyalty, coupons, gifts & bundles](/divine-ecommerce/promotions#bundles).

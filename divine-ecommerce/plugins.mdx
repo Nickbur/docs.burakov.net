@@ -1,54 +1,174 @@
 ---
-title: "Plugins"
-description: "Add features, routes, views and migrations without touching the core."
+title: "Write a plugin"
+description: "Extend Divine eCommerce with a plugin — manifest, installing and activating, services, routes, events, templates, migrations, hooks and assets."
+mode: "wide"
 ---
 
-When you need something the store doesn't do out of the box, write a plugin instead of editing the core. Plugins are auto-discovered from the `plugins/` directory, and each one can register services, routes, views, migrations and front-end assets.
+A plugin is a folder in `plugins/` with a manifest and a PHP class. It can add **services**, **routes**, **event
+listeners**, its own **templates** and **database tables**, content at **hook positions** on the home page, and
+**front-end assets** — without editing the core.
 
-## Anatomy of a plugin
+## Layout
 
 ```text
 plugins/my-plugin/
-  plugin.json        Manifest (id, name, version, class, autoload)
-  src/Plugin.php     Main class implementing PluginInterface
-  src/Controllers/   Optional controllers
-  Views/             Optional Twig templates
-  migrations/        Optional database migrations
-  Assets/main.ts     Optional front-end entry (auto-compiled by Vite)
+  plugin.json       Manifest
+  src/Plugin.php    Main class
+  src/…             Your other classes (PSR-4 autoloaded)
+  Views/            Optional Twig templates
+  migrations/       Optional Phinx migrations
+  Assets/main.ts    Optional front-end entry, compiled by Vite
 ```
 
 ## The manifest
 
 ```json
 {
-    "id": "my/plugin",
-    "name": "My Plugin",
+    "id": "acme/order-log",
+    "name": "Order Log",
     "version": "1.0.0",
-    "description": "Does something useful",
-    "author": "Your Name",
-    "class": "My\\Plugin\\Plugin",
-    "autoload": { "psr-4": { "My\\Plugin\\": "src/" } }
+    "description": "Logs every new order",
+    "author": "Acme",
+    "class": "Acme\\OrderLog\\Plugin",
+    "autoload": { "psr-4": { "Acme\\OrderLog\\": "src/" } }
 }
 ```
 
+`id`, `name`, `version` and `class` are required; `description`, `author`, `requires` and `autoload` are optional.
+
+`requires` lists what the plugin depends on, with version constraints — for example
+`{ "divine/core": "^1.0" }`. A plugin whose requirements aren't met isn't activated.
+
+## Install and manage
+
+New plugins are discovered automatically and start **inactive**. Manage them on the **Plugins** screen in the admin:
+
+| Action | What happens |
+| --- | --- |
+| **Install** | Runs the plugin's migrations, then its `install()` method. |
+| **Activate** | The plugin loads on every request: its routes, services, listeners, templates and assets. |
+| **Deactivate** | The plugin stops loading; its data is kept. |
+| **Uninstall** | Calls its `uninstall()` method, rolls its migrations back and deactivates it. |
+
+The app keeps plugin state in `plugins/state.json`, so the `plugins/` folder must be writable by the PHP container.
+
 ## The plugin class
 
-Your `Plugin.php` implements `PluginInterface`. Each hook is optional — implement only what you need:
+Extend `Divine\Core\Plugin\AbstractPlugin` and override only what you need. Active plugins load in this order on
+every request: **autoload → `register()` → `routes()` → `boot()`**.
 
-| Method | When it runs |
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Acme\OrderLog;
+
+use Divine\Core\Plugin\AbstractPlugin;
+use Divine\Modules\Order\Events\OrderCreated;
+use Laminas\Diactoros\Response\JsonResponse;
+use League\Event\EventDispatcher;
+use League\Route\Router;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+final class Plugin extends AbstractPlugin
+{
+    public function id(): string { return 'acme/order-log'; }
+    public function name(): string { return 'Order Log'; }
+    public function version(): string { return '1.0.0'; }
+
+    public function routes(Router $router): void
+    {
+        $router->get('/order-log/ping', function (ServerRequestInterface $request): ResponseInterface {
+            return new JsonResponse(['ok' => true]);
+        });
+    }
+
+    public function boot(EventDispatcherInterface $events): void
+    {
+        if ($events instanceof EventDispatcher) {
+            $events->subscribeTo(OrderCreated::class, function (OrderCreated $event): void {
+                error_log("Order {$event->orderId}: {$event->totalAmount} {$event->currency}");
+            });
+        }
+    }
+}
+```
+
+| Method | Use it to |
 | --- | --- |
-| `id()`, `name()`, `version()` | Identity, mirrored from the manifest. |
-| `requires()` | Other plugin ids this one depends on. |
-| `register($container)` | Bind services into the DI container. |
-| `boot($events)` | Subscribe to events once everything is loaded. |
-| `routes($router)` | Add storefront or admin routes. |
-| `migrations()` | Path to the plugin's Phinx migrations. |
-| `viewsPath()` | Path to the plugin's Twig templates. |
+| `register($container)` | Bind your services into the PHP-DI container. |
+| `routes($router)` | Add routes (League Route). They pass through the same middleware as the core — sessions, sign-in, CSRF. |
+| `boot($events)` | Subscribe to events and register hooks and assets. |
+| `requires()` | Return the plugin's dependencies, like the manifest's `requires`. |
+| `viewsPath()` | Return your templates folder. By default, the plugin's `Views/` folder. |
+| `migrations()` | Return your migrations folder, for example `$this->pluginPath('migrations')`. |
+| `install()` / `uninstall()` | Set up or clean up when the plugin is installed or uninstalled — seed data, files and the like. |
 
-## Enabling a plugin
+## Templates
 
-Active plugins are tracked in a generated `state.json` (git-ignored and environment-specific). A working sample, **`example-hello`**, ships in the repo — copy it as a starting point for your own.
+A plugin's templates are available to Twig under `@<name>` — the last part of the plugin id with `-` replaced by
+`_`. For `divine/example-hello`, that's `@example_hello` — in a controller that extends `BaseHttpController`:
+
+```php
+return $this->output('@example_hello/hello.twig', $data);
+```
+
+## Migrations
+
+Plugin migrations are ordinary Phinx migrations in the folder `migrations()` returns. They run
+when the plugin is installed and are rolled back when it's uninstalled. Write to the database through the
+`BaseRepository` helpers, like the core does (see [Base classes](#base-classes)).
+
+## Events
+
+Subscribe by class name:
+
+| Event | Fired when | Properties |
+| --- | --- | --- |
+| `Divine\Modules\Order\Events\OrderCreated` | An order is placed | `orderId`, `customerId`, `totalAmount`, `currency`, `itemCount`, `occurredAt` |
+| `Divine\Modules\Catalog\Events\ProductUpdated` | A product is created, updated or deleted | `productId`, `name`, `action`, `occurredAt` |
+| `Divine\Modules\Cart\Events\CartItemAdded` | An item is added to the cart | `productId`, `productName`, `quantity`, `unitPrice`, `currency`, `variantId`, `customerId`, `occurredAt` |
+| `Divine\Modules\Customer\Events\CustomerRegistered` | A customer registers | `customerId`, `email`, `name`, `occurredAt` |
+
+## Hooks
+
+`Divine\Core\Module\HookRegistry::register($position, $template, $priority)` renders a Twig template at a named
+position. Two positions exist, both on the home page: `home.before_content` and `home.after_content`. The
+template can be a core view, a module's `@namespace` view or one of your plugin's own templates.
+
+## Assets
+
+`make npm-build` compiles each plugin's `Assets/main.ts` (and the styles it imports) into
+`public/scripts/plugins/` and `public/styles/plugins/`, named after the plugin folder. Nothing includes them
+automatically — register them in `boot()`:
+
+```php
+use Divine\Core\Module\AssetRegistry;
+
+AssetRegistry::addScript('/scripts/plugins/my-plugin.js');
+AssetRegistry::addStyle('/styles/plugins/my-plugin.css');
+```
+
+## Forms and CSRF
+
+POST forms must include `{{ csrf_field() }}`, or send the token in an `X-CSRF-Token` header. Routes under `/api/`
+are exempt.
+
+## Base classes
+
+Controllers can extend `Divine\Core\Blueprints\BaseHttpController` (rendering, redirects, flash messages, JSON
+responses, the signed-in user). Database code should extend `Divine\Core\Blueprints\BaseRepository` and write through
+`insertRow()`, `updateRow()` and `insertAndGetId()` — see
+[Architecture](/divine-ecommerce/architecture#database).
+
+## Example plugin
+
+The bundled `plugins/example-hello` is a complete example: routes, a controller, templates, a migration, front-end
+assets and the install/uninstall lifecycle. Install and activate it on the **Plugins** screen and open `/hello`.
 
 <Note>
-    Because a plugin can bring its own routes, views and migrations, most features can live entirely inside `plugins/` — which keeps your store easy to update as the core moves forward.
+    Plugins aren't loaded by `bin/console`.
 </Note>

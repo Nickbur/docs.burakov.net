@@ -1,0 +1,138 @@
+---
+title: "Checkout, orders & returns"
+description: "What Divine eCommerce checkout supports, delivery and payment methods, online payment with LiqPay, how totals and taxes are calculated, order statuses and stock, returns, quick orders, unfinished carts and the emails customers receive."
+mode: "wide"
+---
+
+## What checkout supports
+
+| | Options |
+| --- | --- |
+| **Delivery** | The active methods in **Settings → Delivery** — for example store pickup, Nova Poshta or Ukrposhta. |
+| **Payment** | The active methods in **Settings → Payments** — for example payment on delivery, or online card payment through LiqPay. |
+| **Country** | Ukraine |
+| **Currency** | UAH |
+
+Guest checkout is always on. The customer enters **email, first name and phone** (required), plus optional
+details and a comment, and picks a delivery and a payment method.
+
+<Note>
+    The **Currency** admin section doesn't change checkout — amounts are always in UAH.
+</Note>
+
+## Delivery and payment methods
+
+**Settings → Delivery** — each delivery method has:
+
+| Field | Notes |
+| --- | --- |
+| Name, description | Shown at checkout. |
+| Price | Added to the order as shipping. |
+| Free-delivery threshold | Optional. From this order amount on, the method is free. |
+| Estimated time | Shown next to the method, for example *1–3 days*. |
+| Active, position | Only active methods are offered, in this order. |
+
+**Settings → Payments** — each payment method has a name, a description, **instructions** shown to the customer
+after the order is placed (for example bank details), an active flag and a position.
+
+## Online payment (LiqPay)
+
+Card payments online go through [LiqPay](https://www.liqpay.ua):
+
+1. Add your LiqPay keys to `.env` — see [Configuration](/divine-ecommerce/configuration#other-keys).
+2. Set `APP_URL` to the store's public **HTTPS** address. LiqPay returns customers there and sends its payment
+    confirmation there.
+3. Activate the LiqPay method in **Settings → Payments**.
+
+When a customer chooses it, the order is placed, they're sent to LiqPay to pay, and then returned to
+`/checkout/success`. When LiqPay confirms the payment, the order's payment status changes to **Paid**
+automatically.
+
+## How the total is calculated
+
+Every total — in the cart, at checkout and on the placed order — comes from one calculation, in this order:
+
+1. **Subtotal** of the items.
+2. **Bundle discount**, when every product of a bundle is in the cart.
+3. **Coupon or gift certificate** — one code per order.
+4. **Reward points**, for signed-in customers.
+5. **Tax**, added on top of what's left.
+6. **Shipping** — the chosen delivery method's price, or nothing once the order reaches its free-delivery threshold.
+
+See [Loyalty, coupons, gifts & bundles](/divine-ecommerce/promotions) for the discount rules.
+
+### Taxes
+
+Tax rates live in **Settings → Taxes**. The active rate for Ukraine is used — or, if there isn't one, the default
+active rate — and it's **added on top** of the discounted amount, so enter product prices without tax. To charge no
+tax, deactivate every rate. The cart preview and the placed order always use the same rate.
+
+## Placing an order
+
+When the customer confirms:
+
+- Each item's stock, status and price are checked again before the order is created.
+- The order gets a number like `ORD-20261012-0001` and the status **Pending**.
+- Items are taken out of stock and reward points are credited.
+- The customer gets a confirmation email, if mail is configured.
+- The cart is marked recovered in **Unfinished Orders**.
+- With LiqPay, the customer is then sent to pay — see [Online payment](#online-payment-liqpay).
+
+## Order statuses
+
+Orders move freely between **Pending → Processing → Shipped → Delivered → Completed**, plus **Cancelled** and
+**Refunded**. Each change is recorded in the order's history, with an optional comment. Payment status is set
+separately: **Pending**, **Paid**, **Failed** or **Refunded** — LiqPay payments update it automatically. You can also
+keep an internal admin note on each order.
+
+Customers get an email when their order's status changes, and can follow it under **Account → Orders**.
+
+### Stock
+
+| Change | Stock |
+| --- | --- |
+| Order placed | Taken out |
+| Cancelled while Pending or Processing | Put back |
+| Reactivated after that cancellation | Taken out again |
+| Cancelled after shipping, or marked Refunded | Unchanged |
+| Return completed with **Restock** ticked | Put back (once per return) |
+
+<Warning>
+    Cancelling or refunding doesn't take back the points the order earned, and doesn't restore a used coupon or a
+    gift certificate's balance. Adjust these by hand if you need to.
+</Warning>
+
+## Returns
+
+Returns are created by staff, in **Sales & Marketing → Returns**: choose the order and items, a reason, a refund
+amount and method. A return moves through **Pending → Approved / Rejected → Completed**. Tick **Restock** when
+completing it to put the items back in stock.
+
+## Quick orders
+
+The 1-click form on product pages saves the product and the shopper's contact details as a quick order. Find them in
+**Sales & Marketing → Quick orders** and turn them into real orders by contacting the customer.
+
+## Unfinished orders
+
+Every cart with items is saved as an unfinished order and marked recovered once that shopper orders. Use the list to
+see what's being abandoned. The **Remind** button emails the shopper a reminder about their cart and marks it as
+reminded — it works for carts whose shopper was signed in, so the email address is known.
+
+## Emails customers receive
+
+| Email | When |
+| --- | --- |
+| Order confirmation | An order is placed. |
+| Order status update | The order's status changes. |
+| Cart reminder | You press **Remind** on an unfinished order. |
+| Password reset | The customer asks for one. |
+| Newsletter confirmation and welcome | They subscribe, then confirm. |
+| Newsletter campaigns | You send one. |
+
+The store itself receives every message sent through the `/contacts` form, at the contact email in
+**Settings → Contacts**.
+
+Back-in-stock alerts aren't emailed, and the store isn't notified about new orders. Emails are sent while the page
+loads, so a slow or unreachable mail server slows checkout down; failures are written to the application log. Links
+inside emails use **Settings → Branding → Store Website**.

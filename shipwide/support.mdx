@@ -1,0 +1,82 @@
+---
+title: "Support & tickets"
+description: "End-to-end support: users open tickets in the app, you answer from the admin inbox, and the reply reaches them by email and push."
+mode: "wide"
+---
+
+Shipwide ships a whole support system, so you can answer users from day one:
+
+**user opens a ticket in the app → it lands in the admin inbox → your reply reaches the user by
+email and push → the conversation continues in the app.**
+
+Signed-out visitors have a separate path: the website's support form, which emails you directly.
+
+## In the app
+
+The **Support** screen (`views/pages/support/Support.vue`, route `/support`, signed-in only)
+shows the user's tickets with their status, a **new ticket** form — subject, topic and message —
+and each thread, where the user can reply. Link it from your side menu or settings wherever your
+users should find it.
+
+## In the admin panel
+
+**Support** is the inbox: tickets from signed-in users, filtered by status and topic and
+searchable by subject. Opening one shows the thread and who raised it, and lets you:
+
+- **Reply** — the message is stored first, then sent to the user by **email** (with a link back
+    to the ticket in the app's web build, `SITE_URL`) and by **push**. If neither channel reaches
+    them, the reply is still saved and the panel tells you it wasn't delivered.
+- **Change the status** — `open`, `answered` or `closed`.
+- **Delete** the ticket and its thread.
+
+## Ticket lifecycle
+
+| Event | Status |
+|-------|--------|
+| The user opens a ticket | `open` |
+| You reply | `answered` |
+| The user replies | `open` again |
+| You close it | `closed` |
+
+Email notifications answer to `MAIL_REPLY_TO`, so set it to your support inbox and configure
+`SMTP_*` on the API ([Deployment](/shipwide/deployment)). Push needs OneSignal configured
+([Push & VoIP](/shipwide/push)).
+
+## Retention
+
+Tickets don't live forever. Each one is deleted `TICKET_RETENTION_MONTHS` (default **12**) after
+its last message — every new message renews the clock. The daily purge job
+(`node dist/jobs/purge.js`) removes expired tickets; **Admin → Ops** can run the same sweep by
+hand.
+
+## Topics
+
+Tickets carry a topic — `general`, `bug`, `billing` or `account` — used for filtering in the
+inbox. The list lives in three places; change them together:
+
+- **API** — `TICKET_TOPICS` in `src/config/constants.ts` (validates new tickets and the admin
+    filter).
+- **App** — `TicketTopic` in `src/types/common.ts`, the `<ion-select-option>`s in
+    `src/views/pages/support/Support.vue`, and the `support.topic.*` strings.
+- **Admin** — the filter `<option>`s in `src/views/TicketsView.vue` and the `tickets.topic*`
+    strings.
+
+## The website's support form
+
+Visitors without an account write through the marketing site's form, which posts to the API's
+public `POST /v1/support`: no session, 5 messages per IP per 10 minutes, a honeypot field and a
+minimum fill time against bots. Each message is **emailed** to `MAIL_REPLY_TO` with Reply-To set
+to the sender, so you answer from your mail client — it isn't stored and doesn't appear in the
+admin inbox. Setup: [Website](/shipwide/website).
+
+## API
+
+| Route | Auth | Use |
+|-------|------|-----|
+| `POST /v1/support/tickets` | user session | Open a ticket |
+| `GET /v1/support/tickets` · `/:id` | user session | The user's tickets / one thread |
+| `POST /v1/support/tickets/:id/reply` | user session | The user replies |
+| `GET /v1/admin/tickets` · `/:id` | admin | The inbox / one thread |
+| `POST /v1/admin/tickets/:id/reply` | admin | Reply as support |
+| `PATCH /v1/admin/tickets/:id` · `DELETE /:id` | admin | Change status / delete |
+| `POST /v1/support` | none (rate-limited) | The website's support form |

@@ -1,55 +1,59 @@
 ---
-title: "Privacy"
-description: "What Proofday stores, what it needs, and what it doesn't."
+title: "Account & privacy"
+description: "How you sign in to Proofday, what it stores and who can read it, which services see what, locking the app, and how to export or delete your data."
+mode: "wide"
 ---
 
-Proofday keeps a journal of your days, so it's worth being clear about what's stored and why.
+## Sign in
+
+You sign in with your **email and a 6-digit code** (valid for 10 minutes) — no password. You can also sign
+in with Google, or with **Sign in with Apple** on iPhone. After five wrong codes, the app makes you wait five minutes. It's one
+account across the apps at [burakov.net](https://burakov.net).
 
 ## What Proofday stores
 
-Your **entries** — the daily notes and optional moods — are saved on your device first, then
-synced to the server and tied to your account. That's what lets your journal follow you across
-devices, and what the AI proof layer reads to build your recaps and brag-doc.
+Your **entries** — each day's text, mood and status — are saved on your device first, then synced to the
+server and tied to your account. That's what lets your journal follow you across devices, and what the
+AI reads when you generate a report. Generated **reports** are kept on the server too.
 
-Because those features need to read your entries, Proofday is **not** end-to-end encrypted: your
-notes are readable on the server to sync them and generate your AI proof. They're your private
-journal, tied to your account — not shared, not sold, and not used to build an advertising
-profile.
+<Note>
+    Proofday is **not** end-to-end encrypted. Your entries are stored readable on the server so they can
+    sync and be used for your AI reports, and the service's operator can access them when needed to run
+    the service or answer a support request. They're never shared, sold or used for advertising.
+</Note>
 
-## One account, no separate sign-up
+## Which services see what
 
-Proofday uses your single account across the Burakov apps — sign in once with an email code, no
-password to manage. The same account works on iOS, Android, and the web, and your journal follows
-you between them.
+| Service | What it receives | When |
+| --- | --- | --- |
+| **An AI provider** | The entries of the week, month or year you're generating a report for | Only when you tap **Generate** (Pro) |
+| **A crash-reporting service** | Error details with an account identifier (not your name or email), your time zone, and occasionally a recording of the app screen with all text masked | Only if **Send crash reports** is on — turn it off in Settings |
+| **A push-notification service** | A device push token linked to your account, so reminders reach this phone or browser | Once you allow notifications |
+| **Google or Apple** | Your sign-in request | Only if you sign in with them |
+| **The App Store, Google Play or the web payment provider** | Your purchase | When you subscribe |
 
-## What it needs, and what it doesn't
-
-<CardGroup cols={2}>
-    <Card title="Notifications" icon="bell">
-        Used only for the evening nudge to close your day. Decline them and the app still works — you
-        just close the day when you open it.
-    </Card>
-    <Card title="Payments" icon="credit-card">
-        Pro is billed through the App Store, Google Play, or the web billing provider. Proofday never
-        sees or stores your card details.
-    </Card>
-    <Card title="AI proof" icon="wand-magic-sparkles">
-        Recaps, trends, and the brag-doc are generated on the server from your own entries, only when
-        you ask for them. On the free plan, no AI runs.
-    </Card>
-    <Card title="No tracking" icon="shield-check">
-        No advertising profile, no engagement scoring. Proofday is a journal, not a feed.
-    </Card>
-</CardGroup>
+There's no advertising profile and no engagement scoring.
 
 ## Lock the app
 
-On iOS and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
-fingerprint**. Proofday then asks for your face or fingerprint when it opens and after 5 minutes in
-the background (on iPhone your device passcode works too). The check is done by your phone itself —
-nothing about your face or fingerprint ever reaches the app or our servers.
+On iPhone and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
+fingerprint**. Proofday then asks for your face or fingerprint when it opens and after 5 minutes in the
+background (on iPhone your device passcode works too; on Android, your fingerprint or face). Turning the
+lock on or off needs a successful check too. The check is done by your phone itself — nothing about your
+face or fingerprint ever reaches the app or our servers.
 
-<Note>
-    You stay in control: edit or delete any day at any time, and you can delete your account, which
-    removes your entries and reports.
-</Note>
+## Export or delete your data
+
+Both are in your account on burakov.net — **Account → Data & deletion**:
+
+- **Export your data → Download my data** gives you one file with your data from every app, including
+    your Proofday days and reports.
+- **Delete my account** signs you out at once and removes your data from **every** app on the account.
+    You can restore it within **30 days** by signing in again; after that it's erased for good.
+
+Sign other devices out under **Account → Security**.
+
+<Warning>
+    Deleting your account doesn't cancel a subscription bought through the App Store or Google Play.
+    Cancel it there first.
+</Warning>

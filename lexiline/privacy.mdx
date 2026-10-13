@@ -1,53 +1,59 @@
 ---
-title: "Privacy"
-description: "What Lexiline stores, what it needs, and what it doesn't."
+title: "Account & privacy"
+description: "How you sign in to Lexiline, what it stores, which services see what, locking the app, and how to export or delete your data."
+mode: "wide"
 ---
 
-Lexiline is a calm tool, and that extends to how little it asks of you. Here's what it keeps and
-why.
+## Sign in
+
+You sign in with your **email and a one-time code** — no password. You can also use **Sign in with
+Google**, or **Sign in with Apple** on iPhone. After five wrong codes, the app makes you wait five minutes. It's one account across the
+apps at [burakov.net](https://burakov.net), and your topics follow you to every device.
 
 ## What Lexiline stores
 
-To watch a topic even when your app is closed, Lexiline keeps your **topics** and their matched
-**timeline items** on the server, tied to your account. That's what lets a topic keep being
-watched across your devices and while your phone is asleep. Your relevance feedback (the
-thumbs-up / thumbs-down) is stored too, so your timeline stays tuned to what you meant.
+To keep watching while the app is closed, Lexiline keeps on its server, tied to your account:
 
-## One account, no separate sign-up
+- your **topics** — every field;
+- the **matches** found for them (headline, snippet, link, website, score and reason) — including ones
+    you hid, which help tune the topic. On Free you see the last 30 days of them; on Pro, all of them;
+- your **feedback** (swipes) and your **Recaps**.
 
-Lexiline uses your single account across the Burakov apps — sign in once with an email code, no
-password to manage. The same account works on iOS, Android and the web, and your topics follow
-you between them.
+On your device it keeps a copy of your feed and topics so you can read them offline. Logging out removes
+it from that device.
 
-## What it needs, and what it doesn't
+## Which services see what
 
-<CardGroup cols={2}>
-    <Card title="Notifications" icon="bell">
-        Used only to deliver your digest and any instant alerts. Decline them and the app still works
-        — you just read the timeline when you open it.
-    </Card>
-    <Card title="Payments" icon="credit-card">
-        Pro is billed through the App Store, Google Play, or the web billing provider. Lexiline never
-        sees or stores your card details.
-    </Card>
-    <Card title="AI matching" icon="wand-magic-sparkles">
-        Reading candidates for meaning and writing digests happens on the server. It works on the
-        public content it's checking against your topics — not on anything private about you.
-    </Card>
-    <Card title="No tracking feed" icon="shield-check">
-        There's no advertising profile and no engagement scoring. Lexiline shows your matches in time
-        order — that's all it's built to do.
-    </Card>
-</CardGroup>
+| Service | What it receives |
+| --- | --- |
+| **A search provider** | Only your topic's **title**, to search for it — never who you are. |
+| **An AI provider** | Your topic's fields, the candidate headlines and snippets it's judging, a few headlines you rated, and the text you give **Suggest with AI** — without your name or account. Requests are sent with data collection for training turned off. |
+| **A push notification service** | An account identifier and the notification text, which can include topic titles. |
+| **A crash-reporting service** | Error details with an account identifier (not your name or email), your time zone, and occasionally a recording of the app screen with all text masked — only if **Send crash reports** is on. Turn it off in Settings. |
+| **Google or Apple** | Only if you sign in with them — the sign-in itself. |
+| **The App Store, Google Play or the web payment provider** | Your purchase. Lexiline never sees your card details. |
+
+There's no advertising profile and no engagement scoring.
 
 ## Lock the app
 
-On iOS and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
-fingerprint**. Lexiline then asks for your face or fingerprint when it opens and after 5 minutes in
-the background (on iPhone your device passcode works too). The check is done by your phone itself —
-nothing about your face or fingerprint ever reaches the app or our servers.
+On iPhone and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
+fingerprint**. Lexiline then asks for your face or fingerprint when it opens and after 5 minutes in the
+background (on iPhone your device passcode works too). The check is done by your phone itself — nothing
+about your face or fingerprint ever reaches the app or our servers.
 
-<Note>
-    You stay in control: edit or delete any topic at any time, and deleting a topic clears its
-    items from your timeline.
-</Note>
+## Export or delete your data
+
+Both are in your account on burakov.net — **Account → Data & deletion**:
+
+- **Export your data → Download my data** gives you one file with your data from every app, including
+    your Lexiline topics, matches, recaps and feedback.
+- **Delete my account** signs you out at once and removes your data from **every** app on the account.
+    You can restore it within **30 days** by signing in again and choosing **Restore my account**.
+
+Your sessions on other devices are under **Account → Security**.
+
+<Warning>
+    Deleting your account doesn't cancel a subscription bought through the App Store or Google Play.
+    Cancel it there first.
+</Warning>

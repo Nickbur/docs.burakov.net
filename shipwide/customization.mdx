@@ -1,6 +1,7 @@
 ---
 title: "Customization"
 description: "Rebrand and theme the app, admin and site — design tokens, fonts and languages."
+mode: "wide"
 ---
 
 The kit ships as placeholder content over a shared design system (dusty-indigo accent, warm
@@ -64,6 +65,17 @@ neutrals, **Golos Text** display font). Here's how to make each part yours.
 ## Languages
 
 - **Website**: 5-step add (see [Website](/shipwide/website) → Languages). Ships en + ru.
-- **App / admin**: drop `<code>.json` into `src/i18n/locales/` and register it in
+- **App**: copy `src/i18n/locales/en/` to `src/i18n/locales/<code>/` and translate the JSON files,
+    then add the language to `LANGUAGE_DEFINITIONS` in `composables/useLanguageSelector.ts` (with
+    its label under `languages` in each `app.json`). Bundles load on demand; Arabic (`ar`) and Hebrew (`he`)
+    switch the layout to right-to-left. English-only? Remove the `ru` folder and its entry.
+- **Admin**: drop `<code>.json` into `src/i18n/locales/` and add one line to
     `src/i18n/locales.ts` (mark `rtl: true` for right-to-left). Bundles load on demand.
     English-only? Remove the `ru` entry and its JSON.
+
+**Language detection.** The app's language setting starts on **Use system language**: it takes
+the device's language (the OS language on iOS / Android, the browser's preference list on web and
+desktop), matches the exact tag first and then the base language (`pt-BR` → `pt`), and falls back
+to English when the app doesn't speak it. A language the user picks in Settings overrides it. The
+admin starts in the language last chosen in the panel, otherwise the browser's language if the
+panel has it, otherwise English.

@@ -1,0 +1,81 @@
+---
+title: "Loyalty, coupons, gifts & bundles"
+description: "Reward points, coupons, gift certificates, product bundles, sale prices and the promo banner in Divine eCommerce — rules, defaults and how they combine."
+mode: "wide"
+---
+
+## How discounts combine
+
+In one order, discounts apply in this order: **bundle discount → one coupon *or* gift certificate → reward points**,
+then tax is added. So a shopper can combine a bundle, a coupon and points, but **not** a coupon with a gift
+certificate — both go into the same code field, one code per order.
+
+## Reward points
+
+Points are for **signed-in customers** only. Set the rules in **Sales & Marketing → Loyalty points**.
+
+| Global rule | Default | Meaning |
+| --- | --- | --- |
+| Earn rate | 1 | Points per 1 UAH paid for goods. |
+| Redemption rate | 0.01 | Value of one point in UAH (100 points = 1 UAH). |
+| Minimum to redeem | 100 | Points needed before they can be spent. |
+| Expiry | 365 days | Points expire this long after they're earned. |
+
+You can override the **earn rate** for a category or a product. A product-specific rate wins; otherwise the highest
+rate among the product's categories; otherwise the global rate.
+
+- Points are earned on what the customer actually pays for the goods, after discounts, and are credited when the
+    order is placed.
+- Points can pay for up to the full value of the goods.
+- The customer sees their balance and history under **Account → Reward Points**; product pages show how many points a
+    product earns.
+- Expired points are removed by the background worker once a day.
+
+<Warning>
+    Points aren't taken back when an order is cancelled or refunded, and there's no manual adjustment screen yet.
+</Warning>
+
+## Coupons
+
+Create codes in **Sales & Marketing → Coupons**:
+
+- **Percentage** (up to 100%) or **fixed amount**.
+- Optional **minimum order**, **start** and **expiry** dates, **total uses** and **uses per customer** (counted by
+    account, or by email for guests).
+- Codes are case-insensitive — they're stored upper-case.
+
+## Gift certificates
+
+Create them in **Sales & Marketing → Gifts** with a code, amount, optional expiry and description. A certificate
+works like store balance: each order draws down what it uses, and the code stays valid until the balance reaches
+zero. Certificates can be created and deleted, not edited.
+
+## Bundles
+
+Product sets (**Products → Product Sets**) sell several products together at a discount.
+
+| Setting | Options |
+| --- | --- |
+| Members | Products and the quantity of each. |
+| Discount | **Percent** off, a **fixed** amount off, or a **fixed price** for the whole set. |
+| Schedule | Optional start and end dates. |
+| Display | Heading, sort order, active flag. |
+
+Bundles appear on `/bundles` and on their members' product pages. **Add set** puts every member in the cart or none
+of them. The discount applies automatically whenever all members are in the cart, however they got there, and
+disappears if one is removed.
+
+## Sale prices
+
+Give a product (or a SKU) a **compare-at price** above its price: it's shown crossed out, the product counts as
+**on sale** in filters, and it's listed on `/special`.
+
+## Promo banner
+
+A store-wide announcement strip. Turn it on and set its text in **Settings → Marketing** (**Promo Banner Enabled**,
+**Promo Banner Text**). The demo text promises free shipping — replace it with your own.
+
+<Note>
+    **Sales & Marketing → Discounts** stores discount rules but doesn't apply them yet — use coupons, bundles or
+    compare-at prices.
+</Note>

@@ -1,55 +1,80 @@
 ---
-title: "Zero-knowledge"
-description: "How Quietletter encrypts your content so only your recipient can read it — never us."
+title: "Encryption & privacy"
+description: "How Quietletter encrypts your content so only your recipient can read it, exactly what the server can and can't see, your account, and how to export or delete your data."
+mode: "wide"
 ---
 
-## What we can and can't see
+## What the server can and can't see
 
-Quietletter is honest about its privacy boundary:
-
-| We can see | We can never see |
+| The server can see | The server can never see |
 | --- | --- |
-| That a switch exists, and its title | The contents of an encrypted file, secret, or message |
-| When it's due and when it fires | The passphrase that unlocks it |
-| The recipient's address (we have to, to deliver) | The decryption key in usable form |
+| Your switches' **titles**, schedules, state, check-in and fire times, time zone | The **contents** of encrypted messages, files, secrets and private pages |
+| **Recipients** — emails, names and phone numbers — and your warning phone | Any **passphrase** |
+| Which **actions** a switch has, message **subjects**, file **names, types and sizes** | The decryption key in usable form |
+| **Readable messages** — the ones you chose to deliver as normal email | |
 
-The one-line version: **we can see *that* a switch exists and *when* it fires — never *what's
-inside*.**
+In one line: **we can see *that* a switch exists, who it's for and *when* it fires — never what's
+inside an encrypted item.**
 
 ## How the encryption works
 
-Your files and secrets (and, if you choose, your messages) are **zero-knowledge**:
-
 <Steps>
     <Step title="Encrypted on your device">
-        When you save an encrypted item, your device encrypts it with a strong modern cipher
-        (XChaCha20-Poly1305). The key is derived from a **passphrase you choose** (via Argon2id).
-        Only the ciphertext ever leaves your device.
+        When you save an encrypted item, your device encrypts it with a fresh random key
+        (XChaCha20-Poly1305). That key is itself locked with a key derived from the item's **passphrase**
+        (Argon2id). What's uploaded is the ciphertext, the locked key and the values needed to unlock it
+        — never the passphrase or the readable content.
     </Step>
     <Step title="Share the passphrase out-of-band">
-        You give the passphrase to your recipient **outside the app** — in a will, a sealed
-        envelope, or in person. We never see it, so we can't lose it or hand it over.
+        You give the passphrase to your recipient **outside the app** — in a will, a sealed envelope, or
+        in person. We never see it, so we can't lose it or hand it over.
     </Step>
     <Step title="Your recipient decrypts in their browser">
-        When the switch fires, your recipient opens a link and enters the passphrase. Decryption
-        happens **entirely in their browser** — the passphrase is never sent to us.
+        When the switch fires, your recipient opens their link and enters the passphrase. Decryption
+        happens **entirely in their browser**.
     </Step>
 </Steps>
 
+Once saved, encrypted content can't be read back — not even by you. That's the point.
+
 <Warning>
-    Because it's truly zero-knowledge, **if the passphrase is lost, the content cannot be
-    recovered** — not even by us. That's the point. Record it somewhere durable (the same place
-    you'd keep a will) and make sure your recipient will have it.
+    **Use long passphrases.** The app requires at least 12 characters and rates each passphrase as you
+    type. The locked key is stored on the server (and in your export files), so a weak passphrase could
+    be guessed by anyone who obtained that data. And if a passphrase is lost, the content can't be
+    recovered by anyone.
 </Warning>
 
 ## Readable messages
 
-Not everything has to be encrypted. For a plain, low-stakes message you can choose **readable
-delivery** — a normal email your recipient just reads, no passphrase needed. It's clearly
-labelled as not encrypted when you choose it. Files and secrets are always zero-knowledge.
+Not everything has to be encrypted. A **Message** is delivered as a normal readable email by default,
+clearly labelled *Delivered as a normal email — not encrypted*. Switch it to **Encrypted** if it
+matters. Files, secrets and private pages are always encrypted.
 
-## Your own account
+## Your account
 
-Your account is always recoverable by email, independently of any switch passphrase. So
-forgetting a passphrase never locks you out of *managing* your switches — only out of reading
-that one old encrypted payload.
+- **Sign in** with your email and a 6-digit code (valid for 10 minutes). After five wrong codes, the
+    app makes you wait five minutes.
+- Your **account is always recoverable by email**, independently of any passphrase — forgetting a
+    passphrase never locks you out of *managing* your switches, only out of reading that encrypted
+    item.
+- **Lock the app** on iPhone and Android with **Settings → Privacy & security → Lock with Face ID /
+    fingerprint**: it asks when the app opens and after 5 minutes in the background. The check is done
+    by your phone — nothing about your face or fingerprint reaches us.
+- **Log out** removes the app's data and your check-in PIN from that device. Your switches stay on
+    the server and keep running.
+
+## Export or delete your data
+
+Both are in your account on burakov.net — **Account → Data & deletion**:
+
+- **Export your data → Download my data** gives you one file with your data from every app,
+    including your switches, recipients and encrypted payloads exactly as stored. To move switches to
+    another Quietletter, use [Back up and move your switches](/quietletter/backup-and-transfer) instead.
+- **Delete my account** signs you out at once. You can restore the account within **30 days** by
+    signing in again; after that, everything is erased.
+
+<Warning>
+    **Deleting your account stops your switches.** From that moment they no longer warn or fire — your
+    recipients will receive nothing. Deleting the account also doesn't cancel an App Store or Google
+    Play subscription; cancel it there.
+</Warning>

@@ -1,0 +1,63 @@
+---
+title: "Kernel"
+description: "What the OMOS kernel implements today — memory management, scheduling, multicore and core types, timers, power and hardware discovery."
+mode: "wide"
+---
+
+## Memory
+
+| Part | Implementation |
+| --- | --- |
+| Physical memory | A bitmap page allocator, aware of NUMA nodes when the firmware describes them (ACPI SRAT). |
+| Virtual memory | 4-level page tables on every architecture — x86_64 PML4, AArch64 with 4 KiB pages, RISC-V Sv48. |
+| Kernel heap | Slab and buddy allocators, with per-CPU caches; the heap can grow. |
+| Processes | Each process has its own address space, with per-segment permissions. |
+| Shared memory | Memory objects that can be mapped into several address spaces. |
+| Randomization | The kernel is loaded at a random address (KASLR). Position-independent programs are loaded at random addresses, and every stack gets a random position with a guard page below it. |
+
+## Scheduling
+
+- **Preemptive and priority-based**, with a run queue per CPU core.
+- A **1000 Hz** timer tick and a 10-tick (10 ms) time slice.
+- Five scheduling classes: **Real-time**, **Interactive**, **Compute**, **Background** and **Idle**.
+- **Work stealing** — an idle core takes work from a busy one.
+- Inter-processor interrupts for rescheduling and for keeping page-table caches consistent across cores.
+
+## Multicore and core types
+
+All three architectures start their secondary cores. On processors with **performance and efficiency cores**, OMOS
+detects which is which — Intel hybrid processors and ARM big.LITTLE designs. RISC-V cores are treated as identical.
+
+## Timers and clocks
+
+| | Tick source | Clock |
+| --- | --- | --- |
+| x86_64 | Local APIC timer, calibrated against the PIT | TSC |
+| AArch64 | ARM Generic Timer | Generic Timer counter |
+| RISC-V | SBI timer | `time` counter, assumed to run at 10 MHz |
+
+Programs can create timer objects and sleep; the kernel keeps them on a timer wheel.
+
+## Power
+
+| | Idle | Frequency control |
+| --- | --- | --- |
+| x86_64 | `HLT` / `MWAIT` | Hardware P-states (HWP) |
+| AArch64 | `WFI`, with PSCI | Not yet |
+| RISC-V | `WFI`, with SBI | Not yet |
+
+## Hardware discovery
+
+- **ACPI** on x86_64 — XSDT/RSDT, MADT for cores and interrupt controllers, MCFG for PCI, SRAT for memory nodes.
+- **Device tree** on ARM64 and RISC-V.
+- **PCI Express** configuration through ECAM — bus 0 only for now.
+
+## Randomness
+
+The kernel gathers entropy from the CPU (`RDRAND`, `RNDR`) or the cycle counter. It's used for address
+randomization and is **not yet suitable for cryptography**.
+
+## Resource limits
+
+Processes are grouped into **jobs** that form a tree with memory and other quota fields. The quotas are recorded but
+**not enforced yet**.

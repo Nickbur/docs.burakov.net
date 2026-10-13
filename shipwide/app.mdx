@@ -1,6 +1,7 @@
 ---
 title: "App"
 description: "shipwide_app — Vue 3 + Ionic + Capacitor + Tauri. One codebase for web, mobile and desktop."
+mode: "wide"
 ---
 
 The client half of the kit — Vue 3 + Ionic + Capacitor (iOS/Android) + Tauri (desktop), one
@@ -78,6 +79,29 @@ both); on the web the `theme-color` meta follows too.
     Capacitor pads the web view itself and the bars fall back to the OS window colour.
 </Warning>
 
+## Sign-in flow
+
+Passwordless only — sign-in and sign-up are the same act. `views/pages/_base/Login.vue` is the
+single entry point:
+
+1. The user enters an email and gets a six-digit code (or picks **Google** / **Apple**).
+2. A valid code signs them in; an unknown address gets an account on the spot.
+3. A code for an account that is pending deletion (`deletion_pending`) makes the screen offer to
+    **restore** it, then signs in.
+4. With `VITE_ENABLE_ONBOARDING='true'`, a fresh sign-in goes through onboarding, where the user
+    picks a username (live availability check; the API enforces a 30-day cooldown between
+    changes). Without it, the auto-generated username from the email stays.
+
+Errors arrive as `{ code, message }` — switch on the code with `extractApiErrorCode()`, never show
+`message`. The backend side is in [Backend](/shipwide/backend).
+
+## Support screen
+
+`views/pages/support/Support.vue` (route `/support`, signed-in only) is the in-app help desk:
+the user's tickets with their status, a **new ticket** form (subject, topic, message) and each
+thread with replies. Link it from the side menu or your settings wherever your users should find
+it. How tickets flow to the admin inbox and back: [Support & tickets](/shipwide/support).
+
 ## Account time zone + language — kept in sync
 
 `accountStore.syncDeviceProfile()` keeps the account's `timezone` on the device's IANA zone
@@ -101,9 +125,10 @@ API accepts IANA names (plus the fixed `UTC ±HH:MM` offset older builds sent).
 It keeps tokens out of plaintext at rest. It is **not** an XSS defence — real device-binding is
 the API's `sessions.device_id`.
 
-## App lock & screenshot protection (iOS / Android)
+## Privacy & security: app lock, screenshots, crash reports
 
-Settings → **Privacy & security**, shown only in the native builds:
+Settings → **Privacy & security**. The lock and screenshot switches appear only in the native
+builds (iOS / Android); the crash-report switch appears wherever Sentry is configured:
 
 - **Lock with Face ID / fingerprint** — `helpers/security/biometricLock.ts` + `views/core/AppLock.vue`
     (`@capgo/capacitor-native-biometric`). A signed-in app with the lock on starts behind a
@@ -116,10 +141,16 @@ Settings → **Privacy & security**, shown only in the native builds:
     (`@capacitor-community/privacy-screen`): screenshots and screen recordings come out blank and
     the app-switcher preview is hidden. Keep `PrivacyScreen.preventScreenshots: true` in
     `capacitor.config.ts` — without it iOS hides only the preview, not screenshots.
+- **Send crash reports** — shown only when `VITE_SENTRY_DSN` is set, web included. Off closes the
+    running Sentry client at once and keeps it from starting on later launches; on takes effect
+    after a restart. Reports carry only the account's opaque id and time zone — never the username
+    or email (`composables/useSentry.ts`) — and Session Replay masks all text and inputs and blocks
+    media.
 
-Both are `settingsStore` flags (`fingerprintFaceIdProtection`, `preventScreenshots`), reset on
-logout. Native config is in place: `NSFaceIDUsageDescription` in `Info.plist` (reword it for your
-app) and `USE_BIOMETRIC` in `AndroidManifest.xml`.
+All three are `settingsStore` flags (`fingerprintFaceIdProtection`, `preventScreenshots`,
+`collectReports`). The lock and screenshot flags reset on logout; the crash-report choice belongs
+to the device and survives it. Native config is in place: `NSFaceIDUsageDescription` in
+`Info.plist` (reword it for your app) and `USE_BIOMETRIC` in `AndroidManifest.xml`.
 
 ## Offline-first data & self-hosted instances
 

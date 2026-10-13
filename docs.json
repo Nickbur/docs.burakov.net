@@ -26,22 +26,41 @@
                 "product": "Finity",
                 "icon": "timer",
                 "description": "Countdowns, life in weeks and a journal",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["finity", "finity/countdowns"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["finity", "finity/quickstart", "finity/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Reflection",
-                        "pages": ["finity/life-in-weeks", "finity/journal-and-character"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Countdowns",
+                                "pages": ["finity/countdowns", "finity/reminders", "finity/calendar"]
+                            },
+                            {
+                                "group": "Reflection",
+                                "pages": ["finity/life-in-weeks", "finity/journal", "finity/character"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Accounts & pricing",
-                        "pages": ["finity/accounts-and-privacy", "finity/pricing"]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": ["finity/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Account & plans",
+                                "pages": ["finity/accounts-and-privacy", "finity/pricing"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["finity/faq", "finity/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -49,26 +68,45 @@
                 "product": "Tidybook",
                 "icon": "address-book",
                 "description": "One clean, encrypted address book",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["tidybook", "tidybook/importing"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["tidybook", "tidybook/quickstart", "tidybook/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Tidying up",
-                        "pages": ["tidybook/deduplication", "tidybook/cleanup-and-editing"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Bringing contacts in",
+                                "pages": ["tidybook/importing", "tidybook/connected-accounts"]
+                            },
+                            {
+                                "group": "Tidying up",
+                                "pages": ["tidybook/deduplication", "tidybook/cleanup-and-editing"]
+                            },
+                            {
+                                "group": "Everywhere",
+                                "pages": ["tidybook/sync-and-encryption", "tidybook/push-back", "tidybook/export-and-share"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Sync & privacy",
-                        "pages": ["tidybook/sync-and-encryption", "tidybook/accounts-and-privacy"]
-                    },
-                    {
-                        "group": "Pricing",
-                        "pages": ["tidybook/pricing"]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": ["tidybook/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Account & plans",
+                                "pages": ["tidybook/accounts-and-privacy", "tidybook/pricing"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["tidybook/faq", "tidybook/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -76,38 +114,55 @@
                 "product": "Shipwide",
                 "icon": "rocket",
                 "description": "Multi-platform Vue starter kit",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["shipwide", "shipwide/quickstart", "shipwide/architecture"]
-                    },
-                    {
-                        "group": "The four parts",
-                        "pages": ["shipwide/backend", "shipwide/app", "shipwide/admin", "shipwide/website"]
-                    },
-                    {
-                        "group": "Guides",
-                        "pages": [
-                            "shipwide/configuration",
-                            "shipwide/customization",
-                            "shipwide/deployment",
-                            "shipwide/https-dev",
-                            "shipwide/install-scripts"
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["shipwide", "shipwide/quickstart", "shipwide/architecture", "shipwide/license"]
+                            },
+                            {
+                                "group": "The four parts",
+                                "pages": ["shipwide/backend", "shipwide/app", "shipwide/admin", "shipwide/website"]
+                            }
                         ]
                     },
                     {
-                        "group": "Features",
-                        "pages": [
-                            "shipwide/billing",
-                            "shipwide/push",
-                            "shipwide/progress-bar",
-                            "shipwide/offline-sync",
-                            "shipwide/self-host"
+                        "tab": "Guides",
+                        "groups": [
+                            {
+                                "group": "Guides",
+                                "pages": [
+                                    "shipwide/configuration",
+                                    "shipwide/customization",
+                                    "shipwide/deployment",
+                                    "shipwide/ci-cd",
+                                    "shipwide/https-dev",
+                                    "shipwide/install-scripts"
+                                ]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["shipwide/faq"]
+                            }
                         ]
                     },
                     {
-                        "group": "Help",
-                        "pages": ["shipwide/faq"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Features",
+                                "pages": [
+                                    "shipwide/billing",
+                                    "shipwide/push",
+                                    "shipwide/support",
+                                    "shipwide/progress-bar",
+                                    "shipwide/offline-sync",
+                                    "shipwide/self-host"
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
@@ -115,30 +170,45 @@
                 "product": "RingKit",
                 "icon": "phone-volume",
                 "description": "Native VoIP incoming calls for Capacitor",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["ringkit", "ringkit/quickstart"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["ringkit", "ringkit/quickstart"]
+                            },
+                            {
+                                "group": "Choosing RingKit",
+                                "pages": ["ringkit/comparison", "ringkit/migration", "ringkit/license"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Platform setup",
-                        "pages": ["ringkit/ios", "ringkit/android", "ringkit/hms"]
+                        "tab": "Guides",
+                        "groups": [
+                            {
+                                "group": "Platform setup",
+                                "pages": ["ringkit/ios", "ringkit/android", "ringkit/hms"]
+                            },
+                            {
+                                "group": "Guides",
+                                "pages": ["ringkit/reliability", "ringkit/audio", "ringkit/testing"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["ringkit/faq"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Guides",
-                        "pages": ["ringkit/reliability", "ringkit/audio", "ringkit/configuration", "ringkit/testing"]
-                    },
-                    {
-                        "group": "Reference",
-                        "pages": ["ringkit/api"]
-                    },
-                    {
-                        "group": "Choosing RingKit",
-                        "pages": ["ringkit/comparison", "ringkit/migration", "ringkit/license"]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": ["ringkit/faq"]
+                        "tab": "Reference",
+                        "groups": [
+                            {
+                                "group": "Reference",
+                                "pages": ["ringkit/configuration", "ringkit/api"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -146,18 +216,50 @@
                 "product": "Quietletter",
                 "icon": "heart-pulse",
                 "description": "Zero-knowledge dead man's switch",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["quietletter", "quietletter/how-it-works"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["quietletter", "quietletter/quickstart", "quietletter/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Privacy & trust",
-                        "pages": ["quietletter/zero-knowledge", "quietletter/self-hosting", "quietletter/running-your-instance"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Your switches",
+                                "pages": ["quietletter/create-a-switch", "quietletter/how-it-works", "quietletter/check-in"]
+                            },
+                            {
+                                "group": "Delivery",
+                                "pages": ["quietletter/recipients", "quietletter/turn-off-or-delete", "quietletter/backup-and-transfer"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Help",
-                        "pages": ["quietletter/faq"]
+                        "tab": "Self-hosting",
+                        "groups": [
+                            {
+                                "group": "Self-hosting",
+                                "pages": ["quietletter/self-hosting", "quietletter/running-your-instance"]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Account & plans",
+                                "pages": ["quietletter/zero-knowledge", "quietletter/pricing"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["quietletter/faq", "quietletter/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -165,26 +267,49 @@
                 "product": "Bastion",
                 "icon": "shield-halved",
                 "description": "Self-hosted encrypted chat and calls",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["bastion", "bastion/quickstart"]
+                        "tab": "For users",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["bastion", "bastion/quickstart"]
+                            },
+                            {
+                                "group": "Using Bastion",
+                                "pages": ["bastion/chat", "bastion/calls", "bastion/topics", "bastion/ai-assistant"]
+                            },
+                            {
+                                "group": "You & your account",
+                                "pages": ["bastion/security", "bastion/account-and-settings"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Using Bastion",
-                        "pages": ["bastion/chat", "bastion/calls", "bastion/security"]
+                        "tab": "For admins",
+                        "groups": [
+                            {
+                                "group": "Buying",
+                                "pages": ["bastion/pricing"]
+                            },
+                            {
+                                "group": "Self-hosting",
+                                "pages": ["bastion/self-hosting", "bastion/operations"]
+                            },
+                            {
+                                "group": "Admin panel",
+                                "pages": ["bastion/administration", "bastion/organization-settings"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Running your own",
-                        "pages": ["bastion/self-hosting", "bastion/administration"]
-                    },
-                    {
-                        "group": "Accounts & pricing",
-                        "pages": ["bastion/accounts-and-privacy", "bastion/pricing"]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": ["bastion/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Help",
+                                "pages": ["bastion/accounts-and-privacy", "bastion/faq", "bastion/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -192,26 +317,49 @@
                 "product": "Cronch",
                 "icon": "clock",
                 "description": "Task scheduler for Windows and macOS",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["cronch", "cronch/quickstart"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["cronch", "cronch/quickstart", "cronch/tour"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Scheduling",
-                        "pages": ["cronch/schedules", "cronch/commands-and-shells"]
+                        "tab": "Guides",
+                        "groups": [
+                            {
+                                "group": "Scheduling",
+                                "pages": ["cronch/schedules", "cronch/catch-up"]
+                            },
+                            {
+                                "group": "Running commands",
+                                "pages": ["cronch/commands-and-shells", "cronch/environment"]
+                            },
+                            {
+                                "group": "Managing rules",
+                                "pages": ["cronch/history", "cronch/import-export"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["cronch/troubleshooting", "cronch/faq"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Running & history",
-                        "pages": ["cronch/history", "cronch/settings"]
-                    },
-                    {
-                        "group": "Trust",
-                        "pages": ["cronch/privacy"]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": ["cronch/troubleshooting", "cronch/faq"]
+                        "tab": "Reference",
+                        "groups": [
+                            {
+                                "group": "Reference",
+                                "pages": ["cronch/cron-syntax", "cronch/rules", "cronch/statuses", "cronch/settings"]
+                            },
+                            {
+                                "group": "Data",
+                                "pages": ["cronch/privacy"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -219,18 +367,41 @@
                 "product": "Lexiline",
                 "icon": "eye",
                 "description": "Calm AI topic watcher",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["lexiline", "lexiline/how-it-works"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["lexiline", "lexiline/quickstart", "lexiline/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Using Lexiline",
-                        "pages": ["lexiline/following-topics", "lexiline/digests-and-alerts"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Topics",
+                                "pages": ["lexiline/following-topics", "lexiline/tuning-topics", "lexiline/how-it-works"]
+                            },
+                            {
+                                "group": "Keeping up",
+                                "pages": ["lexiline/reading-your-feed", "lexiline/digests-and-alerts"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Privacy & help",
-                        "pages": ["lexiline/privacy", "lexiline/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Account & plans",
+                                "pages": ["lexiline/privacy", "lexiline/pricing"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["lexiline/faq", "lexiline/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -238,18 +409,41 @@
                 "product": "Proofday",
                 "icon": "circle-check",
                 "description": "Daily accountability journal",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["proofday", "proofday/getting-started"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["proofday", "proofday/getting-started", "proofday/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Using Proofday",
-                        "pages": ["proofday/close-the-day", "proofday/streaks-and-momentum", "proofday/ai-proof"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Your days",
+                                "pages": ["proofday/close-the-day", "proofday/past-days", "proofday/streaks-and-momentum", "proofday/reminders"]
+                            },
+                            {
+                                "group": "More",
+                                "pages": ["proofday/ai-proof", "proofday/devices-and-offline"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Privacy & help",
-                        "pages": ["proofday/privacy", "proofday/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Account & plans",
+                                "pages": ["proofday/privacy", "proofday/pricing"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["proofday/faq", "proofday/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -257,22 +451,37 @@
                 "product": "Sidedrop",
                 "icon": "share-nodes",
                 "description": "Peer-to-peer file transfer in the browser",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["sidedrop", "sidedrop/how-it-works"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["sidedrop", "sidedrop/quickstart", "sidedrop/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Receiving",
-                        "pages": ["sidedrop/saving-files"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Transfers",
+                                "pages": ["sidedrop/pairing", "sidedrop/sending", "sidedrop/saving-files", "sidedrop/how-it-works"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Running your own",
-                        "pages": ["sidedrop/run-from-source"]
-                    },
-                    {
-                        "group": "Privacy & help",
-                        "pages": ["sidedrop/privacy", "sidedrop/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Help",
+                                "pages": ["sidedrop/privacy", "sidedrop/faq", "sidedrop/troubleshooting"]
+                            },
+                            {
+                                "group": "Developers",
+                                "pages": ["sidedrop/run-from-source"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -280,24 +489,41 @@
                 "product": "Semble",
                 "icon": "users",
                 "description": "Video meetings with an AI participant",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["semble", "semble/quickstart"]
-                    },
-                    {
-                        "group": "Using Semble",
-                        "pages": [
-                            "semble/talking-to-kai",
-                            "semble/documents",
-                            "semble/transcript-and-summary",
-                            "semble/recording",
-                            "semble/hosting"
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["semble", "semble/quickstart", "semble/app-screens"]
+                            }
                         ]
                     },
                     {
-                        "group": "Billing, privacy & help",
-                        "pages": ["semble/credits", "semble/privacy", "semble/faq"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Meetings",
+                                "pages": ["semble/meetings", "semble/in-the-call", "semble/hosting", "semble/recording"]
+                            },
+                            {
+                                "group": "Kai",
+                                "pages": ["semble/talking-to-kai", "semble/documents", "semble/transcript-and-summary"]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Account & credits",
+                                "pages": ["semble/credits", "semble/privacy"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["semble/faq", "semble/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -305,27 +531,45 @@
                 "product": "Rowbots AI",
                 "icon": "robot",
                 "description": "Autonomous software team for your products",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["rowbots", "rowbots/how-it-works"]
-                    },
-                    {
-                        "group": "Using Rowbots",
-                        "pages": [
-                            "rowbots/projects-and-fleet",
-                            "rowbots/feeding-work",
-                            "rowbots/verification",
-                            "rowbots/budget"
+                        "tab": "For users",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["rowbots", "rowbots/quickstart", "rowbots/dashboard"]
+                            },
+                            {
+                                "group": "Working with Rowbots",
+                                "pages": ["rowbots/how-it-works", "rowbots/feeding-work", "rowbots/review-and-merge", "rowbots/verification"]
+                            }
                         ]
                     },
                     {
-                        "group": "Running it",
-                        "pages": ["rowbots/your-own-models", "rowbots/self-hosted-runner"]
+                        "tab": "For admins",
+                        "groups": [
+                            {
+                                "group": "Setting up",
+                                "pages": ["rowbots/setup", "rowbots/projects-and-fleet", "rowbots/recipe", "rowbots/team-and-permissions"]
+                            },
+                            {
+                                "group": "Models & compute",
+                                "pages": ["rowbots/your-own-models", "rowbots/compute", "rowbots/self-hosted-runner"]
+                            },
+                            {
+                                "group": "Governance",
+                                "pages": ["rowbots/channels", "rowbots/budget", "rowbots/security-and-privacy"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Help",
-                        "pages": ["rowbots/security-and-privacy", "rowbots/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Help",
+                                "pages": ["rowbots/pricing", "rowbots/faq", "rowbots/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -333,26 +577,37 @@
                 "product": "WhySoSlow",
                 "icon": "gauge-high",
                 "description": "Offline speed-limit co-driver for Kyiv",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["whysoslow", "whysoslow/quickstart"]
-                    },
-                    {
-                        "group": "On the road",
-                        "pages": ["whysoslow/the-drive-screen", "whysoslow/speed-cameras"]
-                    },
-                    {
-                        "group": "Maps & your data",
-                        "pages": [
-                            "whysoslow/offline-maps",
-                            "whysoslow/your-markers-and-limits",
-                            "whysoslow/ai-sign-advisor"
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["whysoslow", "whysoslow/quickstart", "whysoslow/app-screens"]
+                            }
                         ]
                     },
                     {
-                        "group": "Account & help",
-                        "pages": ["whysoslow/accounts-and-privacy", "whysoslow/faq"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "On the road",
+                                "pages": ["whysoslow/the-drive-screen", "whysoslow/speed-cameras", "whysoslow/adjust-alerts", "whysoslow/offline-maps"]
+                            },
+                            {
+                                "group": "Your corrections",
+                                "pages": ["whysoslow/fix-a-limit", "whysoslow/your-markers-and-limits", "whysoslow/manage-your-data", "whysoslow/ai-sign-advisor"]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Help",
+                                "pages": ["whysoslow/accounts-and-privacy", "whysoslow/faq", "whysoslow/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -360,22 +615,37 @@
                 "product": "Fogline",
                 "icon": "map-location-dot",
                 "description": "Fog-of-war map of where you've been",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["fogline", "fogline/quickstart"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["fogline", "fogline/quickstart", "fogline/app-screens"]
+                            }
+                        ]
                     },
                     {
-                        "group": "On the map",
-                        "pages": ["fogline/the-map-screen", "fogline/painting-roads"]
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "Painting",
+                                "pages": ["fogline/painting-roads", "fogline/background-tracking", "fogline/the-map-screen"]
+                            },
+                            {
+                                "group": "Your map",
+                                "pages": ["fogline/coverage-and-stats", "fogline/offline-maps", "fogline/sync-and-backup"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Maps & your data",
-                        "pages": ["fogline/offline-maps", "fogline/coverage-and-stats", "fogline/sync-and-backup"]
-                    },
-                    {
-                        "group": "Account & help",
-                        "pages": ["fogline/accounts-and-privacy", "fogline/faq"]
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Help",
+                                "pages": ["fogline/accounts-and-privacy", "fogline/faq", "fogline/troubleshooting"]
+                            }
+                        ]
                     }
                 ]
             },
@@ -383,54 +653,106 @@
                 "product": "Divine eCommerce",
                 "icon": "bag-shopping",
                 "description": "Self-hostable e-commerce engine",
-                "groups": [
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["divine-ecommerce", "divine-ecommerce/quickstart", "divine-ecommerce/configuration"]
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["divine-ecommerce", "divine-ecommerce/quickstart"]
+                            },
+                            {
+                                "group": "Tours",
+                                "pages": ["divine-ecommerce/storefront", "divine-ecommerce/admin"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Building on it",
-                        "pages": ["divine-ecommerce/architecture", "divine-ecommerce/plugins"]
+                        "tab": "Guides",
+                        "groups": [
+                            {
+                                "group": "Running the store",
+                                "pages": ["divine-ecommerce/catalog", "divine-ecommerce/checkout-and-orders", "divine-ecommerce/promotions", "divine-ecommerce/content", "divine-ecommerce/seo", "divine-ecommerce/import-export", "divine-ecommerce/staff-and-permissions"]
+                            },
+                            {
+                                "group": "Building & operating",
+                                "pages": ["divine-ecommerce/plugins", "divine-ecommerce/deployment"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Using the store",
-                        "pages": ["divine-ecommerce/storefront", "divine-ecommerce/admin"]
-                    },
-                    {
-                        "group": "Deploy & help",
-                        "pages": ["divine-ecommerce/deployment", "divine-ecommerce/faq"]
+                        "tab": "Reference",
+                        "groups": [
+                            {
+                                "group": "Reference",
+                                "pages": ["divine-ecommerce/configuration", "divine-ecommerce/architecture", "divine-ecommerce/commands"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["divine-ecommerce/faq"]
+                            }
+                        ]
                     }
                 ]
             },
             {
                 "product": "OMOS",
                 "icon": "server",
-                "description": "Privacy-first operating system",
-                "groups": [
+                "description": "Rust operating system — developer preview",
+                "tabs": [
                     {
-                        "group": "Getting started",
-                        "pages": ["omos", "omos/quickstart"]
+                        "tab": "Overview",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": ["omos", "omos/quickstart", "omos/first-boot"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["omos/faq", "omos/privacy"]
+                            }
+                        ]
                     },
                     {
-                        "group": "How it works",
-                        "pages": ["omos/architecture", "omos/security", "omos/platform-support"]
+                        "tab": "Technology",
+                        "groups": [
+                            {
+                                "group": "How it works",
+                                "pages": ["omos/architecture", "omos/kernel", "omos/ipc", "omos/security"]
+                            },
+                            {
+                                "group": "Hardware",
+                                "pages": ["omos/platform-support", "omos/drivers-and-storage"]
+                            },
+                            {
+                                "group": "Developers",
+                                "pages": ["omos/contributing"]
+                            }
+                        ]
                     },
                     {
-                        "group": "Where it's going",
-                        "pages": ["omos/roadmap"]
-                    },
-                    {
-                        "group": "Trust & licensing",
-                        "pages": ["omos/privacy", "omos/licensing"]
-                    },
-                    {
-                        "group": "Help",
-                        "pages": ["omos/faq"]
+                        "tab": "Roadmap & licensing",
+                        "groups": [
+                            {
+                                "group": "Roadmap",
+                                "pages": ["omos/roadmap"]
+                            },
+                            {
+                                "group": "Licensing",
+                                "pages": ["omos/licensing", "omos/third-party-notices"]
+                            }
+                        ]
                     }
                 ]
             }
         ]
     },
+    "redirects": [
+        {
+            "source": "/finity/journal-and-character",
+            "destination": "/finity/journal"
+        }
+    ],
     "navbar": {
         "links": [
             {

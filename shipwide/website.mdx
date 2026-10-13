@@ -1,6 +1,7 @@
 ---
 title: "Website"
 description: "shipwide_website — a fast, static Astro marketing site with a hand-written SCSS design system."
+mode: "wide"
 ---
 
 The marketing site for a single app: a fast, custom-designed site built with **Astro** (static
@@ -51,6 +52,48 @@ npm run build           # Prettier check + ESLint + astro-i18next generate + ast
         Set `PUBLIC_SITE_URL` in `env/env.prod`; swap the copy in `public/locales/en/*.json`.
     </Step>
 </Steps>
+
+## Legal documents
+
+The site ships a **Privacy Policy** (`/privacy`) and **Terms** (`/terms`) as a comprehensive
+starter template, in English and Russian:
+
+- **Privacy Policy** — GDPR/CCPA-shaped: who is responsible, what's collected and why, legal
+    basis, sharing, international transfers, retention, security, data breaches, children, AI &
+    machine learning, automated decisions, your rights, plus regional sections for the EEA, UK &
+    Switzerland, California (CCPA/CPRA), other US states and Canada (PIPEDA).
+- **Terms** — a hardened end-user agreement: license, acceptable use, intellectual property,
+    your content, third-party services, purchases & subscriptions, warranty disclaimer,
+    limitation of liability, indemnification, termination, governing law & disputes, and the
+    Apple & Google store terms the stores require.
+
+**Modular privacy.** List what your app actually does in `privacyModules` in
+`src/data/product.ts` — each entry adds one matching section, and anything not listed stays out,
+so the policy never over-discloses (a common App Store / Google Play rejection). The modules:
+`push`, `payments`, `uploads`, `location`, `contacts`, `camera_media`, `microphone`, `health`,
+`financial`, `identity`, `ugc`, `ai`, `ads`. The kit ships with `push`, `payments` and
+`uploads`.
+
+**Make them yours:**
+
+<Steps>
+    <Step title="Fill in the placeholders">
+        Set `legal.company` and `legal.jurisdiction` in `src/data/site.ts` — they replace
+        `[Your Company]` and `[your country]` throughout. The contact address is
+        `site.supportEmail`.
+    </Step>
+    <Step title="Match the modules to your app">
+        Keep `privacyModules` in step with what the app does; the wording lives in
+        `public/locales/<lang>/legal.json`.
+    </Step>
+    <Step title="Get them reviewed">
+        Each document opens with a notice to replace the placeholders and have the text reviewed
+        for your jurisdiction. It's a strong starting point, not legal advice.
+    </Step>
+</Steps>
+
+Point the app at the published pages with `VITE_LEGAL_PRIVACY_URL` / `VITE_LEGAL_TERMS_URL`
+(see [App](/shipwide/app)).
 
 ## Design tokens & fonts
 

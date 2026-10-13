@@ -1,22 +1,29 @@
 ---
-title: "Schedules"
-description: "The three ways to schedule a job in Cronch — interval, cron and once — and how catch-up handles runs missed while your machine was off."
+title: "Choosing a schedule"
+description: "The three ways to schedule a job in Cronch — interval, cron and once — when the first run happens, and how each one behaves around daylight-saving changes."
+mode: "wide"
 ---
 
 Every rule has one schedule, chosen from three modes. Pick the mode that matches how you think about the job.
 
+| If the job should run… | Use | Example |
+| --- | --- | --- |
+| Every so often, at no particular clock time | **Interval** | Every 15 minutes, every 6 hours |
+| At a clock time or on calendar days | **Cron** | 09:00 on weekdays, midnight on the 1st |
+| Exactly once | **Once** | 2026-12-24 18:00 |
+
 ## Interval
 
-Run every *N* seconds, minutes, hours or days. The simplest option — "every 15 minutes", "every 6 hours" — with no cron syntax to remember. Set the number and the unit, and Cronch counts from when the rule starts. The rhythm is kept: an hourly rule that started at 10:17 keeps running at a quarter past, even after the computer was off for a while.
+Run every *N* **seconds, minutes, hours or days** — "every 15 minutes", "every 6 hours" — with no syntax to remember. The number can be from 1 to 1,000,000, and the whole interval from 1 second up to 100 years. New rules start as **every 5 minutes**.
+
+- **The first run is one interval after you save**, not immediately. Save an hourly rule at 10:17 and it first runs at 11:17. Use **Run now** if you want a run straight away.
+- **The rhythm is kept.** An hourly rule that started at 10:17 keeps running at a quarter past — across restarts, sleep and time with Cronch closed.
+- **Editing re-anchors it.** When you change the interval, or switch the rule off and on again, the rhythm restarts from the start of the rule's last run.
+- **Intervals are exact durations**, not clock times. A daily interval that runs at 09:00 runs at 10:00 or 08:00 after a daylight-saving change. If the clock time matters, use **Cron**.
 
 ## Cron
 
-For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month" — use a cron expression. Cronch follows standard cron:
-
-- **5 fields** — `minute hour day-of-month month day-of-week`; seconds are assumed to be `0`.
-- **6 fields** — adds a leading seconds field for finer timing.
-- **Day of week** — `0`–`7`, where both `0` and `7` are Sunday (`1` is Monday), or names like `MON-FRI`.
-- **Day of month and day of week together** — a day that matches *either* one fires, just like classic cron.
+For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month" — use a cron expression. New rules suggest `0 9 * * *` (every day at 09:00).
 
 | Expression | Runs |
 | --- | --- |
@@ -24,42 +31,34 @@ For calendar-based timing — "at 9:00 every weekday", "on the 1st of the month"
 | `0 9 * * 1-5` | Weekdays (Monday–Friday) at 09:00 |
 | `*/15 * * * *` | Every 15 minutes |
 | `0 0 1 * *` | At midnight on the 1st of every month |
+| `0 18 * * 5L` | 18:00 on the last Friday of every month |
 | `30 0 9 * * MON` | Mondays at 09:00:30 (6 fields, with seconds) |
 
-Expressions are evaluated in your local time, including daylight-saving changes.
-
-<Tip>
-    New to cron? Start from the example in the field (`0 9 * * *`) and change one part at a time. Interval mode is often easier for "every so often" jobs; cron shines for "at this clock time".
-</Tip>
+Cron expressions are evaluated in your computer's **local time** and follow it through daylight-saving changes: `0 9 * * *` stays at 09:00 all year. The full syntax — fields, names, `L`, `W`, `#`, shortcuts like `@daily`, and the exact daylight-saving rules — is in [Cron syntax](/cronch/cron-syntax).
 
 ## Once
 
-Run a single time at a specific date and time — `YYYY-MM-DD HH:MM`, in your local time. The time must be in the future when you save the rule. Useful for a one-off reminder script or a delayed task. After it runs, the rule is done.
+Run a single time at a date and time, typed as `YYYY-MM-DD HH:MM` in your local time.
 
-## Catch-up: runs missed while the machine was off or asleep
+- The time must be **in the future** when you save. (Editing other fields of an existing Once rule keeps its original time.)
+- A time that doesn't exist or happens twice on a daylight-saving day — inside the hour the clock skips or repeats — is rejected; pick a time outside that hour.
+- After it runs, the rule's **next** shows **—**: it's done, and it stays in the list until you delete it.
+- **Run now** before its time doesn't use it up: the rule still runs at its time.
+- The moment is stored as an exact instant. If you travel to another time zone, it still runs at the same instant, which shows as a different local time.
 
-Computers sleep and shut down, so a scheduled time can pass while Cronch can't run anything. A run that is more than **five minutes late** counts as **missed** — whether Cronch wasn't running, the computer was asleep, or everything was paused. (A run that is only slightly late, for example because the system was busy, simply runs.)
+If the computer is off or asleep at that moment, what happens depends on **Catch up if missed** — see [Missed runs, sleep & pausing](/cronch/catch-up).
 
-Each rule has a **Catch up if missed** option (on by default) that decides what happens to a missed run:
-
-- **On** — as soon as Cronch can (when it starts, the computer wakes, or you resume), the rule runs **once**, right away. Multiple missed occurrences are **coalesced** into that single catch-up run, so a weekend of hourly jobs doesn't fire dozens of times at once.
-- **Off** — the missed occurrences are skipped; the rule simply waits for its next scheduled time.
-
-A missed **Once** schedule follows the same option: with catch-up on it runs as soon as Cronch can; with catch-up off its moment has passed, and the rule is marked **Expired**.
-
-Catch-up runs are labelled **catch-up** in the rule's [history](/cronch/history).
-
-<Note>
-    Cronch re-checks its schedule continuously, so clock changes and sleep/wake are handled without relying on operating-system power events. You don't need to configure anything for this.
-</Note>
+<Tip>
+    New to cron? Start from the suggestion in the field and change one part at a time. Interval mode is often easier for "every so often" jobs; cron shines for "at this clock time".
+</Tip>
 
 ## Next
 
 <CardGroup cols={2}>
-    <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
-        What actually runs, in which shell, and what to do about overlap.
+    <Card title="Missed runs, sleep & pausing" icon="moon" href="/cronch/catch-up">
+        What happens to runs that come due while the computer is off, asleep or paused.
     </Card>
-    <Card title="History & logs" icon="clock-rotate-left" href="/cronch/history">
-        Confirm a schedule is firing by checking its run history.
+    <Card title="Cron syntax" icon="code" href="/cronch/cron-syntax">
+        Every field, operator and shortcut Cronch accepts.
     </Card>
 </CardGroup>

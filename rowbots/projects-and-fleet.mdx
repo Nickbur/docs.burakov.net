@@ -1,13 +1,14 @@
 ---
 title: "Projects & your fleet"
-description: "Workspaces, projects and repositories, the onboarding interview, the constitution, and your team."
+description: "Workspaces, projects and repositories, commit authorship, the onboarding interview, the constitution and the .rowbots directory."
+mode: "wide"
 ---
 
 ## Workspaces and projects
 
 A **workspace** is your Rowbots account space: its plan, budget, team, keys and compute. Inside it, each
 **project** is one product — made of one or more git repositories. Your plan sets how many projects can be
-active at once (see [Budget & plans](/rowbots/budget)).
+active at once (see [Pricing](/rowbots/pricing)).
 
 Rowbots looks at the whole workspace as one **fleet**: it ranks work across all your products and spends
 the budget wherever it does the most good, instead of treating each repository on its own.
@@ -79,16 +80,9 @@ pull request, so you review it like any other change:
 
 The **recipe** tells the sandbox how to work with your project: the environment image, setup steps,
 services it needs (such as Postgres or Redis), the build, test and run commands, a health URL and key
-routes, and any extra network hosts it may reach. You confirm it during onboarding.
+routes, and any extra network hosts it may reach. You confirm it during onboarding — see
+[Verification recipe](/rowbots/recipe) for the format.
 
 ## Your team
 
-| Role | Can |
-|---|---|
-| **Owner** (one per workspace) | everything, including billing, keys, compute and deleting the workspace |
-| **Admin** | edit the constitution, answer escalations, set budgets, batch-merge, manage members |
-| **Member** | add tasks, ideas and feedback, comment; sees everything, but doesn't decide or merge |
-| **Viewer** | read-only — handy for an agency's client |
-
-Members and viewers can be limited to specific projects. Paid plans include unlimited members. Everyone
-signs in with their email — a one-time code, no password.
+Who can do what in the workspace is covered in [Team & permissions](/rowbots/team-and-permissions).

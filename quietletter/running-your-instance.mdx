@@ -1,11 +1,12 @@
 ---
-title: "Running your instance"
+title: "Configure, operate & API"
 description: "Configuration, delivery, backups and the API of a self-hosted Quietletter core."
+mode: "wide"
 ---
 
 This page is for whoever runs a **Quietletter core** instance — the open-source server from
-[Self-hosting](/quietletter/self-hosting). It covers how to run and configure it, what it sends and
-when, how to keep it safe, and the API it speaks.
+[Run your own instance](/quietletter/self-hosting). It covers how to run, configure and upgrade it,
+what it sends and when, how to keep it safe, and the API it speaks.
 
 ## What your instance is
 
@@ -15,18 +16,21 @@ when, how to keep it safe, and the API it speaks.
     of the protocol the Quietletter cloud speaks, so the Quietletter app connects to it unchanged.
 - **Content-blind.** It stores ciphertext and a passphrase-wrapped content key — never your
     passphrases or plaintext. The only exceptions are items you deliberately mark *readable*, and
-    public pages, which are plaintext by nature. It knows only what the firing engine needs: the
-    check-in rhythm, the deadline, recipient addresses, action types and state.
-- **AGPL-3.0.** Anyone who hosts a modified version for others must share its source — the
-    strongest trust signal for software that holds secrets. The Quietletter apps are licensed
-    separately.
+    public pages, which are plaintext by nature. Beyond that it stores what delivery needs: titles,
+    schedules and state, recipients, action types, message subjects, file names, types and sizes.
+- **AGPL-3.0.** Anyone who hosts a modified version for others must share its source. The
+    Quietletter apps are licensed separately.
 
 ## Running it
 
-With Docker, `docker compose up --build` is all it takes (see the
+With Docker, `docker compose up --build -d` is all it takes (see the
 [quick start](/quietletter/self-hosting#quick-start)). It starts PostgreSQL and the server, applies
 the database migrations, and serves on `http://localhost:8080`. The firing engine runs inside the
 server every `SWEEP_INTERVAL_SECONDS` (60 by default), so no external scheduler is needed.
+
+The server has no TLS of its own. Serve it to the internet through a reverse proxy with HTTPS — the
+app refuses plain-HTTP instances outside your local network. The server trusts the proxy's
+forwarded headers.
 
 <Note>
     Under Docker Compose the server always uses the bundled database and listens on port 8080
@@ -49,11 +53,20 @@ npm start                 # start the server
 To drive the firing engine from cron instead of the built-in interval, set
 `SWEEP_INTERVAL_SECONDS=0` and run one sweep per tick with `node dist/sweep.js`.
 
+### Upgrading
+
+Back up the database first (see [Keeping it running](#keeping-it-running)), then:
+
+- **With Docker** — `git pull`, then `docker compose up --build -d`. Migrations run automatically
+    every time the container starts.
+- **Without Docker** — `git pull`, `npm install`, `npm run build`, `npm run db:migrate:prod`, then
+    restart the server.
+
 ## Configuration
 
 `env/env.prod` lists every setting with a short explanation — copy it to `.env` and fill in its
-`REPLACE_ME` values. The server refuses to start when a value is invalid, so an unfilled owner
-token, public URL or owner email stops it at boot.
+`REPLACE_ME` values. The server refuses to start when a value is invalid or any `REPLACE_ME` value
+is left, so an unfilled copy stops it at boot.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
@@ -98,6 +111,8 @@ token — they are protected by their unguessable link instead.
 - **Push and SMS are console-only.** The core ships no push or SMS provider, so those warning
     steps are written to the log, where you can wire up a provider of your own. In the Quietletter
     app, check-in reminders still fire on your device.
+- **Language.** Emails are written in the language saved with each switch (English or Russian).
+    The recipient release page is in English.
 
 ## How a switch fires
 
@@ -108,7 +123,7 @@ window. Each sweep:
 2. Sends the warning steps that are now due.
 3. Once the grace window (never less than 48 hours) has elapsed, **fires**: publishes any public
     pages, then emails each recipient a private release link for encrypted items, with any
-    readable messages included in the email.
+    readable messages (each under its subject, in action order) included in the email.
 4. Records every delivery before sending it, so crashes, overlapping sweeps and catch-up runs
     never send twice. A failed recipient email is retried on later sweeps for up to a day after
     firing.
@@ -117,18 +132,21 @@ window. Each sweep:
 
 Your latest action always wins: the sweep moves a switch to grace or fires it only if it is still
 exactly as the sweep read it, so a check-in, disarm or edit that lands mid-sweep is never
-overridden. A fired switch is final — checking it in or disarming it answers `409 already_fired`.
+overridden. A fired switch is final — checking it in, disarming it or editing it answers
+`409 already_fired`.
 
 ## Public pages (self-host only)
 
 Quietletter has five action types: `message`, `file`, `secret`, `private_page` and `public_page`.
 The hosted service refuses `public_page` — a truly public page is plaintext by nature and would
-make the host a publisher. **Your instance accepts it.**
+make the host a publisher. **Your instance accepts it** through the API (`PUT /v1/switches/:id`);
+the app doesn't offer it as an action.
 
 When a switch with a public page fires, its content is published at `/p/<slug>`. The slug comes
 from the action's `slug` (or its subject, or the switch title); a taken slug gets a short random
-suffix. The page is public and indexable, and — unlike encrypted payloads — it is **never** removed
-by the retention purge: a published page is meant to stay up.
+suffix. The page is public and indexable, and — unlike encrypted payloads — it is **not** removed
+by the retention purge: a published page is meant to stay up. Deleting the switch deletes its
+public page too.
 
 <Warning>
     Whatever a public page publishes is your responsibility as the operator of the instance.
@@ -146,7 +164,7 @@ by the retention purge: a published page is meant to stay up.
 
 - **Keep an export too.** **Settings → Backup & transfer → Export switches** in the app (or
     `GET /v1/switches/export`) saves every live switch to one file that imports into another
-    instance or into the hosted service — see [Move your switches](/quietletter/self-hosting#move-your-switches).
+    instance or into the hosted service — see [Back up and move your switches](/quietletter/backup-and-transfer).
 - **Publish your own shutdown protocol.** If you will ever stop running an instance, give your
     recipients advance notice on more than one channel, a final export, and a pointer to the
     core's repository so they can keep the switches alive themselves. "A service outlives its
@@ -160,6 +178,10 @@ by the retention purge: a published page is meant to stay up.
 All JSON routes live under `/v1`. Bodies are camelCase, timestamps ISO-8601, and errors come back
 as `{ "code": "...", "message": "..." }`.
 
+Limits: **300 requests per minute** per client, JSON bodies up to **8 MB**, a single payload upload
+up to **3 MB**, and an import up to **50 MB**. Cross-origin requests are allowed from any origin
+(the owner token is what protects your switches).
+
 ### Owner routes (bearer token)
 
 | Method & path | Purpose |
@@ -168,11 +190,11 @@ as `{ "code": "...", "message": "..." }`.
 | `GET /v1/switches/export` | Every live switch, payloads included, as one export file (see below). |
 | `POST /v1/switches/import` | Recreate the switches of an export file; answers with what was imported and what was skipped. |
 | `GET /v1/switches/:id` | One switch. |
-| `PUT /v1/switches/:id` | Create or replace a switch by its client-generated UUID, with nested recipients and actions. The server computes the deadline; the state fields are read-only. |
+| `PUT /v1/switches/:id` | Create or replace a switch by its client-generated UUID, with nested recipients and actions. The server computes the deadline: an edit counts from the last check-in and never moves the deadline into the past (a shorter cadence starts the grace window now); once the grace window is running, it never brings the fire time closer either (a shorter grace moves the deadline later). The state fields are read-only; a fired switch answers `409 already_fired`. |
 | `PUT /v1/switches/:id/regional` | Fill in the time zone and language a switch saved by an older app is missing (`{ timezone, locale }`); only missing values are written and the deadline never moves. |
 | `DELETE /v1/switches/:id` | Delete a switch and everything under it (idempotent). |
 | `POST /v1/switches/:id/checkin` | Proof of life: resets the deadline and re-activates the switch. |
-| `POST /v1/switches/:id/disarm` | Turn the switch off; a later check-in turns it back on. |
+| `POST /v1/switches/:id/disarm` | Turn the switch off; a later check-in (**Re-arm** in the app) turns it back on with a fresh cycle. |
 | `PUT /v1/switches/:id/actions/:actionId/payload` | Upload the encrypted (or readable) content of one action. |
 
 A switch's safety settings:
@@ -180,7 +202,9 @@ A switch's safety settings:
 - **`cadence`** — `{ value, unit }` with `unit` = `day`, `week` or `month`.
 - **`grace`** — `{ value, unit }` with `unit` = `hour` or `day`; never less than **48 hours**.
 - **`warnings`** — escalation steps `{ offsetHours, channels }`, where `offsetHours` counts from the
-    missed deadline; `push` and `email` must both appear across the steps.
+    missed deadline and must be less than the grace period (the longer of `grace` and 48 hours), so
+    every warning goes out before the switch fires; `push` and `email` must both appear across the
+    steps.
 
 Left out, they default to the Balanced preset: every 30 days, 14 days of grace, warnings at 0, 72
 and 168 hours. The floors are enforced when you save and again when the sweep runs.
@@ -227,7 +251,8 @@ The export is plain JSON that the hosted service produces and accepts in exactly
     zone is filled in the next time the app opens the list). The hosted service writes and reads
     `timezone` only — it sends emails in the language you use the app in.
 - **Imported:** each switch is checked against the same rules as `PUT /v1/switches/:id` (the
-    48-hour grace floor, push + email warnings, the zero-knowledge rules). Its timer starts at the
+    48-hour grace floor, push + email warnings that all fall before the fire time, the
+    zero-knowledge rules). Its timer starts at the
     moment of import — nothing can fire early — and a `disarmed` switch stays disarmed.
 - **Idempotent:** ids are kept, so a switch that already exists is skipped (`exists`), and an id
     already used by another switch is skipped as a `conflict`. Invalid entries are skipped as

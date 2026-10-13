@@ -1,49 +1,63 @@
 ---
 title: "OMOS"
-description: "A privacy-first operating system that aims to make the machines you already own act as one. Boots on x86_64, ARM64 and RISC-V, with capability-based security throughout — offline, with no telemetry and no ads."
+description: "An independent operating system in early development — a Rust kernel with capability-based handles and user-space drivers. Today: a developer preview that boots on x86_64."
+mode: "wide"
 ---
 
-OMOS (codename Sirius) is an operating system with one goal: to make the computers you already own behave like a single, private system. Capability-based security governs everything, faults stay contained, and the same system runs on Intel/AMD, ARM and RISC-V hardware. It's private by default — no account, no telemetry, no ads.
+OMOS (codename **Sirius**) is an operating system written from scratch in Rust. Its long-term goal is to make the
+computers you own act as one private system. Today it's an **early developer preview**: the kernel, memory
+management, multicore scheduling, message-passing IPC, capability handles and a first set of user-space drivers.
 
-<Note>
-    OMOS is in **early development**. What runs today is the foundation: it boots on all three CPU architectures, runs programs in a protected user space, and enforces capability-based security from the first boot. The layer that pools many machines into one is on the [roadmap](/omos/roadmap), not finished — these docs are clear about what exists now versus what's ahead.
-</Note>
+<Warning>
+    **What exists today:** OMOS boots on **x86_64** (UEFI) in a virtual machine, starts its built-in drivers and
+    services, and shows a status screen and a serial log. There's **no shell, no apps, no networking and no installer**
+    yet, and ARM64 and RISC-V run only in QEMU's `virt` machine during development. Everything beyond that is on the
+    [roadmap](/omos/roadmap).
+</Warning>
 
 <CardGroup cols={2}>
     <Card title="Quickstart" icon="rocket" href="/omos/quickstart">
-        Download an image for your machine and boot OMOS in a virtual machine or on real hardware.
+        Boot the OMOS image in QEMU.
+    </Card>
+    <Card title="What you see at boot" icon="terminal" href="/omos/first-boot">
+        The status screen and every part of the serial log.
     </Card>
     <Card title="Architecture" icon="layer-group" href="/omos/architecture">
-        How OMOS is put together — a small trusted core with drivers and services around it.
+        Kernel, user-space services and how they're wired.
     </Card>
-    <Card title="Security" icon="lock" href="/omos/security">
-        Capability-based security: every program starts with nothing and gets only what you grant.
+    <Card title="Security model" icon="lock" href="/omos/security">
+        Capability handles — and their current limits.
     </Card>
     <Card title="Platform support" icon="microchip" href="/omos/platform-support">
-        What runs on x86_64, ARM64 and RISC-V today.
-    </Card>
-    <Card title="Roadmap" icon="road" href="/omos/roadmap">
-        Where OMOS is going — the distributed system, storage, graphics and more.
-    </Card>
-    <Card title="Privacy" icon="shield-halved" href="/omos/privacy">
-        No account, no telemetry, no ads — what that means in practice.
+        What works on x86_64, ARM64 and RISC-V.
     </Card>
     <Card title="Licensing" icon="scale-balanced" href="/omos/licensing">
-        Free for personal, education and non-profit use; free for smaller commercial use.
-    </Card>
-    <Card title="FAQ" icon="circle-question" href="/omos/faq">
-        Short answers to common questions.
+        Free for personal, education, non-profit and smaller commercial use.
     </Card>
 </CardGroup>
 
+## At a glance
+
+| | Today |
+| --- | --- |
+| **Kernel** | Rust, `no_std`; hybrid design — core hardware support in the kernel, storage and input drivers in user space |
+| **Boot** | UEFI only, via the Limine bootloader, with kernel address randomization (KASLR) |
+| **Architectures** | x86_64 developer preview; ARM64 and RISC-V in QEMU `virt` only |
+| **Programs** | Six built-in services and drivers; no way to start your own programs yet |
+| **Storage** | Read-only boot archive, plus a FAT32 disk on a virtio block device |
+| **Networking** | None |
+| **Version** | 1.0.0 "Sirius" (developer preview) |
+
 ## Who it's for right now
 
-Today OMOS is for the curious — people who want to boot an early, independent operating system and watch it grow. You can run it in a virtual machine in a minute, or write an image to a disk and boot a spare machine with it. It's not yet a daily driver, and it doesn't pretend to be.
+People curious about operating-system internals who want to boot an independent kernel in a virtual machine and
+follow its progress. It isn't something to install on a computer you use.
 
-## Made by burakov
+## Licensing
 
-OMOS is built and published by [burakov](https://burakov.net). It's proprietary software: the compiled system is distributed to end users under the [OMOS EULA](/omos/licensing), and it's free for personal, education, non-profit and smaller commercial use.
+OMOS is proprietary and closed-source. The compiled system is free for personal, education, non-profit and smaller
+commercial use — see [Licensing](/omos/licensing).
 
 ## Links
 
-- **Project page:** [burakov.net/projects/omos](https://burakov.net/projects/omos) — downloads, pricing and legal
+- **Project page:** [burakov.net/projects/omos](https://burakov.net/projects/omos)

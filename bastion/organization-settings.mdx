@@ -1,0 +1,56 @@
+---
+title: "Organization settings"
+description: "Configure your Bastion organization in the admin panel — branding, modules, guests from other organizations, joining by e-mail domain, retention, metadata-minimal mode and the AI assistant."
+mode: "wide"
+---
+
+Organization-wide settings live on two pages of the [admin panel](/bastion/administration): **Organization** and **Settings**. Every saved change reaches members' apps right away.
+
+## Branding
+
+- **Display name** — up to 80 characters.
+- **Accent colour** — shown on your organization's card in the app.
+- **Logo** — PNG, JPEG or WebP, up to 256 KB.
+
+## Modules
+
+Switch **Calls**, **Topics**, **High-security chats** and the **AI assistant** on or off for your organization. Chat is always on. A module that isn't in your plan is listed as *not in your license* — add it on [Your organizations](/bastion/pricing#your-organizations).
+
+## Working with other organizations
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Guests from other organizations** | Off | Lets your members invite people from other organizations into their chats. Optionally only from organizations on your **allowlist** (up to 500 organization IDs). |
+| **Your members as guests elsewhere** | On | Lets your members join chats hosted by other organizations. |
+| **Network directory** | Off | Lets people in other organizations find your members by name (they can always find them by exact username or email). |
+
+When two organizations' policies differ, the stricter one wins. Copy your **organization ID** here to share with partners for their allowlist.
+
+## Join without an invitation
+
+Add up to 50 **e-mail domains**: anyone signed in with a verified address at those domains sees your organization under **You can join** in the app. Don't add public mail domains like gmail.com — anyone could join.
+
+## Retention
+
+**Retention** deletes chat messages automatically after a number of days (from 1 to 3,650; **0** keeps everything). It removes messages with their edit history, attachments, and the AI assistant's index of them; the apps remove them from devices too. **Topics aren't affected** — posts and comments stay until they're deleted.
+
+On a self-hosted node, the deletion runs on a schedule set by `RETENTION_SWEEP_INTERVAL_SECONDS` — see [Run & maintain your node](/bastion/operations#configuration-reference).
+
+## Metadata-minimal mode
+
+Switches off typing indicators, read and delivery status and online status, and forces notifications to their most generic form — enforced on the server for everyone in the organization. See [Privacy & your data](/bastion/accounts-and-privacy#metadata-minimal-mode).
+
+## AI assistant
+
+When the AI assistant module is on:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Enable AI in new shared chats by default** | On | New groups and channels include the assistant. |
+| **Allow chat admins to turn AI off per chat** | On | Lets each chat's admins decide for their chat. Off locks the per-chat switch. |
+
+The first time, choose **Provision AI worker** to set up the assistant on your server (a self-hosted node also needs its AI models configured — see [Run & maintain your node](/bastion/operations#ai-assistant-models)). Direct and high-security chats never include the assistant. See [AI assistant](/bastion/ai-assistant) for what members see.
+
+<Note>
+    While the organization is read-only after a lapsed subscription, changes on these pages can't be saved — except the guest settings for working with other organizations.
+</Note>

@@ -1,42 +1,58 @@
 ---
 title: "AI sign advisor"
-description: "Optional: let your mounted phone read roadside speed-limit signs and pre-fill limit suggestions for you to confirm."
+description: "Let WhySoSlow read speed-limit signs through your phone's camera and suggest limit fixes for you to confirm — how it works, what's uploaded, its settings, and its limits."
+mode: "wide"
 ---
 
-The **AI sign advisor** is an **opt-in** helper that keeps your limits fresh without any typing. It
-never changes the map on its own — it only **suggests**, and you confirm.
+The **AI sign advisor** is an optional helper that reads roadside speed-limit signs through your phone's
+rear camera and **suggests** limit fixes. It never changes anything on its own — you confirm each suggestion.
+
+## Turn it on
+
+Turn on **Settings → AI sign advisor** (off by default). The next time the Drive screen is open, your phone
+asks for camera access. Mount the phone so the rear camera sees the road.
 
 ## How it works
 
 <Steps>
-    <Step title="Turn it on">
-        Enable the advisor in **Settings → Driving**. It uses your **camera** while the phone is mounted
-        and a session is running.
+    <Step title="It looks at the road">
+        While the Drive screen is open, the app takes a small, low-resolution photo **every few seconds** (3–5,
+        set in Settings) and tags it with your location and direction. Photos upload in batches to an AI that
+        looks for a speed-limit sign facing your direction. It ignores minimum-speed, advisory and end-of-limit
+        signs.
     </Step>
-    <Step title="It watches for signs">
-        While you drive, the app quietly captures small camera frames and, along with your location and
-        heading, sends them to the AI to read any speed-limit signs.
+    <Step title="It suggests a limit">
+        When it reads a sign, a suggestion appears in **My data → AI suggestions** as *Detected limit …* with the
+        spot.
     </Step>
-    <Step title="You get a suggestion">
-        When it reads a sign, the advisor drops a **pre-filled limit suggestion** into the same
-        confirm-and-undo flow as your manual edits. Tap to accept, and it becomes a normal personal
-        override.
+    <Step title="You decide">
+        **Confirm** opens it as a pre-filled limit fix — check it and save, and it becomes a normal
+        [limit fix](/whysoslow/fix-a-limit). **Dismiss** discards it.
     </Step>
 </Steps>
 
+## Photo interval and quality
+
+Taking photos and uploading them warms the phone up. Two settings, shown while the advisor is on, let you
+balance how much the advisor sees against how hot the phone gets:
+
+- **Photo every** — 3, 4 or 5 seconds (4 by default). A longer interval keeps the phone cooler.
+- **Photo quality** — **Standard** (default) or **Low**. Low keeps the phone cooler and uploads less data.
+
+## Uploads and data
+
+- Photos stay on your phone only until they're uploaded, then they're deleted from it. With no connection,
+    they wait and upload when you're back online.
+- **Upload on Wi-Fi only** keeps photos on your phone until you're on Wi-Fi, on iPhone and Android alike.
+- **Upload now** sends the photos waiting on your phone straight away.
+- Every photo goes to an AI provider to be read. Only photos in which a sign **was recognised** are kept on
+    our server, with their location, until you delete your account.
+- The AI has a daily allowance per account. When it's used up, you'll see *Too many requests. Please wait a
+    moment.* — turn the advisor off for the rest of the day.
+
 <Warning>
-    The advisor **never edits the map by itself**. A suggestion is only applied when **you confirm it**
-    — the AI has no write access to your limits.
+    The advisor takes a photo of the road ahead every few seconds while it's on and the Drive screen is open,
+    and uploads them. Turn it off in Settings whenever you don't need it.
 </Warning>
-
-## Uploads and data use
-
-- Frames are uploaded in **batches**. By default WhySoSlow uploads over **Wi-Fi and mobile data**;
-    flip **"Upload on Wi-Fi only"** in settings if you'd rather wait for Wi-Fi, and use **"Upload
-    now"** to send on demand.
-- Once a batch uploads successfully, the app **deletes those frames from your device**.
-- The photos are **kept on the burakov server** so suggestions can be generated and reviewed.
-- Capture frequency and quality are tuned to keep the phone cool, and the advisor is **off unless you
-    enable it**.
 
 See [Account & privacy](/whysoslow/accounts-and-privacy) for exactly what's stored.

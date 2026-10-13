@@ -1,0 +1,89 @@
+---
+title: "Statuses, triggers & messages"
+description: "What every rule and run status in Cronch means, the four run triggers, every 'cronch:' message that can appear in a run's output, and the notices Cronch shows."
+mode: "wide"
+---
+
+## Run statuses
+
+Each run in a rule's history has one of these statuses:
+
+| Status | Meaning | Exit code shown |
+| --- | --- | --- |
+| **Running** | The run is still going. | — |
+| **Success** | The command finished with exit code **0**. | `0` |
+| **Failed** | The command finished with any other exit code, or couldn't be started at all (see the messages below). | The code, or **—** if it never started or was killed by a signal |
+| **TimedOut** | The rule's timeout ran out and Cronch force-stopped the command and everything it started. | — |
+| **Cancelled** | The run was stopped because Cronch quit, the rule was deleted, or Cronch or the computer shut down while it was running. | — |
+| **Skipped** | The run didn't happen: the previous one was still going (policy **Skip**), the queue was full or a queued run was dropped (policy **Queue**), or it was missed — or came due while paused — with **Catch up if missed** off. Shown at the time it was due (a dropped queued run: when it was dropped); the reason is in its stderr. See [Skipped runs](/cronch/history#skipped-runs). | — |
+
+## Rule statuses
+
+The rule list shows the status of each rule's **last** run, plus two states of its own:
+
+| Status | Meaning |
+| --- | --- |
+| **Never** | The rule hasn't run yet. |
+| **Running**, **Success**, **Failed**, **TimedOut**, **Cancelled** | Same as the last run's status. With the **Parallel** policy, the status updates when the last of its overlapping runs finishes. |
+| **Expired** | A **Once** rule whose moment passed while it couldn't run, with **Catch up if missed** off — it will never run. Also given to a past **Once** rule when you import it. |
+
+## Triggers
+
+Every run records what started it:
+
+| Trigger | Started by |
+| --- | --- |
+| `schedule` | The rule's schedule, on time (or less than five minutes late). |
+| `manual` | **Run now**. |
+| `catch-up` | Making up, once, for runs missed while the computer was off, asleep or paused. |
+| `queued` | A run that waited for the previous one to finish (policy **Queue**). |
+
+A **Skipped** row carries the trigger that would have started it — `schedule`, `manual`, `catch-up`, or `queued` for a waiting run that was dropped.
+
+## Messages in a run's stderr
+
+When something goes wrong around your command, Cronch adds an explanation to the run's **stderr**, always starting with `cronch:`:
+
+| Message | What happened |
+| --- | --- |
+| `shell 'X' not found on this machine` | The rule's shell isn't installed here. Install it and restart Cronch, or pick another shell. |
+| `working directory not found: <path>` | The rule's working directory doesn't exist. |
+| `failed to start process: …` | The program or shell couldn't be started — for example a wrong path or missing permissions. |
+| `cannot parse command: …` | With **Direct (no shell)**, the command line couldn't be split into program and arguments — usually unbalanced quotes. |
+| `empty command` | The command was empty after parsing. |
+| `process error: …` | Something failed while waiting for the command. |
+| `killed after Ns (timeout)` | The timeout ran out (status **TimedOut**). |
+| `cancelled (app is shutting down)` | Cronch quit while the run was going. |
+| `cancelled (rule was deleted)` | The rule was deleted while the run was going. |
+| `interrupted by shutdown or restart` | Cronch or the computer stopped while the run was going; recorded at the next start. |
+| `the command exited but a process it started in the background still holds its output; later output is not recorded` | Your command left a background program running — see [Commands & shells](/cronch/commands-and-shells#programs-left-running-in-the-background). |
+| `skipped — the previous run was still going` | Status **Skipped**: the rule's previous run hadn't finished (policy **Skip**). |
+| `skipped — it was missed (Cronch wasn't running or the computer was asleep) and Catch up if missed is off` | Status **Skipped**: the run came due while Cronch couldn't run it. |
+| `skipped — it came due while everything was paused and Catch up if missed is off` | Status **Skipped**: the run came due during **Pause all**. |
+| `skipped — a run was already waiting in the queue` | Status **Skipped**: policy **Queue** holds one waiting run per rule, and one was already waiting. |
+| `skipped — it was waiting in the queue and the rule was switched off` | Status **Skipped**: the queued run was dropped because the rule is off. |
+| `skipped — it was waiting in the queue and everything was paused` | Status **Skipped**: the queued run was dropped by **Pause all**. |
+| `skipped — it was waiting in the queue and Cronch quit` | Status **Skipped**: the queued run was dropped when Cronch quit. |
+
+Output longer than 256 KB per stream ends with `… [output truncated]`.
+
+## Notices in the window
+
+| Notice | Shown when |
+| --- | --- |
+| Run requested | You clicked **Run now** and the run started. |
+| Rule is disabled | You clicked **Run now** on a rule that is switched off. |
+| Already running — this run was skipped | You clicked **Run now** while the previous run is still going and the policy is **Skip**. |
+| ⚠ shell missing *(in the rule list)* | The rule's shell isn't installed on this computer. |
+| · paused *(in the header)* | Everything is paused. |
+
+## Messages in Settings
+
+| Message | Meaning |
+| --- | --- |
+| Saved. Launch at login is on. / Saved. Launch at login is off. | Your settings were saved. |
+| Saved, but enabling autostart failed. | Settings were saved, but the operating system refused the login item — see Cronch's log. |
+| Exported N rules. | The export file was written. |
+| Export failed to write file. / Export failed: … | The file couldn't be written — check the folder you chose. |
+| Imported N rules (X already existed, added as copies; Y invalid skipped). | The import finished. Reasons for skipped rules are in Cronch's log. |
+| Import failed: … | The file isn't a valid Cronch rules file; nothing was imported. |

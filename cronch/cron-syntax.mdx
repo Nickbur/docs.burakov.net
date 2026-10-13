@@ -1,0 +1,81 @@
+---
+title: "Cron syntax"
+description: "Every field, value range, operator and shortcut Cronch accepts in a cron expression — plus how day-of-month and day-of-week combine and how daylight-saving changes are handled."
+mode: "wide"
+---
+
+Cron expressions in Cronch are evaluated in your computer's **local time**. Letters are case-insensitive.
+
+## Fields
+
+An expression has **5 fields**, or **6** with a leading seconds field. With 5 fields, seconds are `0`. There is no year field.
+
+| # | Field | Values | Names |
+| --- | --- | --- | --- |
+| (1) | Seconds *(optional)* | `0`–`59` | — |
+| 1 | Minute | `0`–`59` | — |
+| 2 | Hour | `0`–`23` | — |
+| 3 | Day of month | `1`–`31` | — |
+| 4 | Month | `1`–`12` | `JAN`–`DEC` |
+| 5 | Day of week | `0`–`7` (`0` and `7` are both Sunday, `1` is Monday) | `SUN`–`SAT` |
+
+## Operators
+
+| Operator | Meaning | Example |
+| --- | --- | --- |
+| `*` | Every value | `* * * * *` — every minute |
+| `,` | A list | `0 9,13,18 * * *` — at 09:00, 13:00 and 18:00 |
+| `-` | A range | `0 9 * * MON-FRI` — weekdays at 09:00 |
+| `/` | A step | `*/15 * * * *` — every 15 minutes; `0 8-18/2 * * *` — every 2 hours from 08:00 to 18:00 |
+| `?` | Same as `*` (day of month and day of week only) | `0 9 ? * MON` |
+| `L` | **Day of month:** the last day of the month. **Day of week:** the last such weekday of the month | `0 0 L * *` — midnight on the last day; `0 18 * * 5L` — 18:00 on the last Friday |
+| `W` | Day of month: the weekday (Mon–Fri) nearest to the given day | `0 9 15W * *` — 09:00 on the weekday nearest the 15th |
+| `#` | Day of week: the *n*-th such weekday of the month | `0 9 * * 1#2` — 09:00 on the second Monday |
+
+## Shortcuts
+
+| Shortcut | Same as |
+| --- | --- |
+| `@yearly`, `@annually` | `0 0 1 1 *` |
+| `@monthly` | `0 0 1 * *` |
+| `@weekly` | `0 0 * * 0` |
+| `@daily` | `0 0 * * *` |
+| `@hourly` | `0 * * * *` |
+
+`@reboot` isn't supported — Cronch has no "at startup" schedule.
+
+## Day of month and day of week together
+
+If **both** fields are restricted (neither is `*` or `?`), a day matches when it matches **either** of them — the classic cron behaviour. `0 9 1 * MON` runs on the 1st of every month **and** on every Monday.
+
+To require **both** instead, start the day-of-week field with `+`: `0 9 1-7 * +MON` runs at 09:00 on the first Monday of the month.
+
+## Daylight-saving changes
+
+Because expressions follow your local clock:
+
+- **A fixed time** (single values for minute, hour and — if used — seconds, like `30 2 * * *`):
+    - if it falls in the hour that's **skipped** in spring, it runs at the first moment after the jump;
+    - if it falls in the hour that's **repeated** in autumn, it runs **once**, the first time round.
+- **A repeating pattern** (with `*`, steps or ranges in the minute or hour, like `*/15 * * * *`) skips times that don't exist in spring and runs on **both** passes through the repeated hour in autumn.
+
+If a job must run exactly once a day whatever the clocks do, give it a fixed time outside the 01:00–03:00 window.
+
+## Examples
+
+| Expression | Runs |
+| --- | --- |
+| `0 9 * * *` | Every day at 09:00 |
+| `0 9 * * 1-5` | Weekdays at 09:00 |
+| `0 */6 * * *` | Every 6 hours, on the hour |
+| `0 0 1 * *` | Midnight on the 1st of every month |
+| `0 0 L * *` | Midnight on the last day of every month |
+| `0 18 * * 5L` | 18:00 on the last Friday of every month |
+| `0 9 * * 1#1` | 09:00 on the first Monday of every month |
+| `0 3 * * SUN` | 03:00 every Sunday |
+| `30 0 9 * * MON` | Mondays at 09:00:30 (6 fields, with seconds) |
+| `@daily` | Every day at midnight |
+
+## When an expression isn't valid
+
+The editor shows **Invalid cron expression:** followed by the reason — for example *Pattern must have 5 or 6 fields when years are disallowed* — and doesn't save until you fix it.

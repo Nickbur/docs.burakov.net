@@ -1,47 +1,53 @@
 ---
-title: "Saving what you receive"
-description: "Large files, folders, text, and how saving differs across browsers."
+title: "Save what you receive"
+description: "Save files, folders and text you receive in Sidedrop — Save versus Save all, how each browser saves, memory mode, and clearing up afterwards."
+mode: "wide"
 ---
 
-Sidedrop is built to handle real transfers — including multi-gigabyte files — and to save them
-with a single click at the end. Exactly how the save works depends on the browser you're
-receiving in.
+Incoming files are streamed into your browser's own storage as they arrive. When one is complete it shows
+**Ready to save** — then it's your turn.
 
-## Big files stream to disk, not memory
+## Save one file
 
-As a file arrives, Sidedrop streams it to on-disk scratch storage in your browser rather than
-holding it all in memory. That's what lets it receive large files without the tab running out of
-room, and it's why you see live progress instead of a long silent wait.
+Tap **Save** on the item:
 
-## Saving at the end
+| Browser | What happens |
+| --- | --- |
+| **Chrome, Edge** (desktop) | A system **Save as** dialog — choose where the file goes. It's saved under its own name, without the folder it came from. |
+| **Firefox, Safari, phones** | It downloads to your browser's usual Downloads location. |
 
-When an item finishes, it gets a **Save** action:
+## Save all
 
-<CardGroup cols={2}>
-    <Card title="Chromium (Chrome, Edge)" icon="folder-open">
-        You get a native "save as" dialog and choose exactly where the file lands. A batch or a whole
-        folder can be saved to one location, with the folder structure recreated.
-    </Card>
-    <Card title="Firefox, Safari, mobile" icon="download">
-        There's no system save picker, so the file downloads to your browser's Downloads folder
-        instead — one file at a time, or a zip for a folder or batch.
-    </Card>
-</CardGroup>
+With **two or more** files ready, **Save all** appears:
 
-## Folders and text
+| Browser | What happens |
+| --- | --- |
+| **Chrome, Edge** (desktop) | Pick a folder; Sidedrop recreates the sent folder structure inside it. Files with the same name are **overwritten**. |
+| **Firefox, Safari, phones** | Everything downloads as one `sidedrop.zip`. The zip is built in memory, so for a very large batch, save files one by one instead. |
 
-Whole folders keep their structure: the sender flattens the tree and the receiver rebuilds it on
-save. Text and clipboard snippets arrive as a copyable block you can also save as a `.txt` file —
-handy for shooting a link, a code, or a paragraph between your own devices.
+## Text
 
-## Receiving big files on a phone
+A text snippet arrives as **Received**, with a one-line preview and a **Copy** button. Text isn't included
+in **Save all**.
 
-The weak corner, told honestly: **receiving** a very large file **on a phone** (especially on
-iOS) can be limited by the browser, which may buffer it in memory and cap the size. Sending from a
-phone is solid, and all the desktop paths handle big files well. If you're moving something large,
-make the phone the **sender** and a computer the receiver.
+## Browsers that buffer in memory
+
+If your browser can't stream to its own storage, Sidedrop keeps incoming files in memory and warns: *This
+browser buffers incoming files in memory, so very large files may not fit. Chrome or Edge on desktop have
+no such limit.* For big transfers, receive on desktop Chrome or Edge.
+
+## Clearing up
+
+- **Clear finished** removes saved, received, canceled and failed items from the table.
+- A received file is removed from the browser's storage once you **Save** it.
+
+<Warning>
+    Starting a **new room** or **joining another code** in the same tab discards files that are ready but
+    not yet saved. Save first.
+</Warning>
 
 <Note>
-    Sidedrop shows a soft inline note when it detects a browser that can't stream-save or is
-    size-limited, so you know before you start rather than after.
+    Files you received but never saved — and canceled or failed transfers — can stay in your browser's
+    storage after you close the tab. To remove them, clear the site's data for sidedrop.burakov.net in your
+    browser settings.
 </Note>

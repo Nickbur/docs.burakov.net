@@ -1,43 +1,45 @@
 ---
-title: "Importing contacts"
-description: "How to bring your contacts into Tidybook — from your phone's address book and from vCard / CSV files — into one high-fidelity canonical book."
+title: "Import contacts"
+description: "Bring contacts into Tidybook from your phone, vCard and CSV files, or pasted text — what each source brings in, and how nothing gets lost."
+mode: "wide"
 ---
 
-Tidybook builds **one canonical address book** from whatever sources you have. You can start
-importing immediately, with **no account required**.
+Everything you import lands in **one address book** inside Tidybook. You can import without an account, and as many
+times and from as many sources as you like. All imports are in the **Import** tab.
+
+| Source | Where | Notes |
+| --- | --- | --- |
+| **Your phone's contacts** | **Import phone contacts** *(iPhone and Android)* | Asks for access to your contacts the first time. |
+| **A file** | **Import vCard / CSV** | `.vcf`, `.vcard` or `.csv`. |
+| **Pasted text** | **Paste vCard / CSV text** | Paste a vCard or CSV straight from another app. |
+| **Google** | Connected accounts | Stays connected — see [Connect Google & CardDAV](/tidybook/connected-accounts). |
+| **CardDAV** | Connected accounts | Nextcloud, Fastmail, iCloud and other CardDAV servers — same page. |
 
 ## From your phone
 
-On iPhone and Android, Tidybook can read your device address book directly (after you grant
-permission) and import every contact — names, organizations, phones, emails, addresses, websites,
-birthdays and notes — into your canonical book.
+Tidybook reads your phone's address book — names, company and job title, phones, emails, addresses, websites,
+birthdays, notes and photos — and adds them to your book. Importing **doesn't change** your phone's contacts. To put
+the cleaned-up book back on the phone, use [Push changes back](/tidybook/push-back).
 
-Nothing is uploaded by importing: the contacts go into Tidybook's own local book on the device. Only
-if you later turn on Sync does an **encrypted** copy leave your phone.
+## From files
 
-## From vCard / CSV files
+- **vCard** (`.vcf`) is the best choice: every phone, email app and address book can export it, and it carries every
+    field. vCard 3.0 and 4.0 are supported.
+- **CSV** works for spreadsheets and simple exports — Google Contacts CSV columns are recognised. CSV carries less
+    detail, so prefer vCard when you can.
 
-You can also import from files:
+To move contacts from a service that isn't connected, export a vCard from it and import the file.
 
-- **vCard** (`.vcf`) — the standard contact format exported by most phones, email clients and
-    address books.
-- **CSV** — common spreadsheet exports.
+## Nothing gets lost
 
-This is the easiest way to pull in contacts from a source Tidybook doesn't connect to directly.
+Tidybook stores contacts in a detailed format close to vCard 4.0, and remembers **where each field came from**.
+Anything a source provides that Tidybook doesn't show — an unusual field, a custom label — is **kept alongside** the
+contact and written back out on export and push-back. Contacts make the round trip intact.
 
-## High fidelity — nothing dropped
+## After importing
 
-Tidybook imports into a rich model that keeps far more than name-and-number. When a source carries a
-field Tidybook doesn't map, it **keeps the original alongside** rather than discarding it, so a later
-export gives everything back intact. See [Cleanup, editing & your card](/tidybook/cleanup-and-editing)
-for the full field list.
-
-## Try before you sign up
-
-Import, deduplicate and edit all work **without an account**. If you later sign in, the book you've
-already built is adopted into your account — your pre-account work is never thrown away.
-
-<Note>
-    Importing the same source again is safe: Tidybook folds new and changed contacts in and surfaces
-    any new duplicates in the review queue rather than creating a second copy of everyone.
-</Note>
+- New contacts appear in **Contacts**, and any that share a phone number or email with an existing contact show up
+    in **Duplicates** for review.
+- Phone numbers are stored in one international format, using your region for local numbers.
+- Importing a file again adds its contacts again — the copies show up in **Duplicates**, ready to merge.
+- With **Sync** on, the new contacts are encrypted and synced to your other devices.

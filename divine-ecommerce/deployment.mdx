@@ -1,54 +1,156 @@
 ---
-title: "Deployment"
-description: "Take the store to production and keep it healthy."
+title: "Deploy, upgrade & back up"
+description: "Run Divine eCommerce in production — the production stack, HTTPS, a first install without demo data, upgrades, and backups."
+mode: "wide"
 ---
 
-The same Docker stack that runs locally runs in production, with a production Compose override (`docker-compose.prod.yml`) and a production `.env`. The override bakes the application code into the PHP image, publishes only nginx (`APP_PORT`), keeps PostgreSQL and Redis inside the Docker network, and keeps runtime data on the host so it survives image rebuilds: uploads (`public/storage`), plugins with their on/off state (`plugins/`), logs (`src/Logs`) and sessions (`src/Temp/session`).
+## The production stack
 
-## Before you deploy
+Production uses the same Docker Compose stack with an override, `docker-compose.prod.yml`, driven by the
+`make prod-*` targets:
+
+- The application code and its PHP dependencies are **built into** the PHP and worker images.
+- nginx serves the built front-end from the host's `public/` folder and is the **only published port**
+    (`APP_PORT`, plain HTTP).
+- PostgreSQL and Redis stay inside the Docker network.
+- Data that must survive image rebuilds lives on the host: `public/storage` (uploads), `plugins/` (with
+    `state.json`), `src/Logs` and `src/Temp/session`.
+
+## Deploy
 
 <Steps>
-    <Step title="Configure the production environment">
+    <Step title="Clone and configure">
         ```bash
-        npm run switch_to_prod
+        git clone https://github.com/Nickbur/divine-ecommerce.git
+        cd divine-ecommerce
+        cp env/env.prod .env
         ```
-        This copies `env/env.prod` to `.env`. Check **`APP_DEBUG=false`**, a real `APP_URL`, a strong `DB_PASS` and your SMTP settings for outgoing mail.
+        In `.env` set at least: `APP_DEBUG=false`, your `APP_URL`, a strong `DB_PASS`, and real `SMTP_*` and
+        `MAIL_FROM_*` values. See [Configuration](/divine-ecommerce/configuration).
     </Step>
-    <Step title="Build assets for production">
+    <Step title="Build the front-end">
         ```bash
-        make npm-install
-        make npm-build
+        make npm-install && make npm-build
         ```
-        This type-checks and builds the front-end bundles into `public/` — they are not stored in git, so build them before the image. The development profiler is excluded from production builds automatically.
+        Built assets aren't stored in git, and nginx serves them from `public/`.
     </Step>
-    <Step title="Start the production stack">
+    <Step title="Build and start the stack">
         ```bash
-        make prod-build
-        make prod-up
+        make prod-build && make prod-up
         ```
-        `make prod-logs` follows the logs; `make prod-down` stops it. Rebuild the image (`make prod-build`) after every code update.
+        `make prod-logs` follows the logs; `make prod-down` stops the stack.
     </Step>
-    <Step title="Migrate and seed">
+    <Step title="Create the database">
         ```bash
         make migrate
         ```
-        Seed only the data you actually want live — the demo seeders are for development.
+    </Step>
+    <Step title="Make the host folders writable">
+        `public/storage`, `plugins`, `src/Logs` and `src/Temp/session` must be writable by the PHP containers' user,
+        `www-data` (uid **82**).
     </Step>
 </Steps>
 
-## Checklist
+## First production install
 
-- `APP_DEBUG=false` — no verbose errors or profiler in production.
-- Change the demo administrator password (or don't seed the demo admin at all).
-- Put the store behind HTTPS (a reverse proxy such as Caddy or nginx with TLS).
-- Make `public/storage`, `plugins`, `src/Logs` and `src/Temp/session` writable by the PHP container's user (`www-data`, uid 82).
-- Set up backups of the PostgreSQL volume and of `public/storage` (uploaded media).
-- Configure real SMTP so order and account emails are delivered.
+Don't run `make seed` on a live store: it loads demo staff accounts with a public password and wipes existing data.
+Start from an empty catalog instead:
 
-## Scheduled jobs
-
-A lightweight worker container runs the recurring jobs — sending scheduled newsletter campaigns and expiring loyalty points. It starts with the stack, so there's no separate cron to configure.
+<Steps>
+    <Step title="Load roles and settings">
+        ```bash
+        docker compose exec php vendor/bin/phinx seed:run -s RolesSeeder
+        docker compose exec php vendor/bin/phinx seed:run -s SettingsSeeder
+        ```
+        This creates the standard roles and every settings key, filled with demo values you'll replace.
+    </Step>
+    <Step title="Register your own account">
+        Open the store, register with your email and a strong password.
+    </Step>
+    <Step title="Make it an administrator">
+        ```bash
+        make sh-db
+        ```
+        Then, in the database shell:
+        ```sql
+        UPDATE accounts
+        SET role = 'admin', role_id = (SELECT id FROM roles WHERE slug = 'admin')
+        WHERE lower(email) = lower('you@example.com');
+        ```
+        Sign out and back in, and `/admin` opens.
+    </Step>
+    <Step title="Replace the demo settings">
+        In **Settings**, update **General**, **Contacts**, **Branding** and **Marketing** — above all
+        **Branding → Store Website**, which every link inside emails uses. Set up your delivery and payment methods in
+        **Settings → Delivery** and **Settings → Payments**. Then edit the static texts in the templates (the
+        `/contacts` page and the product page's delivery lines).
+    </Step>
+</Steps>
 
 <Warning>
-    Keep production secrets in the deployment's `.env` only. Never commit them to a public repository.
+    Both seeders empty their tables first — run them **only on a new database**. Re-running `RolesSeeder` later
+    would also remove accounts.
 </Warning>
+
+## HTTPS
+
+With `APP_ENV=prod` the session cookie is marked **Secure**, so browsers only send it over HTTPS — sign-in and
+every form fail over plain HTTP. nginx in the stack doesn't terminate TLS: put a reverse proxy with a certificate
+(Caddy, nginx, Traefik…) in front of `APP_PORT`.
+
+Behind a proxy, the IP address saved with quick orders and other records is the proxy's.
+
+## Production checklist
+
+- `APP_DEBUG=false`.
+- HTTPS in front of the stack.
+- **Store Website** set to your domain.
+- `APP_URL` set to your public HTTPS address, and your LiqPay keys added, if you take
+    [online payments](/divine-ecommerce/checkout-and-orders#online-payment-liqpay).
+- Working SMTP — order confirmations, status updates, password resets, cart reminders, contact-form messages and
+    newsletters depend on it.
+- No demo accounts on the live database.
+- Host folders writable by uid 82.
+- Backups scheduled (below).
+
+## Health checks
+
+| URL | Returns |
+| --- | --- |
+| `/healthz` | `ok`, straight from nginx — the web server is up. |
+| `/` | The home page — PHP and the database are working. |
+
+## Upgrade
+
+```bash
+git pull
+make npm-install && make npm-build
+make prod-build && make prod-up
+make migrate
+```
+
+Rebuilding the images is required for code changes to take effect: in production PHP doesn't re-check files for
+changes.
+
+## Back up and restore
+
+There's no built-in backup tool. Back up these four things:
+
+| What | How |
+| --- | --- |
+| Database | `docker compose exec -T postgres pg_dump -U divine divine > backup.sql` |
+| Uploaded files | `public/storage/` |
+| Plugins and their on/off state | `plugins/` |
+| Configuration | `.env` |
+
+Use your own `DB_USER` and `DB_NAME` if you changed them. To restore, start the stack on an **empty** database —
+don't run `make migrate` first, the dump already contains the schema — and load the dump:
+
+```bash
+docker compose exec -T postgres psql -U divine divine < backup.sql
+```
+
+<Note>
+    The stack uses PostgreSQL 18, whose data volume is mounted at `/var/lib/postgresql`. A volume created by an
+    older PostgreSQL version can't be reused — dump the data with the old version and restore it into a new volume.
+</Note>

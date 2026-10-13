@@ -1,0 +1,56 @@
+---
+title: "Troubleshooting"
+description: "Fixes for common Fogline problems — roads not painting, painting stopping in the background, low coverage, map downloads, and sign-in."
+mode: "wide"
+---
+
+## Nothing is painting
+
+Work through these:
+
+1. **Is Fogline on?** If the button on the map says **Start**, tap it — Fogline then stays on until you tap
+    **Pause**.
+2. **Are you in a covered region?** Fogline has road data for Kyiv, the Kyiv region and the other regions of
+    Ukraine. The first time you're in a region, it needs a connection to download that region's road data. See
+    [Regions & offline maps](/fogline/offline-maps).
+3. **Is location allowed — and precise?** If not, Fogline shows a message with a shortcut to your phone's settings
+    (iPhone: **Always** and **Precise Location**; Android: allowed, **Precise** on).
+4. **Is location turned on** for the phone at all?
+
+## Painting stops when the screen is off
+
+- iPhone: allow location **Always**.
+- Android: allow notifications for Fogline (Android 13+) and set its battery usage to **Unrestricted**.
+- If you swiped the app away, tracking paused — open Fogline again and it picks up where it left off.
+
+See [Keep painting in the background](/fogline/background-tracking).
+
+## A road I drove isn't painted, or one I didn't is
+
+GPS can be off by tens of metres, especially among tall buildings and in tunnels. A stretch is painted when a
+position lands within 45 metres of it — so drift can miss a stretch or paint a nearby one.
+
+## My coverage seems low
+
+Coverage counts every mapped path — footpaths, service roads and steps too — by number of stretches. See
+[Track your coverage](/fogline/coverage-and-stats).
+
+## The map is blank
+
+You haven't downloaded the base map — your painted roads still show. Tap **Download** on the banner or in
+**Settings → Map data**. If the button comes back without finishing, the download failed — try again on Wi-Fi.
+
+## My roads disappeared after logging out
+
+Logging out removes Fogline's data from the phone immediately, including roads not yet synced. Sign in again to
+get back everything that had synced.
+
+## Sign-in messages
+
+| Message | What to do |
+| --- | --- |
+| *Incorrect validation code. Please try again.* | Check the latest code, or ask for a new one. |
+| *Too many attempts. Please wait N min.* | Wait the time shown. |
+| *Invalid email format* | Check the email address. |
+| *Unable to connect. Please try again later.* | Check your connection. |
+| *Apple sign-in failed. Please try again.* | Try again, or sign in with your email. |

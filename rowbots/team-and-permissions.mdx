@@ -1,0 +1,40 @@
+---
+title: "Team & permissions"
+description: "Invite your team to a Rowbots AI workspace — the Owner, Admin, Member and Viewer roles, per-project access, and who decides and merges."
+mode: "wide"
+---
+
+## Roles
+
+| Role | Can |
+|---|---|
+| **Owner** (exactly one) | Everything, including billing, model keys, compute, and deleting the workspace. The plan belongs to the Owner. |
+| **Admin** | Edit the constitution and take the interview, answer escalations, set budgets, **batch-merge**, manage members |
+| **Member** | Add tasks, ideas and feedback, and comment. Sees everything, but doesn't decide what the product should be and doesn't merge from the dashboard |
+| **Viewer** | Read-only — handy for an agency's client |
+
+Members and Viewers can be limited to **specific projects**.
+
+## Invite people
+
+In **Members**, invite someone by email and pick their role (and, for Members and Viewers, their projects). They sign
+in with that email and a one-time code — there are no passwords. Paid plans include **unlimited members**; Free has one.
+
+## Decisions and merges
+
+- **Escalations** are answered by Owners and Admins. When two people answer, the first answer counts and its author is
+    recorded; the Owner can override it, and the override is recorded too.
+- **Batch merges** from the dashboard are for Owners and Admins, and always respect your git host's branch protection
+    and required reviews.
+- Merging in your git host itself follows that host's own permissions, as usual.
+
+## Issues from your team
+
+Issues your **members** open in GitHub or GitLab with the `rowbots` label are trusted input, like the dashboard
+inbox. Issues from people outside the workspace are treated as untrusted outside input — see
+[Connect channels](/rowbots/channels#trust).
+
+## Audit
+
+Every privileged action — a key added, a member invited, a budget changed, a batch merged — is recorded in **Audit**
+with who did it and when.

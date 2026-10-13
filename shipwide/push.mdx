@@ -1,6 +1,7 @@
 ---
 title: "Push & VoIP"
 description: "How push works across the kit, high-priority pushes, and the path to full VoIP calling."
+mode: "wide"
 ---
 
 How push works across the kit, how to send high-priority pushes, and the exact path to add full
@@ -17,6 +18,11 @@ One identity, both directions:
 - **Delivery truth:** OneSignal returns `200` with a `recipients` count even for an empty
     audience, so the helpers treat delivery as `recipients >= 1` (the `delivered` flag the admin
     panel and the "test notification" button surface).
+
+Push reaches every platform the app ships to: iOS and Android through the native SDK, the web
+build through web push, and the macOS, Windows and Linux desktop builds as native system
+notifications — all targeted through the same External ID, so `sendPushToUser` needs no
+per-platform code.
 
 <Note>
     Everything is a no-op that returns `false` when `ONESIGNAL_APP_ID` / `ONESIGNAL_API_KEY` are

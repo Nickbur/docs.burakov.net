@@ -1,25 +1,32 @@
 ---
 title: "Privacy"
-description: "OMOS has no account, no telemetry and no ads. It answers only to you — nothing about how you use it is sent anywhere."
+description: "What OMOS collects and sends today — nothing: no network code, no accounts, no telemetry and no update channel."
+mode: "wide"
 ---
 
-A privacy-first operating system has to earn that name at the deepest level, because an OS sees everything you do on your machine. OMOS is built so there's nothing to send in the first place.
+## Today
 
-## Private by default
+OMOS can't send anything anywhere — it has **no networking** at all: no network drivers, no network stack, no
+internet connection of any kind.
 
-- **No account.** You don't sign in to use OMOS. There's no identity tied to your machine and nothing to register.
-- **No telemetry.** OMOS doesn't measure how you use it or report usage anywhere. There's no "usage data" collection to opt out of.
-- **No ads.** Nothing in the system is selling your attention.
-- **No forced updates.** Updates are something you choose, not something pushed onto your machine overnight.
+| | |
+| --- | --- |
+| **Telemetry** | None. There's no usage measurement and nothing to opt out of. |
+| **Account** | None. There's no sign-in or registration. |
+| **Updates** | No update mechanism — nothing is downloaded or installed in the background. |
+| **Ads** | None. |
+| **Activation** | None in the system today. |
 
-## It answers only to you
+What OMOS writes is limited to the serial log on your own machine and, if you attach one, the FAT32 disk in your
+virtual machine.
 
-The point of OMOS is a computer that works for you and no one else. It doesn't phone home, and it isn't quietly working on behalf of a company in the background. Your machine's job is to do what *you* ask of it.
+## The licence
 
-## Your data stays yours
+The [EULA](/omos/licensing) states that OMOS is designed to work offline with no telemetry by default. If a future
+version adds anything online — activation, royalty administration or optional services — how personal data is handled
+is described in the Privacy Policy on [burakov.net](https://burakov.net).
 
-The built-in encrypted filesystem on the [roadmap](/omos/roadmap) is designed so your data is sealed on your own storage, with integrity checks so it can't quietly corrupt. And because the whole idea of OMOS is to pool *your* machines together, your data moves between devices you own — not through someone else's cloud.
+## Building OMOS
 
-<Note>
-    As OMOS grows toward networking and the distributed layer, anything that could leave a machine will be something you turn on deliberately and control — never an on-by-default pipe to a third party. This page will stay current as those features land.
-</Note>
+Only the **build** process uses the internet, on the developer's machine — to fetch the Rust toolchain, crates and
+security advisories, and the bootloader. The resulting image doesn't contact anything.

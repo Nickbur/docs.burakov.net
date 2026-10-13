@@ -1,23 +1,22 @@
 ---
-title: "Self-hosting"
-description: "Run the open-source Quietletter core yourself, so it outlives any single company."
+title: "Run your own instance"
+description: "Run the open-source Quietletter core on your own server, connect the app to it, and what changes compared with the hosted service."
+mode: "wide"
 ---
 
-A dead man's switch is only as trustworthy as its promise to still be running years from now.
-So the core of Quietletter is **open-source and self-hostable** — what you set up doesn't depend
-on any one company staying alive.
+The Quietletter server is also available as an **open-source core** (`quietletter-core`, licensed
+**AGPL-3.0**) that you can run yourself. The app connects to it the same way it connects to the hosted
+service, so what you set up doesn't depend on any one company staying alive.
 
-## The open-source core
+## What you need
 
-The self-hostable server (`quietletter-core`) is released under the **AGPL-3.0** license — the same
-model trusted privacy tools like Bitwarden and Standard Notes use. You can read every line,
-run it yourself, and keep it running on your own terms.
-
-<Card title="What the core gives you" icon="server">
-    A standalone server you run with `docker compose up`: your switches, check-ins, the firing
-    engine, and the recipient release page — all on infrastructure you control. It stays
-    **content-blind**, exactly like the hosted service.
-</Card>
+- **Docker** with Docker Compose — or Node.js 24.16+ and your own PostgreSQL database (see
+    [Without Docker](/quietletter/running-your-instance#without-docker)).
+- **A domain with HTTPS.** The core serves plain HTTP; put it behind a reverse proxy that provides
+    TLS (Caddy, nginx, Traefik…). The app only connects over **HTTPS**, except to addresses on your
+    local network (`localhost`, `127.0.0.1`, `192.168.x.x`, `10.x.x.x`, `*.local`).
+- **An SMTP account** for outgoing email — it carries your warnings and your recipients' release
+    links.
 
 ## Quick start
 
@@ -34,79 +33,56 @@ run it yourself, and keep it running on your own terms.
     </Step>
     <Step title="Fill in your settings">
         Generate a strong token (`openssl rand -hex 32`) and set `OWNER_TOKEN` — it's how your app
-        authenticates to your instance. Then replace the remaining `REPLACE_ME` values: your
-        instance's public URL, your email for check-in warnings, and your SMTP details (or clear
-        `OWNER_EMAIL` and the `SMTP_*` values to keep mail in the console). The server won't start
-        until the token, the public URL and the email are set.
+        authenticates to your instance. Then replace the remaining `REPLACE_ME` values: your instance's
+        public URL, your email for check-in warnings, and your SMTP details. The server won't start while
+        any `REPLACE_ME` value is left; to keep mail in the console, leave `SMTP_HOST` empty.
     </Step>
     <Step title="Run it">
-        `docker compose up --build` starts PostgreSQL and the server, applies the database
-        migrations, and begins the check-in sweep. The server listens on `http://localhost:8080`.
-        Point your client at your instance's URL and you're live.
-    </Step>
-    <Step title="Connect the app">
-        In the app, open **Settings → Self-hosted instance** (or tap **Connect your instance** on
-        the sign-in screen) and enter your instance's URL and `OWNER_TOKEN`. The app reloads
-        against your instance — no account needed.
+        `docker compose up --build -d` starts PostgreSQL and the server, applies the database migrations,
+        and begins the check-in sweep. The server listens on port 8080 — point your HTTPS reverse proxy at
+        it.
     </Step>
 </Steps>
 
-Configuration, email delivery, backups, running without Docker and the full API are covered in
-[Running your instance](/quietletter/running-your-instance).
+Configuration, email, backups, upgrades, running without Docker and the full API are covered in
+[Configure, operate & API](/quietletter/running-your-instance).
+
+## Connect the app
+
+In the app, open **Settings → Self-hosted instance** (or tap **Connect your instance** on the sign-in
+screen) and enter the **Instance URL** and your **Owner token**. The app checks that it can reach the
+instance, signs out of the hosted account on that device, and reloads against your instance — no
+account needed. The menu then shows your instance's address.
+
+To go back, choose **Use the hosted service** in the same place and sign in again.
 
 <Note>
-    While the app is connected to your instance, every feature is unlocked and there's no
-    subscription. Check-in reminders keep firing on your device, but push notifications from the
-    hosted service are off.
+    The web app at quietletter.burakov.net runs over HTTPS, so it can't reach an instance served over
+    plain HTTP, even on your local network. Use HTTPS, or the iPhone / Android app.
 </Note>
+
+## How your instance differs from the hosted service
+
+- **One owner, everything unlocked.** An instance serves one person — whoever holds the owner token.
+    There are no accounts, plans or limits.
+- **Email is the delivery channel.** Push and SMS warning steps are only written to the server's log
+    (you can wire up your own provider). The app's own reminders before each deadline still work on
+    your device.
+- **Warning emails** say to open your Quietletter client to check in, rather than linking to the
+    hosted web app.
+- **Public pages.** An instance can publish a truly public page when a switch fires — a feature the
+    hosted service doesn't offer. See [Configure, operate & API](/quietletter/running-your-instance).
 
 ## Move your switches
 
 Your switches move between the hosted service and your own instance — in either direction — as a
-single file.
+single file. See [Back up and move your switches](/quietletter/backup-and-transfer).
 
-<Steps>
-    <Step title="Export">
-        While the app is connected to where your switches live now, open **Settings → Backup &
-        transfer → Export switches** and confirm with your PIN (or Face ID / fingerprint). On the
-        web the file downloads; on iOS and Android the share sheet opens so you can save or send it.
-    </Step>
-    <Step title="Switch sides">
-        Connect your instance in **Settings → Self-hosted instance** — or, to come back, choose
-        **Use the hosted service** there and sign in.
-    </Step>
-    <Step title="Import">
-        Open **Settings → Backup & transfer → Import switches**, pick the file and confirm. You get
-        a report of what was imported and what was skipped, and why.
-    </Step>
-</Steps>
-
-What the file holds, and how an import behaves:
-
-- **Encrypted stays encrypted.** Zero-knowledge messages, files and secrets travel as ciphertext
-    with their passphrase-wrapped key. After the move your recipients open them with the same
-    passphrase, and no server ever sees it.
-- **The rest is plain text.** Titles, recipient emails and phone numbers, check-in settings and
-    any message you marked readable are readable in the file. Keep it somewhere safe.
-- **Nothing fires early.** Every imported switch starts its check-in timer at the moment of
-    import, and a switch you had turned off stays off.
-- **Safe to repeat.** A switch that's already there is skipped — never duplicated or overwritten —
-    so importing the same file twice changes nothing.
-- **Live switches only.** Switches that have already fired are not exported.
-- **Hosted-service rules apply.** An import into the hosted service follows your plan (one switch
-    on the free plan; files, secrets, private pages and SMS warnings need Pro), and a switch with a
-    public page is skipped, because the hosted service doesn't publish public pages.
-
-## Continuity guarantees
+## Continuity
 
 - **Export anytime.** You can always export every switch to one file and import it into your own
     instance — or back — so your setup is never trapped inside one service.
-- **Published shutdown protocol.** If the hosted service ever winds down, you get long advance
-    notice, a final export, and a migration guide to self-hosting.
-- **Honest limits.** "It outlives any company" is only partly solvable — self-hosting is the
-    real backstop, and we document that plainly rather than overclaiming.
-
-<Note>
-    The truly-public "make it public to the world" action is available **only on self-hosted
-    instances** — the hosted service deliberately doesn't publish content to the open web.
-</Note>
+- **If the hosted service ever winds down**, you get long advance notice, a final export, and a
+    migration guide to self-hosting.
+- **Honest limits.** "It outlives any company" is only partly solvable — self-hosting is the real
+    backstop, and an instance is only as reliable as whoever runs it.

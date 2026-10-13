@@ -1,6 +1,7 @@
 ---
 title: "Quickstart"
 description: "Get Cronch running and create your first scheduled rule."
+mode: "wide"
 ---
 
 There are two ways to get Cronch. Download a ready-made build, or build it from source.
@@ -9,19 +10,22 @@ There are two ways to get Cronch. Download a ready-made build, or build it from 
 
 <Steps>
     <Step title="Get the app">
-        Download the build for your system from the [Cronch download page](https://burakov.net/projects/cronch/download) — a `.exe` for Windows, a `.dmg` for macOS (Apple Silicon or Intel).
+        Download the build for your system from the [Cronch project page](https://burakov.net/projects/cronch) — a `.exe` for Windows (x64 or ARM64), or a `.dmg` for macOS (Apple Silicon or Intel). The same files are on the [Releases page](https://github.com/Nickbur/cronch/releases) on GitHub.
+    </Step>
+    <Step title="Put it where it will stay">
+        On macOS, drag Cronch into **Applications** before you open it for the first time. On Windows, put the `.exe` in a folder you won't clean up. Cronch registers itself to launch at login from wherever it's running on first start, so starting it from your Downloads folder and moving it later breaks that link (see [Troubleshooting](/cronch/troubleshooting#cronch-does-not-start-at-login-after-moving-the-app) if it already happened).
     </Step>
     <Step title="Open it">
-        Run the app. A window opens and the Cronch icon — a green loop arrow — appears in your system tray (Windows) or menu bar (macOS).
-        <Warning>
-            Because Cronch runs commands on a schedule and starts at login, an unsigned build can trip Windows SmartScreen or macOS Gatekeeper. See [Troubleshooting](/cronch/troubleshooting) for the one-time click that gets you past it.
-        </Warning>
+        Run the app. A window opens and the Cronch icon — a green loop arrow — appears in your system tray (Windows) or menu bar (macOS). A one-time banner tells you that Cronch now launches at login; click **Got it**.
+        <Note>
+            The downloads are code-signed for Windows and signed and notarized by Apple for macOS, so they open like any other app. A copy you build yourself or get from somewhere else is unsigned and can trip Windows SmartScreen or macOS Gatekeeper — see [Troubleshooting](/cronch/troubleshooting).
+        </Note>
     </Step>
 </Steps>
 
 ## Option B — Build from source
 
-Cronch is open source. If you'd rather build it yourself (or you're on a platform without a prebuilt binary), you need a recent stable Rust toolchain (1.85 or newer) and a system linker: the MSVC toolchain on Windows (Visual Studio Build Tools with the **Desktop development with C++** workload), or Apple's Xcode Command Line Tools on macOS.
+Cronch is open source. If you'd rather build it yourself, you need a recent stable Rust toolchain (1.85 or newer) and a system linker: the MSVC toolchain on Windows (Visual Studio Build Tools with the **Desktop development with C++** workload), or Apple's Xcode Command Line Tools on macOS.
 
 <Steps>
     <Step title="Clone the repository">
@@ -42,33 +46,33 @@ Cronch is open source. If you'd rather build it yourself (or you're on a platfor
 
 <Steps>
     <Step title="Add a rule">
-        Click **+ Add rule**. Give it a name you'll recognise later, like "Nightly backup".
+        Click **+ Add rule** in the header (or **Add rule…** in the tray menu). Give it a name you'll recognise later, like "Nightly backup".
     </Step>
     <Step title="Enter the command">
         Type the command or the path to a script — exactly as you'd type it in a terminal.
     </Step>
     <Step title="Pick a shell">
-        Choose one of the shells Cronch detected on your machine, a custom shell binary, or **Direct** to run an executable with no shell. See [Commands & shells](/cronch/commands-and-shells).
+        Choose one of the shells Cronch detected on your machine, a custom shell binary, or **Direct (no shell)** to run an executable without a shell. See [Commands & shells](/cronch/commands-and-shells).
     </Step>
     <Step title="Choose a schedule">
-        Pick **Interval**, **Cron**, or **Once**, and fill in the timing. See [Schedules](/cronch/schedules).
+        Pick **Interval**, **Cron**, or **Once**, and fill in the timing. New rules start as **Interval, every 5 minutes**. See [Choosing a schedule](/cronch/schedules).
     </Step>
-    <Step title="Save and switch it on">
-        Save the rule and make sure its toggle is **on**. Cronch takes it from there.
+    <Step title="Save">
+        Click **Save**. The rule appears in the list, switched **on**, with its **next** run time. Cronch takes it from there.
     </Step>
 </Steps>
 
 <Tip>
-    Want to check it works right away? Click **Run now** on the rule, then open its **Logs** to see the captured output. A manual run doesn't affect the schedule.
+    Want to check it works right away? Click **Run now** on the rule, then open its **Logs** to see the captured output. A manual run doesn't move the schedule. It only works while the rule is switched on, and it follows the rule's overlap policy — if the previous run is still going and the policy is **Skip**, Cronch tells you the run was skipped.
 </Tip>
 
 ## Next
 
 <CardGroup cols={2}>
-    <Card title="Schedules" icon="clock" href="/cronch/schedules">
-        Interval, cron and one-time runs, and what happens to missed jobs.
+    <Card title="A tour of Cronch" icon="map" href="/cronch/tour">
+        What every part of the window and the tray menu does.
     </Card>
-    <Card title="Commands & shells" icon="terminal" href="/cronch/commands-and-shells">
-        Shells, working directory, environment variables and overlap.
+    <Card title="Choosing a schedule" icon="clock" href="/cronch/schedules">
+        Interval, cron and one-time runs, and when the first run happens.
     </Card>
 </CardGroup>

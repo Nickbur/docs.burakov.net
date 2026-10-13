@@ -1,0 +1,49 @@
+---
+title: "Compute & sandboxes"
+description: "Where Rowbots AI runs your code — your own managed sandbox account or a self-hosted runner — and how sandboxes are isolated and metered."
+mode: "wide"
+---
+
+Rowbots **never runs your code on its own servers**. Every build, test and check runs on compute you bring, in a fresh
+sandbox per run. Choose one of two modes in **Connections → Compute**:
+
+| | Managed sandbox | Self-hosted runner |
+| --- | --- | --- |
+| **You provide** | An API key for **E2B**, **Daytona** or **Modal** | A machine with Docker and gVisor |
+| **The engine runs** | On Rowbots' engine workers — they orchestrate, they never execute code | On your machine |
+| **Code executes** | In sandboxes in your provider account | In gVisor sandboxes on your machine |
+| **Your code, index and exams are stored** | In Rowbots storage, encrypted with a key unique to your workspace | Only on your machine |
+| **Model keys and git credentials** | In Rowbots' encrypted vault, decrypted only in memory per job | Only in the runner's configuration |
+| **Compute is billed** | By your provider, to you | Not metered — it's your machine |
+| **Models on your own network** (`localhost`) | No — endpoints must be reachable from the internet | Yes |
+| **iOS builds** | No | Yes, on a Mac |
+
+Choose the **self-hosted runner** when code, keys and secrets must stay inside your perimeter; otherwise a managed
+sandbox account is the quickest start. See [Self-hosted runner](/rowbots/self-hosted-runner) to set one up.
+
+## Managed sandbox providers
+
+<Steps>
+    <Step title="Create an API key">
+        In your E2B, Daytona or Modal account, create an API key for Rowbots.
+    </Step>
+    <Step title="Add it to Rowbots">
+        In **Connections → Compute**, choose the provider and paste the key. It's stored encrypted and used only to
+        start and stop sandboxes for your jobs.
+    </Step>
+</Steps>
+
+Sandboxes are **paused while the engine waits on a model** — when the provider supports pausing — so you don't pay for
+idle CPU. When the provider reports usage, Rowbots tracks compute spend next to model spend, includes it in forecasts,
+and lets you set a separate compute cap in **Budget**.
+
+## How every sandbox is isolated
+
+- **One fresh sandbox per run**, destroyed afterwards.
+- **No model keys or git credentials inside.** The engine pushes branches and opens pull requests from outside.
+- **Network denied by default** — only package registries, your git host and the hosts in your
+    [recipe](/rowbots/recipe#network-access).
+- **The judge gets its own sandbox** on the exact commit under review.
+- **Local MCP servers** run in a separate sandbox from your code.
+
+See [Security & privacy](/rowbots/security-and-privacy) for the full model.

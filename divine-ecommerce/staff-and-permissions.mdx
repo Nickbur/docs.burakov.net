@@ -1,0 +1,92 @@
+---
+title: "Staff & permissions"
+description: "Access levels, roles, permission groups and how Divine eCommerce decides which admin sections a staff member can open."
+mode: "wide"
+---
+
+## Access levels
+
+Every account has a level, which comes from its **role**:
+
+| Level | Can do |
+| --- | --- |
+| Guest | Browse and buy (not signed in). |
+| Customer | Everything a guest can, plus `/account`. |
+| **Manager** | Open the admin, limited to the sections and actions their role's **permissions** allow. |
+| **Admin** | Everything in the admin, including **Users** and **User Roles**. |
+| Superadmin | Same as admin, one level higher, so other admins can't manage it. Not used by the demo data. |
+
+`/admin` requires manager or higher; `/account` requires a signed-in account.
+
+## Roles
+
+**Settings → User Roles** — a role has a name, an **access level**, and (for manager-level roles) a set of
+permissions. **Settings → Users** creates and edits accounts and assigns their role; the account's level follows
+the role.
+
+The demo data includes these roles:
+
+| Role | Level | Permissions |
+| --- | --- | --- |
+| Administrator, Main Administrator | Admin | Everything |
+| Manager | Manager | Products, categories, brands, articles, media and reviews; view and edit orders; view customers |
+| Sales Manager | Manager | Orders, customers, reports, coupons, discounts, newsletter; view and edit products and reviews; view categories and brands |
+| Content Manager | Manager | Articles, categories, brands, media, menus, SEO, translations; view and edit products and reviews |
+| Editor | Manager | View and edit products, categories, brands and articles; view and upload media; view reviews |
+| Demo | Customer | View-only permissions; at customer level it can't open the admin |
+| Customer | Customer | — |
+
+## Permissions
+
+A permission is `group.action` — for example `orders.view` — or `group.*` for every action in a group.
+
+| Group | Actions | Admin sections it opens |
+| --- | --- | --- |
+| `products` | view, create, edit, delete | Products, Product Sets, Option Types, Specifications, Specification Groups, Catalog Filters |
+| `categories` | view, create, edit, delete | Product Categories |
+| `brands` | view, create, edit, delete | Brands |
+| `orders` | view, create, edit, delete | Orders, Quick orders, Returns, Unfinished Orders |
+| `customers` | view, create, edit, delete | Dashboard customer widget, customer export |
+| `articles` | view, create, edit, delete | Articles, Pages, Landings, Comments, Slides |
+| `reviews` | view, create, edit, delete | Reviews |
+| `coupons` | view, create, edit, delete | Coupons, Gifts, Loyalty points |
+| `discounts` | view, create, edit, delete | Discounts |
+| `newsletter` | view, create, edit, delete | Newsletters |
+| `media` | view, create, edit, delete | File Manager |
+| `menus` | view, create, edit, delete | Menu Builder |
+| `seo` | view, edit | Search Engine Optimization |
+| `translations` | view, edit | Translations |
+| `import` / `export` | view, create | Data Import / Data Export |
+| `settings` | view, edit | Settings |
+| `taxes` | view, create, edit, delete | Taxes, Currency |
+| `payments` / `shipping` | view, edit | Payments / Delivery |
+| `stores` | view, create, edit, delete | Stores, Warehouses, Suppliers |
+| `reports` | view, export | Dashboard report widgets |
+
+### How a request is checked
+
+For a manager, each admin request is matched to a section (the first part of the URL after `/admin`) and an action:
+
+| Request | Action |
+| --- | --- |
+| Opening a page | view — or create / edit for pages ending in `/create` / `/edit` |
+| Saving a new item (a POST to the section's own URL) | create — or edit in groups without a create action |
+| Any other save or action (POST, PUT, PATCH) | edit |
+| A DELETE request | delete |
+
+Some delete buttons post to an address ending in `/delete`; those count as **edit**.
+
+- The dashboard is open to every manager; its widgets depend on `orders.view`, `reports.view` and `customers.view`.
+- Sections without a group — **Users** and **User Roles** — are for admins only, whatever a role says.
+- The admin menu only shows the sections the user can open.
+- Permissions are read on every request, so role changes apply immediately.
+
+## Safety rules
+
+- Nobody can assign a level above their own, or manage an account above their own level.
+- Admins can't change their own level, block themselves or delete their own account.
+
+<Warning>
+    The demo staff accounts share one public password. On a live store, never load the demo accounts — see
+    [Deploy, upgrade & back up](/divine-ecommerce/deployment#first-production-install).
+</Warning>

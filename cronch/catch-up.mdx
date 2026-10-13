@@ -1,0 +1,52 @@
+---
+title: "Missed runs, sleep & pausing"
+description: "What Cronch does with runs that come due while the computer is off, asleep or paused — catch-up, expiry, pausing everything, and what happens to jobs when Cronch quits."
+mode: "wide"
+---
+
+Computers sleep and shut down, so a scheduled time can pass while Cronch can't run anything. This page explains exactly what happens then.
+
+## When a run counts as missed
+
+A run is **missed** when it's more than **five minutes late** — because Cronch wasn't running, the computer was asleep, or everything was paused. A run that's only slightly late (for example because the system was busy) simply runs as a normal scheduled run.
+
+Cronch checks its schedule at least every 30 seconds, so after the computer wakes up, a missed run is picked up within about half a minute. Nothing depends on operating-system power events.
+
+## Catch up if missed
+
+Each rule has a **Catch up if missed** option, **on** by default. It decides what happens to missed runs:
+
+| Catch up if missed | What happens |
+| --- | --- |
+| **On** | As soon as Cronch can, the rule runs **once**. Several missed occurrences are **coalesced** into that single run, so a weekend of hourly jobs doesn't fire dozens of times. The run is labelled **catch-up** in the history, and the rule's rhythm continues from there. |
+| **Off** | The missed occurrences are skipped and the rule waits for its next scheduled time. The skip shows in the rule's history as one **Skipped** row, at the first missed time. |
+
+A missed **Once** rule follows the same option: with catch-up on it runs as soon as Cronch can; with catch-up off its moment has passed and the rule is marked **Expired**. Running it with **Run now** before its time doesn't count — its scheduled run is still owed.
+
+<Note>
+    Saving a rule, switching it on, or importing it never fires runs "for the past". Catch-up only applies to occurrences that came due while the rule was already active.
+</Note>
+
+## Pausing everything
+
+**Pause all** — in the header or the tray menu — stops every rule from firing on schedule. While paused, **· paused** shows next to the Cronch name and the tray icon turns grey.
+
+- The pause **lasts until you resume**, even across restarts of Cronch or the computer.
+- Runs waiting in a **Queue** are dropped when you pause, and recorded in their history as **Skipped**.
+- **Run now** still works on any enabled rule.
+- Runs that were already going keep going.
+
+When you click **Resume all**:
+
+- Rules with **Catch up if missed** on run **once** if any of their occurrences passed during the pause.
+- Rules with catch-up off jump straight to their next future occurrence — even if the missed one was only seconds ago. The skipped run is recorded in their history as **Skipped**.
+
+## When Cronch quits, crashes, or the computer shuts down
+
+- **Quit** from the tray menu stops any running jobs (they're recorded as **Cancelled**) and waits up to five seconds for them to end. A run still waiting in a **Queue** is recorded as **Skipped**.
+- If Cronch crashes or the computer shuts down while a job is running, that run is closed as **Cancelled** — *interrupted by shutdown or restart* — the next time Cronch starts.
+- While Cronch isn't running, nothing runs at all. Missed runs are then handled as described above when it starts again.
+
+<Tip>
+    Jobs only run while Cronch is running **and you're signed in** to the computer — nothing runs at the login screen or for another user. Keep **Launch Cronch at login** on in [Settings](/cronch/settings) so your schedules survive reboots.
+</Tip>

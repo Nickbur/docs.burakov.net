@@ -1,46 +1,47 @@
 ---
-title: "Deduplication"
-description: "How Tidybook finds duplicate contacts, why it matches conservatively, and how the review queue plus undo let you merge without fear."
+title: "Find and merge duplicates"
+description: "How Tidybook finds duplicate contacts, what a merge keeps, and how to undo one."
+mode: "wide"
 ---
 
-Everyone has duplicates and almost nobody cleans them up, because a wrong merge is scary. Tidybook's
-deduplication is built to **earn your trust first** and save you taps second.
+Tidybook looks for duplicates all the time and lists them in the **Duplicates** tab. It never merges anything on its
+own — you review every group.
 
-## Conservative matching
+## How duplicates are found
 
-Tidybook only treats two entries as a **high-confidence** duplicate when they share:
+Two contacts belong to the same group when they share:
 
-- the **same phone number** (compared the way the phone network sees it, not as raw text), or
-- the **same email address** (case-insensitive).
+- the **same phone number** — compared in international format, so `050 123 45 67` and `+380 50 123 4567` match; or
+- the **same email address**, ignoring capital letters.
 
-It will **never** merge two contacts just because they share a name. Two different people called
-"Alex Smith" stay separate — name-only merging is the mistake that loses your data, and Tidybook
-refuses to make it.
+Matches chain together: if A shares a number with B, and B shares an email with C, all three form one group.
 
-## The review queue
+**Names alone never count.** Two different people called "Alex Smith" stay separate — that's the mistake that loses
+contacts, and Tidybook won't make it.
 
-Anything that isn't a dead-certain match goes into a **review queue**. For each pair you see what
-both sides would contribute and choose:
+## Review a group
 
-- **Merge** — combine them into one contact.
-- **Keep separate** — they're different people; don't ask again.
-- **Skip** — decide later.
+The **Contacts** tab shows a banner when duplicates are waiting. In **Duplicates**, each group shows how many contacts
+it holds, what they share, and each one's name, phone and email. The largest groups come first.
 
-The app does the finding; you keep the final say.
+- **Merge** — combine the group into one contact.
+- **Not duplicates** — dismiss the group; the contacts stay as they are.
 
-## Merge without losing anything
+## What a merge keeps
 
-When you merge, Tidybook **unions** the details: every phone, email and address from both cards is
-kept, and where a single value conflicts it keeps the alternatives available rather than silently
-picking one.
+| Part of the contact | Result |
+| --- | --- |
+| Phones, emails, addresses, websites | **All** of them, from every contact, without repeats |
+| Name | The fullest version |
+| Nickname, company, birthday, photo | The first one found |
+| Notes | Combined |
+| Sources | All of them, so push-back still knows where the contact came from |
 
-## Undo any time
+## Undo
 
-Every merge is **reversible**. Tidybook remembers the pieces it combined, so you can split a contact
-back apart later. That safety net is what finally makes it comfortable to tidy a book you've been
-avoiding for years.
+Merged by mistake? Tap **Undo** on the confirmation that appears right after merging, and the original contacts come
+back as they were.
 
 <Note>
-    Deduplication runs entirely on your device. Even with Sync on, the matching happens locally on your
-    own contacts — the server never sees who your duplicates are.
+    Duplicate matching runs on your device. With Sync on, your other devices receive only the merged result.
 </Note>

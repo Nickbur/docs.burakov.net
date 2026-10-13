@@ -1,0 +1,68 @@
+---
+title: "Back up and move your switches"
+description: "Export every Quietletter switch to one file, import it again, and move your switches between the hosted service and your own instance."
+mode: "wide"
+---
+
+All your switches can be saved to **one file** and imported again — as a backup, or to move between
+the hosted service and [your own instance](/quietletter/self-hosting), in either direction.
+
+## Export
+
+Open **Settings → Backup & transfer → Export switches** and confirm with your PIN (or Face ID /
+fingerprint). On the web the file downloads as `quietletter-export-` followed by the date; on iPhone
+and Android the share sheet opens so you can save or send it.
+
+## Import
+
+Open **Settings → Backup & transfer → Import switches**, pick the file and confirm. Quietletter then
+shows what was imported and what was skipped, and why.
+
+## What the file holds
+
+- **Encrypted stays encrypted.** Encrypted messages, files, secrets and private pages travel as
+    ciphertext with their passphrase-protected key. After a move your recipients open them with the
+    same passphrase, and no server ever sees it.
+- **The rest is plain text.** Titles, recipient emails and phone numbers, schedules and any readable
+    message are readable in the file. **Keep it somewhere safe.**
+- **Live switches only.** Switches that have already fired aren't exported.
+
+## How an import behaves
+
+- **Nothing fires early.** Every imported switch starts its check-in timer at the moment of import,
+    and a disarmed switch stays disarmed.
+- **Safe to repeat.** A switch that's already there is skipped — never duplicated or overwritten — so
+    importing the same file twice changes nothing.
+- **The same rules apply.** Each switch is checked like one you saved by hand (for example the
+    48-hour minimum grace period, or warnings that must fall before the fire time); invalid ones are
+    skipped without stopping the rest.
+- **Plan limits apply on the hosted service.** On the free plan you can have one live switch in total —
+    including the ones you already have, but not switches that have fired — and files, secrets, private
+    pages and SMS warnings need Pro.
+    A switch with a public page (a self-hosted-only feature) is skipped there.
+
+A file from a newer version of Quietletter than the one you're importing into is refused; update first.
+
+## Move to your own instance (or back)
+
+<Steps>
+    <Step title="Export">
+        While the app is connected to where your switches live now, export them as above.
+    </Step>
+    <Step title="Switch sides">
+        Connect your instance in **Settings → Self-hosted instance** — or, to come back, choose **Use the
+        hosted service** there and sign in. See [Run your own instance](/quietletter/self-hosting).
+    </Step>
+    <Step title="Import">
+        Import the file on the new side.
+    </Step>
+    <Step title="Check in">
+        Check in on each switch and review its schedule. Then disarm or delete the old copies on the side
+        you left, so they don't fire later.
+    </Step>
+</Steps>
+
+<Warning>
+    Moving doesn't remove the switches from where you exported them — they keep counting down there. Turn
+    them off on the old side once the move is done.
+</Warning>

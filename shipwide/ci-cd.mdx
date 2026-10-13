@@ -1,0 +1,62 @@
+---
+title: "CI/CD"
+description: "The GitHub Actions pipeline that builds and deploys the web app and builds the Android and desktop apps."
+mode: "wide"
+---
+
+The app ships with a GitHub Actions workflow, `.github/workflows/deploy.yml` in `shipwide_app`.
+It runs the same `npm run build` you run locally — Prettier and ESLint checks, type-check, unit
+tests, then the build — so nothing reaches production that wouldn't pass on your machine.
+
+## What runs when
+
+| Job | Runs on | Trigger | Output |
+|-----|---------|---------|--------|
+| **Build Web** | Ubuntu | Every push to `main`, and manual runs | The web/PWA build (`dist/`, kept as the `web-dist` artifact for 7 days), then deployed to your server |
+| **Build Android** | Ubuntu (JDK 21) | Manual runs (**Run workflow**) | A release APK (`android-apk` artifact) |
+| **Build Desktop (Tauri)** | macOS, Windows, Linux | Manual runs (**Run workflow**) | `.dmg`, `.msi` / `.exe`, `.AppImage` / `.deb` bundles (`tauri-<os>` artifacts) |
+
+All jobs use Node 24. Manual runs start from the repository's **Actions** tab → **Build & Deploy**
+→ **Run workflow**.
+
+## Secrets and variables
+
+Set these under the repository's **Settings → Secrets and variables → Actions**. `VITE_*` values
+are inlined into the build, so only public values belong in them — see
+[Configuration](/shipwide/configuration).
+
+| Name | Kind | Used for |
+|------|------|----------|
+| `VITE_BACKEND_URL` | Secret | Your production API — every job |
+| `VITE_APP_NAME` | Variable | The app's local namespace (defaults to `shipwide`) — every job |
+| `VITE_SENTRY_DSN` | Secret | Error tracking in the web build (optional) |
+| `VITE_ONESIGNAL_APP_ID` | Secret | Push in the web build (optional) |
+| `VITE_GOOGLE_CLIENT_ID` | Secret | Google sign-in in the web build (optional) |
+| `DEPLOY_HOST` · `DEPLOY_USER` · `DEPLOY_KEY` · `DEPLOY_PATH` | Secrets | Where the web build is deployed |
+
+## Deploying the web build
+
+After a successful build, the web job copies `dist/` to your server over SSH — `DEPLOY_HOST` and
+`DEPLOY_USER` with the private key in `DEPLOY_KEY`, into `DEPLOY_PATH`. Serve that folder as a
+static site; its origin must be in the API's `CORS_ORIGINS` ([Deployment](/shipwide/deployment)).
+If you host the web app elsewhere (a CDN, Cloudflare Pages, Netlify…), replace the deploy step
+with your host's own action — the build before it stays the same.
+
+## Mobile and desktop builds
+
+- **Android** — the job produces a release APK. Add your signing configuration to
+    `android/app/build.gradle` (with the keystore as a secret) before you distribute it, and
+    switch to `bundleRelease` if you upload to Google Play.
+- **Desktop** — the Tauri job builds on all three operating systems at once and keeps each
+    platform's installers as an artifact.
+- **iOS** — archive and submit from Xcode (see [Deployment](/shipwide/deployment)); add a macOS
+    job with your signing certificates if you want it in CI.
+
+Store submission isn't part of the workflow — extend it with the uploader you use once your
+store accounts are set up.
+
+<Tip>
+    The workflow builds without a lockfile: the repositories don't commit `package-lock.json`, so
+    every run resolves dependencies fresh and applies each repo's `allowScripts` decisions. See
+    [Install scripts](/shipwide/install-scripts).
+</Tip>

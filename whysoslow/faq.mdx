@@ -1,45 +1,55 @@
 ---
 title: "FAQ"
 description: "Coverage, platforms, battery, and the honest edges."
+mode: "wide"
 ---
 
 <AccordionGroup>
     <Accordion title="What does it cost?">
-        Nothing. WhySoSlow is a **personal project — free, with no subscriptions and no in-app
-        purchases**. One burakov account works across all your devices.
+        Nothing — free, with no subscriptions and no in-app purchases.
     </Accordion>
     <Accordion title="Which platforms are supported?">
-        **iOS and Android**, phones and tablets, from one account. It's **mobile-only** — there's no
-        desktop or web version, because it's built to be mounted in a car.
+        **iPhone and Android**, in portrait or landscape. There's no web or desktop version — it's built to be
+        mounted in a car.
     </Accordion>
     <Accordion title="Is it a navigator? Does it do routes?">
-        No. WhySoSlow is a **follow-map**, not a navigator — no destinations, no turn-by-turn. It shows
-        the limit in force and warns about cameras, and otherwise stays out of your way.
+        No. WhySoSlow is a **follow-map**, not a navigator — no destinations, no turn-by-turn. It shows the limit
+        in force and warns about cameras.
     </Accordion>
     <Accordion title="Where does it work?">
-        **Kyiv and the surrounding oblast** today, with **other regions as downloadable map packs**. Once
-        a region is downloaded, everything works fully offline.
+        Speed limits and cameras for **Kyiv and Kyiv Oblast** come with the app. For any other region of Ukraine,
+        the data downloads the first time you're there online. See [Offline maps](/whysoslow/offline-maps).
     </Accordion>
     <Accordion title="Why does it need me to sign in?">
-        So your personal edits (fixed limits and markers) **sync across your devices**, and so the
-        optional AI advisor can work. The account is free.
+        So your own fixes and markers sync across your devices, and so the optional AI advisor can work. The
+        account is free.
     </Accordion>
-    <Accordion title="Will it drain my battery or overheat?">
-        WhySoSlow assumes the phone is **mounted and charging** with the screen on, so it's tuned for
-        **heat, not battery** — GPS runs about once a second and the optional camera capture is
-        throttled. It doesn't run in the background.
+    <Accordion title="Does it run in the background?">
+        No. It's built to run on screen, with the phone mounted, and it keeps the screen on while a drive is
+        running. On Android, a quick switch to another app doesn't interrupt the drive (a notification shows
+        while it's using your location). Once you stop the drive, it stops using your location.
+    </Accordion>
+    <Accordion title="Does it drain the battery or heat the phone?">
+        It's built to run on a charger, with the screen on. To keep the phone cool it reads GPS about once a
+        second, and if the AI sign advisor is on, you can take photos less often or at lower quality — see
+        [Photo interval and quality](/whysoslow/ai-sign-advisor#photo-interval-and-quality).
+    </Accordion>
+    <Accordion title="Why does the limit show '—'?">
+        You're not on a road WhySoSlow can match — for example in a car park. Where the map data has no posted
+        limit, WhySoSlow uses Ukraine's default for that kind of road instead. If a limit is wrong, add a
+        [limit fix](/whysoslow/fix-a-limit).
     </Accordion>
     <Accordion title="Is my camera always recording?">
-        Only if you switch the **AI sign advisor** on. With it off, the camera is never used. Even on, it
-        captures small frames for sign-reading, uploads them, and **deletes them from your device after
-        upload**.
+        Only if you switch on the **AI sign advisor**. Then it takes a small photo of the road every few seconds
+        (3–5, set in Settings) while the Drive screen is open; photos stay on your phone only until they're
+        uploaded. See [AI sign advisor](/whysoslow/ai-sign-advisor).
     </Accordion>
     <Accordion title="How accurate are the limits and cameras?">
-        Limits come from OpenStreetMap plus Ukraine's implicit defaults; cameras come from the official
-        `data.gov.ua` dataset enriched with OpenStreetMap. Nothing is perfect — which is why you can
-        **fix any limit and add any camera yourself**, and your edits always win.
+        Cameras come from Ukraine's official camera register, with OpenStreetMap filling the gaps. Limits come
+        from OpenStreetMap, with Ukraine's default limits where a road has no number. Good, but not perfect —
+        that's why you can fix any limit and add any camera yourself; your edits always win.
     </Accordion>
     <Accordion title="Does it use kilometres or miles?">
-        **Kilometres per hour**, always — it's built for Ukraine.
+        Kilometres per hour, always.
     </Accordion>
 </AccordionGroup>

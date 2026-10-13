@@ -1,0 +1,62 @@
+---
+title: "AI assistant"
+description: "Bastion's AI assistant module — asking questions across your chats and topics, summarizing a chat, which chats it can read, and what that means for privacy."
+mode: "wide"
+---
+
+The **AI assistant** is an optional module that answers questions from your organization's own
+conversations — with numbered links to the messages and posts it used. It runs on your organization's
+server, with the AI model your admin configures.
+
+When the module is on and set up, an **Assistant** item appears in the menu.
+
+## Ask a question
+
+Open **Assistant** and type a question. The answer cites its **sources** — tap a number to jump to that
+message or post. While it's writing you can **Stop** it; afterwards you can **Ask again**, **Copy** the
+answer, or **Clear conversation**.
+
+The assistant only answers from chats and topics where **you are a member and the assistant has been
+added** — it never tells you about conversations you can't read yourself. Your conversation with the
+assistant is private to you and is cleared when you sign out.
+
+## In a chat
+
+From a chat you can:
+
+- **Ask about this chat** or **Summarize this chat**, and
+- **Share to chat** — post the answer into the chat as a normal, encrypted message starting with
+    *AI assistant answer:*.
+
+## Which chats it can read
+
+The assistant shows up in a chat's member list with the badge *AI — indexes this chat for org-wide
+answers*.
+
+- **Groups and channels** — your admin chooses whether the assistant joins new ones by default (it does,
+    unless they changed that). A chat's admins can switch **AI assistant in this chat** off or on, unless
+    your organization has locked that setting. Chats created before the assistant was set up need it
+    switched on.
+- **Direct chats and high-security chats** — **never**.
+- **Topics** — each topic has its own switch.
+
+It understands message text and code, and PDF, Word and Excel files. Images and voice messages only if
+your organization's setup includes models for them.
+
+## Privacy
+
+<Warning>
+    In a chat or topic the assistant has been added to, the assistant **can read the content**: it's
+    decrypted on your organization's server to build the assistant's index, and passed to the AI model
+    your admin configured to write answers. If that model is an external service, the app tells you so.
+    Direct and high-security chats are never included.
+</Warning>
+
+Your questions are recorded in the organization's audit log only as a fingerprint and length — not
+their text.
+
+## For admins
+
+The module needs an AI model configured on the organization's server, and the assistant's worker set up
+once from the admin panel. See [Organization settings](/bastion/organization-settings#ai-assistant) and
+[Run & maintain your node](/bastion/operations#ai-assistant-models).

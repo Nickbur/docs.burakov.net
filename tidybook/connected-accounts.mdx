@@ -1,0 +1,54 @@
+---
+title: "Connect Google & CardDAV"
+description: "Connect a Google account or a CardDAV server to Tidybook — bring their contacts in, keep them up to date, and send your tidy book back."
+mode: "wide"
+---
+
+A **connected account** is a contacts source Tidybook stays linked to: it brings changes made there into your book,
+and can [push your tidy book back](/tidybook/push-back) to it. Connected accounts are part of the
+[Sync plan](/tidybook/pricing).
+
+Tidybook's own book stays the master copy. A connected account is never overwritten unless you push to it yourself.
+
+## Google
+
+<Steps>
+    <Step title="Connect">
+        In **Import**, choose to connect **Google** and sign in to the Google account whose contacts you want. Google
+        asks you to let Tidybook read and update your contacts.
+    </Step>
+    <Step title="Import">
+        Tidybook brings in all of that account's contacts. Matches with contacts you already have show up in
+        **Duplicates**.
+    </Step>
+    <Step title="Stay up to date">
+        Contacts you add or change in Google later are brought into Tidybook.
+    </Step>
+</Steps>
+
+Disconnect the account to stop Tidybook from reading or updating it — the contacts already in your book stay. You
+can also remove Tidybook's access from your Google account's security settings.
+
+## CardDAV
+
+CardDAV is the open standard most contact servers speak — Nextcloud, Fastmail, iCloud, Synology and others.
+
+| Field | What to enter |
+| --- | --- |
+| **Server URL** | Your server's CardDAV address, for example `https://cloud.example.com/remote.php/dav` for Nextcloud. |
+| **Username** | Your account name on that server. |
+| **Password** | Your password — or an **app password**, which iCloud, Fastmail and others require. |
+
+Tidybook finds your address book on the server, imports it, and keeps it connected like a Google account.
+
+<Tip>
+    Services with two-step sign-in (iCloud, Fastmail, Google Workspace) need an **app-specific password** for CardDAV
+    — create one in that service's security settings.
+</Tip>
+
+## Your data
+
+- A connection is used only to read and update that account's contacts.
+- Contacts brought in from a connected account join your book like any other, so with Sync on they're stored
+    **end-to-end encrypted**.
+- See [Account & privacy](/tidybook/accounts-and-privacy) for everything Tidybook stores.

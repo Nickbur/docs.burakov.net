@@ -1,31 +1,47 @@
 ---
 title: "FAQ"
 description: "Short answers to common questions about Cronch."
+mode: "wide"
 ---
 
 <AccordionGroup>
     <Accordion title="Is Cronch free?">
-        Yes — free forever and open source, dual-licensed under MIT or Apache-2.0. There's no paid tier and no monetization.
+        Yes — free and open source, dual-licensed under MIT or Apache-2.0. There's no paid tier.
     </Accordion>
     <Accordion title="Do my jobs run if Cronch is closed?">
         Cronch has to be running for jobs to fire — it's a tray app, not a background OS service. Closing the window only hides it to the tray; it keeps running there. It also launches at login by default so your schedules survive reboots. Fully quitting it (from the tray menu) stops all scheduling until you open it again.
     </Accordion>
+    <Accordion title="Do jobs run when I'm signed out, or for other users?">
+        No. Cronch runs inside your user session, so jobs fire only while you're signed in. Each user on a computer has their own Cronch, rules and history.
+    </Accordion>
     <Accordion title="What happens to jobs I missed while my computer was off?">
-        When Cronch starts (or the computer wakes up), any rule that came due while it couldn't run — more than five minutes ago — runs once, if **Catch up if missed** is on for that rule. Multiple missed occurrences are collapsed into a single catch-up run — you won't get a flood. With catch-up off, the missed runs are skipped; a missed one-time (**Once**) job is then marked Expired.
+        When Cronch starts (or the computer wakes up), any rule that came due while it couldn't run — more than five minutes ago — runs once, if **Catch up if missed** is on for that rule. Multiple missed occurrences are collapsed into a single catch-up run. With catch-up off, the missed runs are skipped (the rule's history shows them as **Skipped**); a missed one-time (**Once**) job is then marked Expired. See [Missed runs, sleep & pausing](/cronch/catch-up).
+    </Accordion>
+    <Accordion title="Does Cronch notify me when a job fails?">
+        Yes. When a run fails or times out, Cronch shows a system notification with the rule's name and the result. The run's status also shows in the rule list, and its output is in **Logs**.
+    </Accordion>
+    <Accordion title="How do I update Cronch?">
+        Download the new release from the [Cronch project page](https://burakov.net/projects/cronch) or the [Releases page](https://github.com/Nickbur/cronch/releases), quit Cronch from the tray menu, and replace the app with the new one in the same place. Your rules, settings and history stay where they are. If the new copy lives somewhere else, open it and click **Save settings** so launch at login points at it. Cronch never checks for updates by itself.
+    </Accordion>
+    <Accordion title="Can I duplicate a rule?">
+        There's no duplicate button. The quick way is to export your rules and import the file again — every rule comes back as a copy named "(copy)", and you can delete the ones you don't need. See [Import, export & moving machines](/cronch/import-export).
     </Accordion>
     <Accordion title="Does Cronch work on Linux?">
-        No — Cronch targets Windows and macOS only, by design. Linux already has strong scheduling options and isn't in scope.
+        No — Cronch targets Windows and macOS only.
     </Accordion>
     <Accordion title="Where is my data stored? Does anything leave my machine?">
-        Everything lives in a local SQLite database on your computer (`%APPDATA%\burakov\Cronch\data` on Windows, `~/Library/Application Support/net.burakov.Cronch` on macOS). Cronch has no account, no cloud and no telemetry, and makes no network calls of its own. See [Privacy](/cronch/privacy).
+        Everything lives in a local SQLite database on your computer (`%APPDATA%\burakov\Cronch\data` on Windows, `~/Library/Application Support/net.burakov.Cronch` on macOS). Cronch has no account, no cloud and no telemetry, and makes no network calls of its own. See [Data & privacy](/cronch/privacy).
     </Accordion>
     <Accordion title="Can I move my rules to another computer?">
-        Yes. Export your rules to a JSON file in [Settings](/cronch/settings), then import that file on the other machine. Importing only ever adds rules; one that already exists there comes in as a copy. If a rule uses a shell that isn't installed there, Cronch flags it as *shell missing* until you adjust it.
+        Yes. Export your rules to a JSON file, then import that file on the other machine. Importing only ever adds rules; one that already exists there comes in as a copy. If a rule uses a shell that isn't installed there, Cronch flags it as *shell missing* until you adjust it. See [Import, export & moving machines](/cronch/import-export).
     </Accordion>
     <Accordion title="Why does it start at login by default?">
-        Because jobs only fire while Cronch is running, launching at login keeps your schedules alive across restarts. Cronch tells you the first time it does this, and you can turn it off in Settings.
+        Because jobs only fire while Cronch is running, launching at login keeps your schedules alive across restarts. Cronch tells you the first time it does this, and you can turn it off in [Settings](/cronch/settings).
     </Accordion>
     <Accordion title="Can I run a command without any shell?">
         Yes — choose **Direct (no shell)** on the rule. Cronch runs the executable straight, without a shell interpreting pipes, variables or special characters; the command line is only split into program and arguments (put a path with spaces in double quotes). You can also point at a **custom shell** binary if you need a specific one.
+    </Accordion>
+    <Accordion title="Is there a light theme or another language?">
+        No — Cronch has a dark interface in English.
     </Accordion>
 </AccordionGroup>

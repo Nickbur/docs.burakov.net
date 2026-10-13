@@ -1,60 +1,63 @@
 ---
-title: "The Drive screen"
-description: "The heads-up display: your speed, the limit in force, colour-coded alerts, and the follow-map."
+title: "Read your speed and the limit"
+description: "WhySoSlow's Drive screen — starting a drive, your speed, the limit in force and where it comes from, the colours and numbers, and the follow-map."
+mode: "wide"
 ---
 
-The **Drive** screen is the whole point of WhySoSlow. Tap **Start** to begin a session and **Stop**
-to end it. There are no destinations and nothing to tap while you're moving — you glance, you know,
-you drive.
+The **Drive** screen is the whole point of WhySoSlow.
 
-## Your speed and the limit, side by side
+## Start and stop a drive
 
-The display shows two things next to each other:
+- Tap **Start** to begin a drive, and **Stop** when you're done.
+- Or just set off: with the app open, WhySoSlow starts the drive by itself once it senses you're moving.
+- While a drive is running, the screen stays on.
+- On Android, a quick switch to another app doesn't interrupt the drive — a notification shows while
+    WhySoSlow is using your location.
+- There's no background tracking: once you stop the drive, WhySoSlow stops using your location.
 
-- **Your current speed**, in km/h, straight from GPS.
-- **The limit in force** as a road-sign roundel — the posted limit for the road you're on, taken
-    from map data and your own edits.
+## Your speed and the limit
 
-Near a camera, the roundel switches to the **camera's own enforced limit** and shows a small camera
-badge. If a camera's enforced limit isn't published, the roundel keeps showing the posted limit with
-the badge.
+The display shows, side by side:
 
-## Colour tells you where you stand
+- **Your speed** in km/h, from GPS.
+- **The limit in force** as a road-sign roundel, with the **name of the road** in a pill.
 
-Your speed number changes colour so you never have to do the maths:
+The limit comes from the first of these that applies:
 
-<Steps>
-    <Step title="Under the limit — calm">
-        At or below the posted limit, your speed reads in the normal colour. Nothing beeps.
-    </Step>
-    <Step title="Over the limit — amber">
-        The moment you're over the **posted** limit, your speed turns **amber**. This is information, not
-        an alarm — there's no sound.
-    </Step>
-    <Step title="Fineable — red">
-        Once you cross Ukraine's **+20 km/h** line — where a fine actually becomes possible — your speed
-        turns **red** with a single, short beep. One beep on crossing, never a nagging loop.
-    </Step>
-</Steps>
+1. **A camera's enforced limit**, while you're approaching a camera that publishes one — the roundel then
+    shows a small camera badge. If the camera's limit isn't published, the roundel keeps the road's limit and
+    still shows the badge.
+2. **Your own limit fix** for the stretch of road you're on — see [Fix a speed limit](/whysoslow/fix-a-limit).
+3. **The road's posted limit** from OpenStreetMap, for the road you're on (matched within 45 metres).
+4. **Ukraine's default limit** for that kind of road, where the map data has no number — for example
+    50 km/h in a city or town.
+5. Otherwise — when you're not on a mapped road — the roundel shows a dimmed **—**.
 
-<Note>
-    Ukraine only fines speeding at **more than +20 km/h** over the limit. WhySoSlow keys its red alert
-    to that fineable line by default, so it warns you when it matters instead of nagging at every
-    +1 km/h.
-</Note>
+## The colours
 
-## Settings you can tune
+| Colour | When | Sound |
+| --- | --- | --- |
+| **Green** | At or below the limit | — |
+| **Yellow** | Over the limit, but below your warning threshold | — |
+| **Red** | At or above the limit **plus** your threshold (+20 km/h by default) — the tile pulses | One low buzz each time you go into red |
 
-In **Settings → Driving**:
+The threshold is **Warn above limit by** in Settings — see [Change or mute alerts](/whysoslow/adjust-alerts).
 
-- **Warn above limit by** — the threshold for the red, fineable alert. The default is **+20 km/h**;
-    set it lower (down to every km/h over) if you want an earlier warning.
-- **Alert sound** — the tone used for alerts. Camera warnings and overspeed use **distinct** sounds
-    so you can tell them apart without looking.
+## The number on your speed tile
+
+The small number shows how far you are from the red line:
+
+- **−12** — 12 km/h below the point where it turns red.
+- **+3 (23)** — in red: 3 km/h past your threshold, and 23 km/h over the posted limit.
 
 ## The map
 
-The map is a **follow-map**: it tracks your position and heading and keeps the road you're on lit up.
-It **auto-switches between day and night** for a high-contrast, glanceable display, and stays awake
-while a session is running. You can recenter and zoom, but you never need to — it's built to be read
-at a glance, not operated.
+The map follows you, **north up**, with an arrow for your position pointing the way you're heading. The road
+you're on is highlighted, cameras show as red dots, and your own markers — potholes, roadworks and so on —
+show with their own icons; temporary ones have an amber outline.
+
+- **Recenter**, **Zoom in** and **Zoom out** are on the side. Moving the map yourself pauses following;
+    **Recenter** picks it up again.
+- The map is light or dark with your **Appearance** setting (Auto follows your phone). Street names are in
+    Ukrainian.
+- The **speaker** button turns alert sounds on or off.

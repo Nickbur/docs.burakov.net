@@ -1,50 +1,75 @@
 ---
 title: "Troubleshooting"
-description: "Fixes for the common snags — SmartScreen and Gatekeeper warnings, missing shells, PATH problems, timeouts, Cronch's own log, and build errors."
+description: "Fixes for the common snags — SmartScreen and Gatekeeper warnings, rules that didn't run, missing shells, PATH problems, timeouts, garbled output, launch at login, and build errors."
+mode: "wide"
 ---
 
 ## "Windows protected your PC" (SmartScreen)
 
-An app that runs commands on a schedule and starts at login looks, to Windows, a lot like malware — so an unsigned build can trigger SmartScreen. If you trust the source (or built it yourself), click **More info → Run anyway**. To avoid this on machines you distribute to, sign the binary with a code-signing certificate.
+Official Cronch downloads are code-signed, so Windows shows the publisher when you run them. An unsigned copy — for example one someone else built — can trigger SmartScreen, because an app that runs commands on a schedule and starts at login looks a lot like malware to Windows. Some antivirus tools flag such copies for the same reason. If you trust the source, click **More info → Run anyway**.
 
 ## macOS: "cannot be opened because the developer cannot be verified" (Gatekeeper)
 
-This appears for apps downloaded from the internet. Clear it by **right-clicking the app → Open** (confirm once), or from a terminal:
+Official Cronch downloads are notarized by Apple, so macOS only asks once whether to open an app downloaded from the internet. This stronger warning appears for an unsigned copy from somewhere else. If you trust the source, clear it in **System Settings → Privacy & Security → Open Anyway** (on older macOS: **right-click the app → Open**, confirm once), or from a terminal:
 
 ```bash
-xattr -dr com.apple.quarantine /path/to/Cronch.app
+xattr -dr com.apple.quarantine /Applications/Cronch.app
 ```
 
 A copy you build yourself and run locally is not quarantined, so Gatekeeper doesn't block it.
 
-## A rule shows "shell missing"
+## A rule didn't run
 
-The rule names a shell that isn't installed on this machine, so its runs fail with a "shell not found" message. Either install that shell, or edit the rule to use one Cronch detected (or **Direct**). This commonly happens after importing rules created on a different computer — see [Commands & shells](/cronch/commands-and-shells). If you just installed the shell, restart Cronch so it detects it.
+Work through these in order:
+
+1. **Is the rule on?** The **on** checkbox must be ticked, and its **next:** time shouldn't be **—**.
+2. **Is everything paused?** Look for **· paused** in the header (or a grey tray icon) and click **Resume all**.
+3. **Was Cronch running and were you signed in?** Jobs only fire while Cronch runs in your session. If the computer was off or asleep, see [Missed runs, sleep & pausing](/cronch/catch-up) — with **Catch up if missed** off, missed runs are skipped.
+4. **Was the previous run still going?** With **If already running: Skip**, the new run is skipped. With **Queue**, only one run waits — a further one is skipped.
+5. **Is it an interval rule you just saved?** The first run comes one full interval after saving.
+
+A skipped run shows in the rule's **Logs** as **Skipped**, with the reason in its stderr — see [Skipped runs](/cronch/history#skipped-runs).
 
 ## "It runs in my terminal, but not on a schedule"
 
-Almost always an **environment** issue: the scheduled job can't find a tool that's on your `PATH` in a terminal. Cronch reads your login environment from your shell's startup files when it starts — so after changing them, restart Cronch. If a job still can't find something:
+Almost always an **environment** issue: the scheduled job can't find a tool that's on your `PATH` in a terminal, or relies on an alias.
 
-- Use the **full path** to the program in the command, or
-- Set the needed variable on the rule (the **Environment variables** field), or
-- Set the rule's **Working directory** if the script expects to run from a specific folder.
+- On **macOS**, Cronch reads your login environment from your shell's startup files when it starts — after changing them, **restart Cronch**. If your `.zshrc` is slow or waits for something, Cronch may fall back to a plainer environment.
+- On **Windows**, jobs inherit the environment Cronch was started with — after changing environment variables, **restart Cronch**.
+- Aliases and shell functions aren't available in scheduled jobs, and PowerShell profiles aren't loaded.
+
+If a job still can't find something, use the **full path** to the program, set the variable on the rule, or set the rule's **Working directory**. The details are in [Environment & working directory](/cronch/environment).
+
+## A rule shows "shell missing"
+
+The rule names a shell that isn't installed on this computer, so its runs fail with *shell '…' not found on this machine*. Either install that shell and **restart Cronch** (shells are detected at startup), or edit the rule to use one Cronch found (or **Direct**). This commonly happens after importing rules from a different computer.
 
 ## A run shows "TimedOut"
 
-The run was still going when the rule's **Timeout** ran out (5 minutes for new rules), so Cronch stopped it. Raise the timeout for long jobs, or set it to `0` for no limit — see [Commands & shells](/cronch/commands-and-shells#timeout).
+The run was still going when the rule's **Timeout** ran out (5 minutes for new rules), so Cronch force-stopped it. Raise the timeout for long jobs, or set it to `0` for no limit — see [Commands & shells](/cronch/commands-and-shells#timeout).
 
-## A job didn't run while the machine was asleep or off
+A job that waits for input — a confirmation or password prompt — never gets an answer and ends up timing out too. Make the command non-interactive.
 
-That's expected — nothing can run while the computer sleeps or Cronch isn't running. As soon as it can, a rule with **Catch up if missed** enabled runs once to make up for it; with catch-up off, the missed run is skipped. Check the rule's setting, and look for a `catch-up` run in its history. See [Schedules](/cronch/schedules).
+## Output shows "�" instead of accented or non-Latin characters (Windows)
+
+Command Prompt and Windows PowerShell 5.1 can print text in an older code page, which Cronch, reading output as UTF-8, shows as `�`. Switch the job to UTF-8 output — for example start a `cmd` command with `chcp 65001>NUL & `, or run it in **PowerShell 7+**.
+
+## Output stops or ends with "[output truncated]"
+
+Cronch keeps up to 256 KB of each stream per run. For jobs that print a lot, write the full log to a file from the command itself (`… > backup.log 2>&1`) and keep the run's output short.
+
+## Cronch does not start at login after moving the app
+
+Launch at login points at the place Cronch was running from when it was registered. If you moved the app afterwards (for example out of Downloads into Applications), open Cronch from its new location, go to **Settings**, make sure **Launch Cronch at login** is on, and click **Save settings** — that re-registers the current location.
 
 ## Cronch's own log
 
-When something about Cronch itself misbehaves, its log file says what it did — which shells it found, every run it started and finished, and any error:
+When something about Cronch itself misbehaves, its log says what it did — which shells it found, every run it started, finished or skipped, and any error:
 
 - **Windows** — `%APPDATA%\burakov\Cronch\data\cronch.log`
 - **macOS** — `~/Library/Application Support/net.burakov.Cronch/cronch.log`
 
-It's capped at about 1 MB; the previous file is kept as `cronch.log.1`.
+Every `cronch:` message you can see in a run's stderr is explained in [Statuses, triggers & messages](/cronch/statuses).
 
 ## Build errors (building from source)
 

@@ -1,9 +1,10 @@
 ---
 title: "Chat"
 description: "Encrypted messaging in Bastion — direct chats, groups, channels and high-security chats, with threads, mentions, polls, files, notifications and moderation."
+mode: "wide"
 ---
 
-Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your device and only opened on the recipients'. The server only ever relays ciphertext. See [Security](/bastion/security) for how that works.
+Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your device and only opened on the recipients'. The server relays ciphertext — the one exception is a chat your organization's [AI assistant](/bastion/ai-assistant) has been added to, which the assistant can read on your organization's own server. See [Security](/bastion/security) for how that works.
 
 ## Kinds of chat
 
@@ -22,16 +23,18 @@ Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your d
     </Card>
 </CardGroup>
 
-Open **New chat**, pick the kind, choose people from your organization's directory and start typing.
+Open **New chat**, pick the kind, choose people from your organization's directory and start typing. A new chat can start with up to 500 people. Someone who has never opened Bastion yet has no encryption key, so they can't be added until they do — you'll see *Not added — they haven't opened Bastion yet*.
+
+Chats you archive move to an **Archived** group at the bottom of the chat list.
 
 ## Writing messages
 
 - **Formatting:** messages support Markdown — bold, lists, links, quotes and code blocks with syntax highlighting. Links open in your browser, and images from the web are never loaded automatically, so a link can't be used to track you.
-- **Mentions:** type `@` to pick a member. They're highlighted and notified even if they only want notifications for mentions.
+- **Mentions:** type `@` to pick a member (up to 50 in a message). They're highlighted and notified even if they only want notifications for mentions.
 - **Drafts** are saved encrypted and follow you to your other devices.
-- **Polls:** a question with 2–10 options — single or multiple choice, optionally anonymous, with an optional deadline. The author or a moderator can close a poll early.
+- **Polls** (**Create poll**): a question with 2–10 options — single or multiple choice, optionally with anonymous votes, and an optional deadline at least five minutes ahead. The author or a moderator can close a poll early.
 - **Voice messages** of up to five minutes.
-- **Files, photos and videos:** encrypted on your device before they leave, with a thumbnail and upload progress. Large files upload in resilient chunks, so a dropped connection retries the affected piece instead of restarting the whole transfer. Images open full screen with zoom, videos play inline.
+- **Files, photos and videos** (**Photo or video**, **Take a photo**, **Attach file**): encrypted on your device before they leave, with a thumbnail and upload progress — up to 100 MB each unless your organization set another limit. Large files upload in resilient chunks, so a dropped connection retries the affected piece instead of restarting the whole transfer. Images open full screen with zoom, videos play inline.
 
 Messages appear the moment you send them and wait in an outbox while you're offline. If the server permanently refuses one (for example, a file that's too large), it shows why and lets you discard it.
 
@@ -44,13 +47,13 @@ Long-press, right-click or use the **⋯** on a message for its actions:
         Quote a message inline, or branch a focused thread off it. Swipe a message right to reply quickly.
     </Card>
     <Card title="React" icon="face-smile">
-        Add an emoji reaction; tap it again to remove yours. See who reacted with what.
+        Add one of eight emoji reactions; tap it again to remove yours. See who reacted with what.
     </Card>
     <Card title="Forward" icon="share">
         Send a copy to another chat you can post in, marked with who wrote it.
     </Card>
     <Card title="Save" icon="bookmark">
-        Keep it in **Saved messages**, across every chat and organization, on all your devices.
+        Keep it in **Saved messages** on all your devices. Saved messages cover the organization you're in, plus chats you joined as a guest of another organization.
     </Card>
     <Card title="Edit" icon="pen">
         Fix a text message you sent. Edited messages are marked, and anyone in the chat can view the earlier versions.
@@ -100,11 +103,11 @@ Open a chat's **info** page from its header to:
 - see members with their roles and online status, and compare **safety numbers** to confirm no one has been impersonated — see [Security](/bastion/security);
 - rename the chat and edit its description;
 - **add members** from your organization — the chat's key is sealed to them so they can read the shared history;
-- create **invite links** that expire (after a day, a week, a month or never) and allow a set number of uses — copy, share or revoke them any time;
+- create **invite links** — **Expires** in 1 day, 7 days (default), 30 days or never; **Uses** unlimited (default), 1, 10 or 100 — and copy, share or revoke them any time. On iPhone and Android, an invite link opens straight in the Bastion app when it's installed. Someone who joins by link can read the history once a member's app has granted them the key (*Waiting for a member to grant you access…* until then);
 - **invite someone from another organization** — find them by their exact username or e-mail (or by name, if their organization is listed network-wide); they get a notification and a single-use invitation that expires after 7 days, and their organization's guest policy still applies;
 - choose your notification level, browse the chat's photos, videos and files, and see its recent calls;
-- add **bots** — webhook integrations that post into the chat (bot messages are marked as not encrypted);
-- turn the [AI assistant](/bastion#whats-included) on or off for the chat, if your organization uses it;
+- add **bots** — webhook integrations that post into the chat (see [Bots](#bots));
+- turn the [AI assistant](/bastion/ai-assistant) on or off for a group or channel, if you're its admin and your organization allows it;
 - **archive** the chat (it becomes read-only for everyone), **leave** it, or **delete** it with its history and files.
 
 ### Roles
@@ -118,8 +121,22 @@ Open a chat's **info** page from its header to:
 
 Both people in a direct chat can pin; a direct chat has no roles and can't be renamed, archived or extended. If the owner leaves, ownership passes to the longest-standing admin; the last person to leave deletes the chat. Your organization's moderators, admins and owner can moderate every chat they're in — see [Administration](/bastion/administration#moderation).
 
+## Bots
+
+Your organization's owner, admins and moderators can add a **bot** to a chat. A bot gets a secret webhook address on your organization's server; anything that sends it a request posts a message into the chat:
+
+```bash
+curl -X POST "https://<your-node>/v1/bots/hook/<token>" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Deploy finished ✅"}'
+```
+
+- `text` can be up to 4,000 characters; a bot can post up to 120 messages a minute.
+- A bot has no encryption key, so its messages are stored as plain text and marked **🤖 bot · not encrypted**.
+- Bots can't post in high-security chats, in archived chats, or while the organization is read-only.
+
 ## High-security chats
 
-High-security chats add **forward secrecy and post-compromise security** on top of end-to-end encryption: keys move forward with every change, so a key stolen later can't open earlier messages, and a removed member or device is locked out of what comes next. Every device has its own certificate from your organization, and Chat info shows each member's devices as verified, not trusted or waiting to be admitted.
+High-security chats add **forward secrecy and post-compromise security** on top of end-to-end encryption: keys move forward with every change, so a key stolen later can't open earlier messages, and a removed member or device is locked out of what comes next. Every device has its own short-lived certificate (valid for seven days), and Chat info shows each member's devices as verified, not trusted or waiting to be admitted.
 
 To keep that guarantee, high-security chats are text-only (replies and mentions included), don't support threads, edits, invite links, bots or the AI assistant, and only owners and admins add members. Calls work — see [Calls](/bastion/calls). A new device of an existing member is admitted automatically by another member's app.

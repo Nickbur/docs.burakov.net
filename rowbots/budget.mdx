@@ -1,6 +1,7 @@
 ---
-title: "Budget & plans"
-description: "A hard monthly spending cap, honest probabilistic forecasts, and flat pricing per active project."
+title: "Budget & forecasts"
+description: "The hard monthly spending cap on your own model keys, compute tracking, and Rowbots' probabilistic, calibration-tracked forecasts."
+mode: "wide"
 ---
 
 ## A hard monthly cap
@@ -30,39 +31,8 @@ in what similar work actually cost before.
 Rowbots **publishes its own track record**: how often its past forecasts came true. When it has little
 history with your projects, it says plainly that its confidence is low.
 
-## Plans
+## Where to set it
 
-Pricing is a **flat monthly fee by the number of active projects** — never per token, per pull request or
-per task. Rowbots makes money from running your team well, not from spending more.
-
-| Plan | Monthly | Annual | Active projects | Mode |
-|---|---|---|---|---|
-| **Free** | $0 | — | 1 | task-triggered only |
-| **Solo** | $49 | $490 | 1 | always-on |
-| **Studio** | $199 | $1,990 | 5 | always-on |
-| **Fleet** | $499 | $4,990 | 15 | always-on |
-| **Agency** | $1,299 | $12,990 | 50, then $25 per extra project a month | always-on, priority |
-
-- **Every plan** is bring-your-own-keys and bring-your-own-compute — your model and sandbox usage is
-  billed to you directly by those providers, at their prices.
-- **Paid plans** add always-on maintenance, shared memory across your fleet, unlimited members and email
-  support. Work runs in parallel up to a fair-use ceiling of 32 items per workspace.
-- **Free** runs one item at a time, for one member, with community support.
-- **Agency** also gets priority throughput and priority support.
-
-<Tip>
-    New workspaces get a **14-day Studio trial with no card**, starting when you connect your first git
-    account. One trial per git account; afterwards the workspace moves to Free unless you subscribe.
-</Tip>
-
-Subscriptions are handled by **Paddle**, our Merchant of Record, which also issues invoices; prices are
-in USD and annual billing costs ten months. You can change the payment method, see invoices and cancel
-from Paddle's customer portal. Current prices are always listed on the
-[pricing page](https://burakov.net/projects/rowbots/pricing).
-
-## Downgrades and failed payments
-
-- **Downgrading** below your number of active projects pauses the extra ones — they become read-only,
-  nothing is deleted — and you choose which stay active.
-- **A failed renewal** keeps everything working for a 7-day grace period while the payment is retried;
-  after that, work pauses until the subscription is active again.
+An **Owner or Admin** sets the monthly cap — and an optional compute cap — in the dashboard under **Budget**,
+which also shows spend so far, the forecast for the month and Rowbots' forecast hit-rate. Plans and prices are on
+[Pricing](/rowbots/pricing).

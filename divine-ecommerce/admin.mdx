@@ -1,36 +1,94 @@
 ---
-title: "Admin panel"
-description: "Manage products, orders, customers, loyalty rules and store settings."
+title: "Admin tour"
+description: "Every section of the Divine eCommerce admin panel, and which ones affect the storefront."
+mode: "wide"
 ---
 
-The admin panel lives at `/admin` and is protected by role-based access control — you need an administrator or manager account to reach it. The seed data creates a demo administrator (see [Quickstart](/divine-ecommerce/quickstart)).
+The admin panel is at `/admin`. Administrators see everything; managers see the sections their role allows (see
+[Staff & permissions](/divine-ecommerce/staff-and-permissions)).
 
-## Catalog management
+A few sections are **stored only** — you can create and edit records, but the storefront and checkout don't use
+them. They're marked below so you don't spend time configuring them.
 
-- **Products** — full CRUD with options, cross-variants, images, specifications and per-product SEO.
-- **Categories & brands** — organize the catalog and give each a page.
-- **Specifications & option types** — reusable attribute libraries you attach to products; these also feed the storefront filters.
-- **Product sets** — assemble bundles and set their discount.
-- **Filters** — choose which attributes become facets, and rebuild the filter index.
+<Note>
+    **Live** — affects the store. **Stored only** — saved, but nothing reads it yet. **Placeholder** — a page with no
+    function yet.
+</Note>
 
-## Orders & customers
+## Main
 
-- **Orders** — review orders, move them through their lifecycle, and handle **returns**.
-- **Unfinished orders** — see carts that didn't convert and send a reminder.
-- **Customers** — accounts, roles and history.
+| Section | Status | What it does |
+| --- | --- | --- |
+| Dashboard | Live | Order, report and customer widgets, depending on your permissions. |
+| Slides | Live | The home-page slider. |
+| Warehouses, Suppliers, Stores | Stored only | Reference lists. |
 
-## Marketing
+## Sales & Marketing
 
-- **Loyalty rules** — set how points are earned and redeemed.
-- **Coupons & gift certificates** — create and limit discount codes.
-- **Newsletter** — manage subscribers and build **campaigns** targeted by segment, sent now or scheduled.
+| Section | Status | What it does |
+| --- | --- | --- |
+| Orders | Live | Orders, their status history and payment status. See [Checkout, orders & returns](/divine-ecommerce/checkout-and-orders). |
+| Quick orders | Live | Orders sent with the product page's 1-click form. |
+| Unfinished Orders | Live | Carts that never became orders — saved on every add to cart, marked recovered when the shopper orders. **Remind** emails the shopper. |
+| Returns | Live | Return requests, with optional restock on completion. |
+| Landings & Filters | Placeholder | "Coming soon". |
+| Discounts | Stored only | Use coupons, bundles and compare-at prices instead. |
+| Gifts | Live | Gift certificates. |
+| Coupons | Live | Discount codes. |
+| Loyalty points | Live | Earn and redeem rules. |
+| Comments | Stored only | Moderation screen; the storefront has no comment form. |
+| Reviews | Live | Approve, reject, reply to and delete product reviews. |
+| Newsletters | Live | Subscribers and campaigns. |
 
-## Content & settings
+Promotions are covered in [Loyalty, coupons, gifts & bundles](/divine-ecommerce/promotions); newsletters in
+[Content, menus & newsletter](/divine-ecommerce/content).
 
-- **Blog & pages** — write articles (and attach products), edit CMS pages.
-- **Sliders & banners** — the home-page slideshow and the promo banner.
-- **Settings** — store name and branding, contact details, currency, tax, checkout options and SEO defaults, grouped into tabs.
+## Information
 
-## Roles
+| Section | Status | What it does |
+| --- | --- | --- |
+| Articles | Live | Blog posts, with products to "shop the story". |
+| Pages | Live | Info pages (page, privacy, terms, offer). |
 
-Access is keyed off a simple role hierarchy — `guest < customer < manager < admin`. RBAC middleware guards `/admin` (managers and admins) and `/account` (signed-in customers), so unauthorized requests never reach a controller.
+## Products
+
+| Section | Status | What it does |
+| --- | --- | --- |
+| Product Categories | Live | The category tree. |
+| Products | Live | Products, their options and SKUs, cross-variants and specifications. |
+| Specification Groups, Specifications | Live | Attribute library for product pages, filters and compare. |
+| Catalog Filters | Live | Which facets appear, their labels and order; rebuild the filter index. |
+| Option Types | Live | Option axes such as colour or storage. |
+| Brands | Live | Brands and their pages. |
+| Product Sets | Live | Bundles. |
+
+Details in [Set up your catalog](/divine-ecommerce/catalog).
+
+## Tools
+
+| Section | Status | What it does |
+| --- | --- | --- |
+| File Manager | Live | Upload and organise images and files; forms pick images straight from it. |
+| Translations | Stored only | The storefront is English-only. |
+| Menu Builder | Live | Header, footer and sidebar menus. |
+| Search Engine Optimization | Live | Meta templates, `robots.txt`, sitemap, canonical links and analytics tags — see [SEO & analytics](/divine-ecommerce/seo). |
+| Data Export, Data Import | Live | CSV — see [Import & export](/divine-ecommerce/import-export). |
+
+Plugins are installed, activated, deactivated and uninstalled on the **Plugins** screen in the admin — see
+[Write a plugin](/divine-ecommerce/plugins).
+
+## Settings
+
+| Section | Status | What it does |
+| --- | --- | --- |
+| Settings | Partly live | Live tabs: **General** (site name, description), **Contacts**, **Branding** (logo, copyright, **Store Website**; not the favicon), **Marketing** (promo banner). Stored only: **Store**, **Checkout**, **Locale**, **Tax** and **Loyalty** — taxes and points are set in **Taxes** and **Loyalty points** instead. For store-wide SEO, use **Tools → Search Engine Optimization**. |
+| User Roles, Users | Live | Staff and customer accounts and roles. Administrators only. |
+| Taxes | Live | The active rate is added on top of the order. |
+| Delivery | Live | Delivery methods offered at checkout, with their prices and free-delivery thresholds. |
+| Payments | Live | Payment methods offered at checkout, including LiqPay for online card payment. |
+| Currency | Stored only | Amounts are always in UAH. |
+
+<Warning>
+    **Settings → Branding → Store Website** is the address used in links inside emails (password reset, newsletter).
+    Set it to your own domain before going live.
+</Warning>

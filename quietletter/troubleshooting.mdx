@@ -1,0 +1,73 @@
+---
+title: "Troubleshooting"
+description: "Fixes for common Quietletter problems — the free switch limit, saving and uploads, the grace period, delivery to recipients, and connecting your own instance."
+mode: "wide"
+---
+
+## I can't create another switch
+
+On the free plan you can have **one live switch** — a disarmed switch counts too, a fired one doesn't.
+Re-arm or delete the disarmed switch (see [Turn off or delete a switch](/quietletter/turn-off-or-delete)),
+or upgrade to [Pro](/quietletter/pricing).
+
+## "Couldn't save the switch"
+
+Check the details you entered:
+
+- A **phone number** may contain digits, spaces, `(`, `)`, `-` and a leading `+` — at least 5 and at
+    most 32 characters.
+- The **grace period** must be at least 48 hours.
+- In a custom schedule, both **push** and **email** must appear in the warnings.
+- Every **warning** must come before the switch fires — its offset shorter than the grace period.
+- **Files, secrets, private pages** and **SMS warnings** need Pro.
+
+## "Couldn't upload some content. Please try again."
+
+The switch was saved, but some of its content wasn't. Open **Edit switch** and enter that content again
+(with its passphrase if it's encrypted). Until you do, a recipient would see that the item has no
+content.
+
+## My switch is in its grace period
+
+The switch shows a **Grace period** badge, and its countdown has run out. Check in now — the warning
+email tells you exactly when the switch will fire otherwise. See [Check in](/quietletter/check-in).
+
+## I'm not getting reminders or warnings
+
+- **Reminders before the deadline** come from your device — allow notifications for Quietletter in
+    your phone's settings. On the web they depend on your browser.
+- **Warning emails** go to your account email — check your spam folder.
+- **Push warnings** need notifications allowed; **Settings → Notifications → Send test notification**
+    checks that they reach this device.
+- **SMS warnings** need Pro, a custom schedule with SMS ticked, and a warning phone.
+
+## My PIN doesn't work on a new phone
+
+The check-in PIN is per device. On a new phone or browser, Quietletter asks you to set one the first
+time you check in. Forgot it on this device? Tap **Forgot PIN? Reset it**.
+
+## The app is locked and Face ID doesn't work
+
+On the lock screen you can **Log out**. That only removes the app's data from this device — your
+switches stay on the server and keep running. Sign in again to continue.
+
+## A recipient says the link doesn't work
+
+- *Link not available* — release links work for **90 days** after the switch fires, and stop working
+    if the switch was deleted.
+- *Wrong passphrase, try again.* — each encrypted item has its own passphrase. Check they're using the
+    one you set for that item.
+- No email at all — ask them to check their spam folder. Delivery is retried for up to 24 hours after
+    the switch fires.
+
+## "Couldn't reach that instance"
+
+When connecting to your own instance, check the **Instance URL** (including `https://`), the **Owner
+token**, and that the instance is reachable from this device. The web app can't connect to an instance
+served over plain HTTP — use HTTPS or the phone app. See [Run your own instance](/quietletter/self-hosting).
+
+## Importing switches failed
+
+The file must be a Quietletter export. A file made by a newer version than the one you're importing
+into is refused — update first. On the hosted service, plan limits apply to imports too. See
+[Back up and move your switches](/quietletter/backup-and-transfer).

@@ -1,54 +1,54 @@
 ---
 title: "Settings & tray"
-description: "Launch at login, history retention, importing and exporting your rules, and everything you can do from the Cronch tray menu."
+description: "Every Cronch setting, how launch at login works on Windows and macOS, the tray menu, and the command-line options."
+mode: "wide"
 ---
 
 ## Settings
 
-Open **Settings** from the header. It holds a small, deliberate set of options:
+Open **Settings** from the header.
 
-- **Launch Cronch at login** — on by default, because jobs only fire while Cronch is running (see below). Turn it off if you'd rather start Cronch yourself.
-- **Keep run history for _N_ days** — how long to keep run records; `0` means forever. See [History & logs](/cronch/history).
-- **Export rules…** / **Import rules…** — save your rules to a JSON file, or load them back.
+| Setting | Default | Range | Applies |
+| --- | --- | --- | --- |
+| **Launch Cronch at login** *(recommended — jobs only fire while it runs)* | On | On / Off | When you click **Save settings** |
+| **Keep run history for _N_ days** *(0 = forever)* | 30 | 0–3650 | When you click **Save settings** — old runs are removed right away |
+| **Export rules…** | — | — | Immediately — see [Import, export & moving machines](/cronch/import-export) |
+| **Import rules…** | — | — | Immediately |
 
-Click **Save settings** to apply.
-
-## Import & export
-
-Your rules export to a single **JSON** file. That file is useful for:
-
-- **Moving to another computer** — export on one machine, import on the other.
-- **Backing up** your setup, or keeping it in version control.
-- **Sharing** a set of rules with someone else.
-
-Importing adds the rules from the file to Cronch; it never changes or replaces a rule you already have. If a rule from the file already exists here (say, you import your own backup), it's added as a copy with **(copy)** after its name. Imported rules start fresh: no last run, no status — their history stays on the machine where they ran.
+The **Documentation** button opens these docs in your browser, and **Back** returns to the rule list. Click **Save settings** before leaving to keep changes to the first two options.
 
 ## Launch at login, explained
 
-Cronch is a **tray-resident** app: it runs your jobs itself, so it has to be running for them to fire. On the first run it enables launch-at-login (via the OS mechanism — a Run entry on Windows, a LaunchAgent on macOS) and shows you a one-time banner about it. This keeps your schedules alive across reboots. You can switch it off any time in Settings.
+Cronch runs your jobs itself, so it has to be running for them to fire. On its **first run** it turns on launch at login and shows a one-time banner about it. The login item uses the operating system's own mechanism:
+
+- **Windows** — a **Run** entry named `Cronch` in the registry (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`), which starts Cronch with `--minimized`.
+- **macOS** — a LaunchAgent at `~/Library/LaunchAgents/Cronch.plist`.
+
+The login item points at **where Cronch is right now**. Every time you click **Save settings** with launch at login on, Cronch registers its current location again — so after moving the app, open it from the new place and click **Save settings**.
+
+When launch at login starts Cronch, it starts hidden in the tray. You can always see what's scheduled by opening the window from the tray.
 
 ## The tray menu
 
-Cronch lives in the system tray (Windows) or menu bar (macOS). Right-click its icon for:
+Cronch lives in the system tray (Windows) or menu bar (macOS):
 
-- **Add rule…** — jump straight to creating a rule.
-- **Open Cronch** — bring the main window forward.
-- **Pause all / Resume all** — stop every rule from firing on schedule, then resume. Handy during maintenance or a noisy deploy. A pause lasts until you resume, even across restarts, and runs waiting in a queue are dropped; **Run now** still works. When you resume, rules with **Catch up if missed** run once for what they missed (see [Schedules](/cronch/schedules)). The same toggle is in the app header.
-- **Quit** — actually exit Cronch. Remember: while it's quit, nothing is scheduled.
+- **Add rule…** — open the window on a new rule.
+- **Run rule ▸** — a submenu with your rules; pick one to run it now, exactly like **Run now** in the window (same overlap policy; a rule that's switched off can't be run).
+- **Open Cronch** — show the window (always on the rule list).
+- **Pause all / Resume all** — stop every rule from firing on schedule, then resume. The icon turns grey while paused. See [Missed runs, sleep & pausing](/cronch/catch-up#pausing-everything).
+- **Quit** — exit Cronch. Running jobs are stopped, and nothing runs until you open it again.
 
-Left-clicking the icon opens the window too, and so does opening Cronch again while it's already running — from the Start menu on Windows; on macOS from Finder, Launchpad, Spotlight or its Dock icon. A window you only minimized comes back exactly as you left it.
+Clicking the icon opens the window too, and so does starting Cronch again while it's already running.
 
 <Note>
-    **Closing the window does not quit Cronch** — it hides it to the tray, where it keeps running. Use **Quit** from the tray menu when you really want to stop it.
+    **Closing the window does not quit Cronch** — it hides to the tray and keeps running. Use **Quit** from the tray menu when you really want to stop it.
 </Note>
 
-## Next
+## Command-line options
 
-<CardGroup cols={2}>
-    <Card title="Privacy" icon="lock" href="/cronch/privacy">
-        Where your rules and history are stored, and what never leaves.
-    </Card>
-    <Card title="FAQ" icon="circle-question" href="/cronch/faq">
-        Quick answers about login, offline behaviour and more.
-    </Card>
-</CardGroup>
+| Option | Effect |
+| --- | --- |
+| `--minimized` | Start hidden in the tray. Used by launch at login. Ignored on Cronch's very first run. |
+| `RUST_LOG` environment variable | Changes how much Cronch writes to its own log (`info` by default, `debug` for more detail). |
+
+Only one Cronch runs per user: starting it again brings the existing window forward instead of opening a second copy.

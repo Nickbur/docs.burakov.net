@@ -1,51 +1,56 @@
 ---
 title: "Account & privacy"
-description: "One free account across your devices, what leaves your phone (and what never does), and the permissions Fogline needs."
+description: "How you sign in to Fogline, the permissions it needs, what's stored on your phone and on the server, other services, and exporting or deleting your data."
+mode: "wide"
 ---
 
-## One free account
+## Your account
 
-Fogline uses a single **free burakov account** (email, Google, or Apple) that works across all your
-apps and devices. **Signing in is required** — it's what lets your painted map back up and follow you
-from one phone to the next. There are **no subscriptions** and nothing to buy.
+Sign in with your **email and a one-time code** — no password. On iPhone you can also use **Sign in with
+Apple**. Signing in is required: it's what backs up your map and brings it to your other devices. It's one free
+account across the apps at [burakov.net](https://burakov.net); there's nothing to buy.
 
-## Private by design
+## Permissions
 
-Fogline is built so the **sensitive part never leaves your phone**:
+| Permission | Why |
+| --- | --- |
+| **Location** — *Always* on iPhone, *while using* on Android, with **Precise** on | To match where you are to roads, including with the screen off. Approximate location is too coarse to paint anything. |
+| **Notifications** *(Android 13+)* | To show the notification Android requires while Fogline tracks in the background. |
 
-- **Your raw location trail** — the record of where and when you actually travelled — stays **on your
-    device** and is used only to paint roads. It is **never uploaded**.
-- **Only your painted roads** — the plain list of which road stretches are lit up, plus your coverage
-    totals — sync to your account, so your map can back up and reach your other devices.
-- **The basemap and road network** live **offline on your device** as downloaded packs.
+See [Keep painting in the background](/fogline/background-tracking).
 
-The server knows which roads you've coloured in, but not the routes, times, or trips that painted
-them.
+## What's stored where
 
-## Permissions it asks for
+| On your phone | On the server, with your account |
+| --- | --- |
+| Your painted road stretches, with the time each was painted | Your painted road stretches and their region — nothing else |
+| Recent positions, only until they're matched to roads | — |
+| Downloaded maps and road data | — |
+| Your settings | — |
 
-<Steps>
-    <Step title="Location — including in the background">
-        Fogline needs **background (always) location** so it can paint roads while the app is closed and
-        the screen is off. That passive tracking is the whole point — without it, there's nothing to
-        paint.
-    </Step>
-    <Step title="Notifications — on Android">
-        On Android, Fogline shows a quiet, ongoing notification while it's tracking in the background —
-        that's how the system lets an app keep painting with the screen off, so you can always tell it's
-        running.
-    </Step>
-</Steps>
+**Your positions never leave your phone.** Fogline keeps them only until they're matched to roads, then deletes
+them. The server gets only the list of road stretches you've painted — not your positions, your route, or when you
+travelled.
+
+Your data isn't sold or used for ads.
+
+## Other services
+
+- **Crash reports**, if **Send crash reports** is on (it is by default) — turn it off in Settings.
+- **Apple**, if you use Sign in with Apple.
+- Maps and road data are downloaded from our own server.
 
 ## Lock the app
 
-On iOS and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
-fingerprint**. Fogline then asks for your face or fingerprint when it opens and after 5 minutes in
-the background (on iPhone your device passcode works too). The check is done by your phone itself —
-nothing about your face or fingerprint ever reaches the app or our servers.
+Turn on **Settings → Privacy & security → Lock with Face ID / fingerprint**. Fogline then asks for your face or
+fingerprint when it opens and after 5 minutes in the background (on iPhone your device passcode works too). The
+check is done by your phone itself — nothing about your face or fingerprint reaches the app or our servers.
 
-<Note>
-    Fogline is a **personal project, not a business** — your data isn't sold or used for ads. Because a
-    movement map is personal, it's built to keep your raw trail on your device and share only the roads
-    you've painted.
-</Note>
+## Export or delete your data
+
+Both are in your account on burakov.net — **Account → Data & deletion**:
+
+- **Export your data → Download my data** gives you one file with your data from every app, including your
+    Fogline coverage.
+- **Delete my account** signs you out at once and removes your data from **every** app on the account. You can
+    restore it within **30 days** by signing in again.

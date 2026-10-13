@@ -1,37 +1,34 @@
 ---
-title: "Coverage & stats"
-description: "Your % coverage, the coverage ring, and the roads, kilometres and new-this-week numbers behind your map."
+title: "Track your coverage"
+description: "How Fogline's coverage percentage is calculated for your city and district, the coverage ring, what each number on the Stats screen means, and resetting your map."
+mode: "wide"
 ---
 
-Every road you paint moves one number: your **coverage**. Fogline turns your travels into a simple,
-growing score for how much of a region you've actually seen — the quiet dopamine loop that makes you
-want to close one more blank street.
+## Coverage %
 
-## Your coverage
+Your coverage is the share of an area's road stretches you've painted:
 
-- **% coverage** — the share of a region's roads you've painted, for the whole region and by
-    district.
-- **Coverage ring** — a ring that fills as your percentage climbs, so progress is visible at a
-    glance.
+> Coverage = painted stretches ÷ all stretches in the area
 
-Because a road is painted permanently, coverage only ever goes **up** — there's no streak to lose and
-nothing to keep up with.
+It counts **stretches**, not kilometres, and every kind of road and path counts — see
+[What counts as a road](/fogline/painting-roads#what-counts-as-a-road). It's shown for your **city** and for the
+**district** you're in, on the Map and on Stats.
 
-## The stats behind it
+## The Stats screen
 
-<Steps>
-    <Step title="Roads painted">
-        How many distinct road stretches you've covered — the raw size of your explored map.
-    </Step>
-    <Step title="Kilometres painted">
-        The total distance of road you've travelled and painted across the region.
-    </Step>
-    <Step title="New this week">
-        How much you've added in the last seven days, so you can see fresh ground at a glance.
-    </Step>
-</Steps>
+A big **coverage ring** shows your % for your city, with your district's % beside it, and these numbers:
 
-<Note>
-    Coverage and stats are computed **on your device** from your painted roads, so they're always in
-    step with the map in front of you.
-</Note>
+| Number | What it counts |
+| --- | --- |
+| **Roads painted** | Road stretches you've painted — everywhere |
+| **km painted** | The length of what you've painted |
+| **New this week** | Stretches painted for the first time in the last 7 days |
+| **This city** / **This district** | Stretches painted out of all stretches in your city / district |
+
+*Coverage syncs to your account. Raw location traces never leave your device.*
+
+## Reset your map
+
+**Reset map** at the bottom of Stats clears every painted road — on this device, your other devices and in your
+account — after confirming *Reset your map?* If you're offline, the reset reaches your account as soon as you're back
+online. It can't be undone.

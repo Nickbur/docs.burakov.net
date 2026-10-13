@@ -1,0 +1,65 @@
+---
+title: "What you see at boot"
+description: "The OMOS status screen and the serial log, part by part — and what you can and can't do once it's running."
+mode: "wide"
+---
+
+OMOS shows two things while it runs: a **status screen** in the QEMU window, and a detailed **serial log** in the
+terminal you started QEMU from.
+
+## The status screen
+
+A short text screen drawn on the display the UEFI firmware provides:
+
+```text
+=== OMOS v1.0.0 (Sirius) ===
+
+Hello, World!
+
+Kernel loaded successfully.
+Framebuffer: active
+Keyboard: ready (type in serial)
+Waiting for input...
+```
+
+It doesn't change after that — the system keeps running, but the screen is a status display, not a console.
+
+## The serial log
+
+Messages appear in this order. Lines start with `[ok]` when a step succeeds and `[--]` when something doesn't apply
+to the machine.
+
+| Stage | What it shows |
+| --- | --- |
+| **Banner** | `=== OMOS v1.0.0 (Sirius) ===` |
+| **CPU and interrupts** | Processor set-up and the interrupt tables. |
+| **Memory** | The firmware's memory map, page tables and the kernel heap. |
+| **Platform** | Power management, ACPI tables, the files in the read-only boot archive (initrd), PCI devices, the interrupt controller, the timer and the keyboard. |
+| **Self-tests** | Quick heap checks, the display, then "Waiting 1 second to verify timer…" to confirm the clock ticks. |
+| **Cores** | The other CPU cores coming online. |
+| **Services** | The service manager loading the six built-in services and drivers, connecting them, then starting them. |
+| **Drivers** | Each driver probing its hardware — for example `[fat32] mounted: …` when a FAT32 disk is attached. |
+| **Test threads** | `[thread-a] alive at N ms (cpu=X)` from three kernel test threads (a, b and c), every half second, indefinitely. |
+
+The test-thread lines show the scheduler moving work across cores. They continue until you stop QEMU.
+
+## The keyboard
+
+Click into the QEMU window and type. Key presses show up **in the serial log** — as the characters themselves from
+the PS/2 keyboard, or as `[virtio-input] KEY code=N down` / `up` lines from the virtio keyboard. Nothing on screen
+responds.
+
+## What you can't do yet
+
+- There's **no shell** and no commands to type.
+- You **can't start programs** — only the six built-in services run.
+- Files on the attached FAT32 disk aren't used by anything yet.
+- There's no networking, sound or graphics beyond the text screen.
+
+These are on the [roadmap](/omos/roadmap).
+
+## If it stops
+
+If the log ends with a fault message and the system halts, the window stays open (because of `-no-reboot
+-no-shutdown`) so you can read what happened. Faults in any part of the system currently stop the whole machine —
+see [Security model](/omos/security#current-limitations).

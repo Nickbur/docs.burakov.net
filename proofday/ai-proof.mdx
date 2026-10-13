@@ -1,47 +1,58 @@
 ---
 title: "AI proof (Pro)"
-description: "Turn your daily entries into weekly and monthly recaps, trends, and a career brag-doc."
+description: "Generate Proofday's weekly and monthly recaps, trends and career brag-doc from your entries — what each report covers, how many entries it needs, and how regenerating works."
+mode: "wide"
 ---
 
-The daily close builds a record of everything you got done. Proofday's **AI proof layer** turns
-that record into something you can actually use. It's the core of **Pro**.
+Your daily entries build a record of everything you got done. On **Pro**, the **Proof** tab turns that
+record into four reports, written by AI from **your own words** — it doesn't invent achievements, it makes
+yours legible.
 
-## What the AI produces
+## The four reports
 
-<CardGroup cols={2}>
-    <Card title="Weekly recap" icon="calendar-week">
-        A short, honest reflection of the week's wins and how your momentum is trending.
-    </Card>
-    <Card title="Monthly recap" icon="calendar-days">
-        The longer arc across a month, so a good stretch is visible and a rough one has context.
-    </Card>
-    <Card title="Trends & themes" icon="chart-line">
-        The directions your days quietly point in — surfaced without you ever setting a goal or a tag.
-    </Card>
-    <Card title="Brag-doc" icon="award">
-        Your accomplishments assembled from your own words into a career "receipts" document.
-    </Card>
-</CardGroup>
+| Report | Covers | Needs at least | You get |
+| --- | --- | --- | --- |
+| **Week** | The current week, Monday to Sunday | 1 day with an entry | One short paragraph |
+| **Month** | The current month | 1 day with an entry | Two or three paragraphs |
+| **Trends** | The current year | 5 days with entries | 3–6 themes, each marked as building or fading |
+| **Brag-doc** | The current year | 3 days with entries | Sections of resume-style bullet points |
 
-## How it works
+Only days with written entries count — rest days and empty days don't. The AI reads each day's date, mood
+and text.
 
-The AI reads **your own entries** and reflects them back in a clear, encouraging voice. It never
-invents anything — the achievements are yours; it just makes them legible. Generation happens on
-the server, and results are cached so revisiting a recap doesn't regenerate it.
+## Generate and regenerate
 
-Because Proofday is **goal-free**, you never fill in objectives or tags. The trends and themes are
-inferred from what you actually wrote, which is exactly what makes them honest.
+Open **Proof**, pick a report and tap **Generate**. It shows when it was generated. **Regenerate**
+writes a fresh version and replaces the old one — there's one saved report per type and period.
 
-## Free, Pro, and the trial
+Reports cover the **current** week, month or year by default; earlier weeks, months and years stay
+available in **Proof**.
 
-- **Free forever:** the whole habit loop — the daily close, calendar, streak, momentum — plus
-    your recent history.
-- **Pro** unlocks **all AI** and **unlimited history**. It's **$29.99/year**, or a **$59.99**
-    one-time lifetime unlock.
-- A **7-day trial** gives you the full AI layer to taste first. When it ends, the AI is Pro-only —
-    the trial *is* the free taste, so there's no separate ongoing free allowance.
+## Edit a report
+
+You can edit the text of any report — your edits are saved to your account and sync to your other devices.
+Once you've edited a report, **Regenerate** leaves your version alone, so your wording is never overwritten.
+
+## Export your brag-doc
+
+To use your brag-doc outside Proofday — for a performance review or your CV — open **Proof → Brag-doc** and tap
+**Export**. It's shared through your phone's share sheet, or copied on the web, as themed sections of
+resume-style bullet points.
+
+| Message | Meaning |
+| --- | --- |
+| *Not enough entries yet for this report — keep logging.* | The period doesn't have enough days with entries yet (see the table). |
+| *The AI service is unavailable right now. Try again later.* | The AI service is temporarily down. |
+| *Couldn't generate the report. Try again.* | Something else went wrong — including reaching the daily AI allowance (30 requests a day per account, shared across burakov apps). |
+
+Reports need a connection, and they aren't stored on your device.
+
+## On the free plan
+
+The Proof tab shows *AI proof reports are a Pro feature.*, and **Generate** offers **See Proofday Pro**.
+Reports you generated while on Pro stay viewable. See [Pricing](/proofday/pricing).
 
 <Note>
-    The habit loop is never paywalled. The price sits on the proof — the output — not on the daily
-    act of showing up that creates it.
+    When you generate a report, that period's entries are sent to an AI provider to write it. Nothing is
+    sent unless you ask. See [Account & privacy](/proofday/privacy).
 </Note>

@@ -1,0 +1,95 @@
+---
+title: "Commands & scheduled jobs"
+description: "Every make target, the bin/console commands and the background worker's schedule in Divine eCommerce — with the commands that erase data marked."
+mode: "wide"
+---
+
+Run every command from the project root. `make help` prints the list below.
+
+## Stack
+
+| Command | Does |
+| --- | --- |
+| `make up` | Start nginx, PHP, the worker, PostgreSQL and Redis. |
+| `make up-all` | Same, plus Adminer and the front-end watcher. |
+| `make down` | Stop and remove the containers (data volumes are kept). |
+| `make restart` | `down` then `up`. |
+| `make build` | Rebuild the Docker images without cache. |
+| `make logs` / `make logs-php` | Follow the logs of every service / of PHP only. |
+| `make sh` | Shell inside the PHP container. |
+| `make sh-db` | `psql` shell on the store database. |
+
+## Dependencies and assets
+
+| Command | Does |
+| --- | --- |
+| `make composer-install` | Install PHP dependencies (development). |
+| `make composer-update`, `make composer-outdated` | Update PHP dependencies / list outdated ones. |
+| `make npm-install` | Install front-end dependencies. |
+| `make npm-build` | Check formatting, lint, type-check, then build assets into `public/`. Fails on unformatted code — `docker compose run --rm node npm run fix` reformats and fixes lint. |
+| `make npm-dev` | Watch and rebuild assets while you work. |
+
+## Database
+
+| Command | Does |
+| --- | --- |
+| `make migrate` | Apply new migrations. Safe on a live store. |
+| `make migrate-rollback` | Roll back the last migration. |
+| `make migrate-fresh` | ⚠️ Roll back **everything**, migrate and reseed — erases all data. |
+| `make seed` | ⚠️ Load demo roles, accounts, catalog and settings — empties those tables first, which also removes orders. |
+
+Run a single seeder with `docker compose exec php vendor/bin/phinx seed:run -s SeederName`, or every seeder
+(including blog, pages, menus and reviews) with `docker compose exec php vendor/bin/phinx seed:run`.
+
+<Warning>
+    Never run `make seed`, `make migrate-fresh` or the seeders on a store with real data. See
+    [First production install](/divine-ecommerce/deployment#first-production-install) for a safe start.
+</Warning>
+
+## Quality checks
+
+| Command | Does |
+| --- | --- |
+| `make lint-writes` | Fail if a model writes to the database without the `BaseRepository` helpers. |
+| `make analyse` | PHPStan static analysis. |
+| `make test` | PHPUnit tests. |
+| `make check` | All three. |
+| `make smoke` | HTTP smoke tests against the running stack, on `APP_PORT` (override with `BASE_URL`). |
+
+These need the development image — they don't run in the production containers.
+
+## Maintenance
+
+| Command | Runs | Does |
+| --- | --- | --- |
+| `make reindex-facets` | `catalog:reindex-facets` | Rebuild the filter index for the whole catalog. |
+| `make search-refresh` | `search:refresh` | Refresh the search index if its sources changed. |
+| `make cron-newsletter` | `newsletter:send-scheduled` | Send campaigns whose scheduled time has passed. |
+| `make cron-expire` | `reward:expire` | Remove expired reward points. |
+| `make cache-clear` | — | Clear compiled templates, the DI container and other caches. |
+
+The middle column is the `bin/console` command each target runs (`php bin/console <command>` inside the PHP
+container).
+
+## Production
+
+| Command | Does |
+| --- | --- |
+| `make prod-build` | Build the production images without cache. |
+| `make prod-up` / `make prod-down` | Start / stop the production stack. |
+| `make prod-logs` | Follow production logs. |
+
+See [Deploy, upgrade & back up](/divine-ecommerce/deployment).
+
+## The background worker
+
+The `cron` container is a simple loop — there's no crontab to configure. It starts with the stack and:
+
+| Every | Runs |
+| --- | --- |
+| 60 seconds | `newsletter:send-scheduled`, then `search:refresh` |
+| ~24 hours (and once at start-up) | `reward:expire` |
+
+If the worker isn't running, scheduled campaigns aren't sent, points don't expire, and new categories, brands,
+articles and pages don't appear in search. Right after a fresh install the worker logs errors until dependencies are
+installed and migrations have run.

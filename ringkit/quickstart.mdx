@@ -1,6 +1,7 @@
 ---
 title: "Quickstart"
 description: "Install RingKit and present your first native incoming call."
+mode: "wide"
 ---
 
 RingKit requires **Capacitor 8** (iOS 14+, Android 8+). This page gets the plugin wired; the
@@ -16,6 +17,9 @@ install straight from it.
 npm i github:Nickbur/ringkit#v1.0.0
 npx cap sync
 ```
+
+Every release is a git tag — pin the one you want. Installing in CI, pinning a copy without git,
+and moving to a new version: [Installing and updating](#installing-and-updating).
 
 <Note>
     No license yet? See [License](/ringkit/license) — $99/year per app.
@@ -124,6 +128,55 @@ infrastructure. For the killed-app path, use the ready-made test-push senders in
     presents the call via Telecom or the full-screen fallback. When the user answers, RingKit
     revives your app (launcher intent) and flushes the `callAnswered` event on `register()`
     (cold-start actions older than `androidPendingActionTtlMs` are dropped).
+
+## Installing and updating
+
+### Access from your machine and from CI
+
+npm fetches RingKit with git, so whatever runs `npm i` needs read access to the private
+repository:
+
+- **Your machine** — the GitHub account your license gives access to, signed in to git (an SSH
+    key or a git credential helper). A "repository not found" or permission error from `npm i`
+    means git couldn't authenticate.
+- **CI** — give the job a read-only credential for the repository (a deploy key, or a
+    fine-grained token limited to reading its contents) and let git use it. Or skip git in CI
+    entirely with a pinned tarball (below).
+
+### Pinning a copy without git
+
+Every release on the repository's **Releases** page has the packed package attached
+(`nickbur-ringkit-<version>.tgz`). Download it into your project — for example a `vendor/`
+folder you commit — and install from the file:
+
+```bash
+npm i ./vendor/nickbur-ringkit-1.0.0.tgz
+npx cap sync
+```
+
+The build then needs no access to the repository, which keeps CI simple.
+
+### Moving to a new version
+
+<Steps>
+    <Step title="Read the release notes">
+        Each release on GitHub lists what changed; the repository's `CHANGELOG.md` has the full
+        history.
+    </Step>
+    <Step title="Install the new tag (or tarball)">
+        ```bash
+        npm i github:Nickbur/ringkit#v<new-version>
+        npx cap sync
+        ```
+    </Step>
+    <Step title="Rebuild the native apps">
+        Rebuild and test the iOS and Android apps — RingKit's native code changes with the
+        plugin. The killed-app path is worth re-checking with the [test senders](/ringkit/testing).
+    </Step>
+</Steps>
+
+Only the latest release receives fixes, so stay on it. New versions are yours while the
+subscription runs; if it lapses, you keep shipping the versions you already built.
 
 ## Next steps
 

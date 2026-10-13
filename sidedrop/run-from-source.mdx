@@ -1,18 +1,23 @@
 ---
 title: "Run from source"
-description: "Sidedrop is open source — run the web app on your own machine to explore or change it."
+description: "Sidedrop's web app is open source — run it on your own machine, build it, and what it needs from a signaling server."
+mode: "wide"
 ---
 
-Sidedrop is **open source** under the MIT license. The repository holds the web app — everything
-that runs in your browser. To pair two devices, the app talks to a small **signaling service** in
-the Burakov API, which introduces the two sides and hands out relay credentials. It never carries
-your files.
+The Sidedrop **web app** — everything that runs in your browser — is open source under the **MIT
+license**. To pair two devices it needs a **signaling server**, which introduces the browsers and can hand
+out relay credentials.
+
+<Warning>
+    The signaling server that sidedrop.burakov.net uses **isn't part of the open-source repository**, and it
+    only accepts connections from Sidedrop's own sites. So you can run, read and change the web app; to pair
+    devices with your own build, you need a signaling server of your own that speaks the same protocol.
+</Warning>
 
 ## What you need
 
 - **Node.js 24.16 or newer** — the project refuses to install on older versions.
-- The **Burakov API** running locally — the app expects its signaling service at
-    `http://localhost:3000` in development.
+- A **signaling server** that speaks Sidedrop's protocol, for pairing to work.
 
 ## Run it locally
 
@@ -24,32 +29,47 @@ your files.
         npm install
         ```
     </Step>
-    <Step title="Point it at the local API">
-        ```bash
-        npm run switch_to_dev
-        ```
-        This copies `env/env.dev` to `.env`, which sets `VITE_API_URL=http://localhost:3000` — the
-        address the app uses for signaling and relay credentials.
+    <Step title="Point it at a signaling server">
+        The app reads the server address from `VITE_API_URL` (default `http://localhost:3000`) and connects
+        to its WebSocket at `/v1/signaling/ws`. `npm run switch_to_dev` copies `env/env.dev` to `.env` with
+        the local default.
     </Step>
     <Step title="Start the dev server">
         ```bash
         npm run serve
         ```
-        The app opens on `http://localhost:8103` — a fixed port, because it's the origin the API
-        accepts in development. Open it in two tabs, pair them, and drop a file.
+        The app runs on `http://localhost:8103` (a fixed port).
     </Step>
 </Steps>
 
 <Note>
-    `http://localhost` counts as a secure context, so the direct connection, on-disk saving, and
+    `http://localhost` counts as a secure context, so the direct connection, browser storage and the
     clipboard all work in development without HTTPS.
 </Note>
 
-## Build and check
+## Build
 
 ```bash
 npm run build
 ```
 
-One command runs the full check — formatting, linting, type-checking, and the unit tests — and
-then produces the production build in `dist/`.
+This runs formatting, linting, type-checking and the unit tests, then writes the production build to
+`dist/`. `npm run fix` formats the code for you.
+
+To serve the build yourself:
+
+- `VITE_API_URL` is baked in **at build time** — set it before building.
+- Serve `dist/` as static files over **HTTPS**, with a fallback so that room links (`/r/…`) return
+    `index.html`.
+- The signaling server must accept your site's origin.
+
+## Contribute
+
+Issues and pull requests are welcome on [GitHub](https://github.com/Nickbur/sidedrop_app).
+
+- Run `npm run build` before you open a pull request — it checks formatting and linting, type-checks and runs the
+    tests. `npm run fix` formats the code.
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`type(scope): subject`); a
+    commit hook checks them.
+- A pre-commit hook rejects stray files, very large files and unresolved merge-conflict markers.
+- Contributions are accepted under the project's **MIT license**.

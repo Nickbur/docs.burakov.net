@@ -1,47 +1,71 @@
 ---
-title: "Countdowns & reminders"
-description: "How Finity models a countdown — an anchor date plus an optional repeat rule — with reverse-fill rings, notifications, and a calendar view."
+title: "Count down to a date"
+description: "Create, repeat, edit and delete countdowns in Finity — the anchor date and repeat rule, time zones and daylight saving, the countdown bar and ring, and the end-of-life counter."
+mode: "wide"
 ---
 
 Every countdown in Finity is two simple things: an **anchor date** (the moment you care about) and
 an optional **repeat rule**. That small model covers your whole life without fuss.
 
-## Anchor date + repeat rule
+## Create a countdown
 
-- **Anchor date** — the target moment: a launch, a birthday, an anniversary, a deadline.
-- **Repeat rule** — every N **days, weeks, months or years**, ending **never**, **on a date**, or
-    **after a set number of times**. Leave it off for a one-time countdown.
+Tap **+** on the Countdowns screen. The form has:
+
+| Field | What it's for |
+| --- | --- |
+| **Title** | Required, up to 300 characters. |
+| **Description** | Optional notes, up to 8,000 characters. Also shown in its reminders. |
+| **Event date & time** | The moment you're counting down to. Starts as tomorrow. |
+| **Time zone** | The zone this countdown lives in — your device's by default. Pick **This device**, browse **All time zones**, or search. |
+| **Countdown starts** | Where the bar starts draining from. Usually **now**; set an earlier date to see how much of a longer stretch has already passed. |
+| **Repeat** | One-time, or a repeat rule (below). |
+| **Notifications** | How you're reminded — see [Get reminded](/finity/reminders). |
+
+## Repeat rules
+
+Leave it as **One-time**, or choose **Repeats** every *N* **day(s), week(s), month(s) or year(s)**,
+ending:
+
+- **Never**,
+- **On a date** — that whole day is included, or
+- **After N times** — 10 by default.
 
 A birthday is a yearly repeat; a visa renewal is a one-off; "water the plants" repeats every few
-days and never ends.
+days and never ends. One-time countdowns that have passed show **Done**; repeating ones roll forward
+to their next occurrence on their own.
 
-## Time zones
+## Time zones and daylight saving
 
-Each countdown keeps its **own time zone** — your device's when you create it, changeable in the
-form (handy for a call or a launch in another city). Everything about it runs on that zone's clock:
+Each countdown keeps its **own time zone**, and everything about it runs on that zone's clock:
 
 - A repeat stays at the **same local time** through daylight-saving changes — "every day at 09:00"
     is always 09:00.
 - A repeat that ends **on a date** includes that whole day.
-- "**1 day before**" lands at the same clock time the day before; minutes and hours are exact.
-- Push and email reminders fire at the same moment, and emails show the time in the countdown's
-    zone, in the language you use Finity in.
+- Reminders fire at the right moment for that zone, and email reminders show the time in the
+    countdown's zone, in the language you use Finity in.
 
-When you travel, a countdown stays on its own zone's clock until you change it.
+When you travel, a countdown stays on its own zone's clock until you change it — handy for a call or
+a launch in another city.
 
-## Reverse-fill rings
+## Reading a countdown
 
-Each countdown is drawn as a ring that **drains as the date approaches**, so a glance tells you
-what's close and what's far. Passed countdowns are kept rather than deleted, so recurring ones roll
-forward to their next occurrence automatically.
+- In the **list**, each countdown has a **bar** that drains as the date approaches and a big live
+    number — days, then hours, minutes and seconds as it gets close — plus its repeat rule and next
+    date.
+- Tap one to open its **detail**: a countdown **ring**, the **Next occurrence**, **Repeat**,
+    **Anchor date**, **Time zone** and when you added it.
 
-## Reminders
+From the detail screen, **Edit** changes anything, and **Delete** removes the countdown after a
+confirmation — this can't be undone.
 
-- **Local notifications** on every plan, scheduled on your device.
-- **Email reminders** sent from the server on **Pro**, for the things you can't miss even with the
-    app closed.
+## The end-of-life counter
 
-## Calendar
+Once you've set up [Life in weeks](/finity/life-in-weeks), Finity adds one extra card to your list:
+a countdown to the end of your average life expectancy. Tap it to open Life. Choose whether it sits
+at the **Top** or **Bottom** of the list in **Settings → Life counter**. It doesn't count toward
+your countdown limit.
 
-The **calendar view** ties your countdowns together with life events and the photos you've pinned to
-a day — a single screen for "what is this week about?".
+<Note>
+    On the free plan you can have up to **3 countdowns**; Pro removes the limit. Countdowns you already
+    have are never removed. See [Pricing](/finity/pricing).
+</Note>

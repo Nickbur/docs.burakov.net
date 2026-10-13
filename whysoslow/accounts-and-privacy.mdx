@@ -1,44 +1,55 @@
 ---
 title: "Account & privacy"
-description: "One free account across your devices, what WhySoSlow stores, and the permissions it needs."
+description: "How you sign in to WhySoSlow, the permissions it asks for, what's stored on your phone and on the server, and how to export or delete your data."
+mode: "wide"
 ---
 
-## One free account
+## Your account
 
-WhySoSlow uses a single **free burakov account** (email, Google, or Apple) that works across all your
-apps and devices. **Signing in is required** — it's what lets your personal edits sync between your
-phones and powers the optional AI advisor. There are **no subscriptions** and nothing to buy.
+Sign in with your **email and a one-time code** — no password. On iPhone you can also use **Sign in with
+Apple**. Signing in is required. It's one free account across the apps at [burakov.net](https://burakov.net);
+there are no subscriptions and nothing to buy.
 
-## What's stored
+## Permissions
 
-- **Your personal layer** — the limits you fix and the markers you drop — is stored on your account
-    and **synced** to the burakov server so it's there on every device. It is **not** end-to-end
-    encrypted, because syncing needs to read it.
-- **AI advisor photos** (only if you turn the advisor on) are **kept on the server** so suggestions
-    can be produced; your device **deletes its copies after upload**.
-- **The map, limits, and camera data** live **offline on your device** as downloaded packs.
+| Permission | Why |
+| --- | --- |
+| **Location — while using the app** | To show your speed and the limit where you are, and to warn you before cameras. There's no background location — once you stop a drive, WhySoSlow stops using it. |
+| **Camera** *(optional)* | Only for the [AI sign advisor](/whysoslow/ai-sign-advisor), and only if you turn it on. |
 
-## Permissions it asks for
+## What's stored where
 
-<Steps>
-    <Step title="Location — while in use">
-        To show the limit where you are and warn you before cameras. WhySoSlow uses location **only while
-        the app is open and on screen** — there is **no background or always-on location**.
-    </Step>
-    <Step title="Camera — optional">
-        Only for the **AI sign advisor**, and only when you enable it. With the advisor off, WhySoSlow
-        never uses the camera.
-    </Step>
-</Steps>
+| On your phone | On the server, with your account |
+| --- | --- |
+| Your settings | Your **limit fixes** and **markers**, with their locations |
+| Your fixes and markers | **AI suggestions** — with the location and direction of each |
+| Downloaded maps and road data, and AI advisor photos waiting to upload (deleted once uploaded) | **Photos** in which the advisor recognised a sign, kept until you delete your account |
+
+WhySoSlow doesn't upload your location continuously. The server only receives a location with something you
+add, and with each AI advisor photo. Your data isn't end-to-end encrypted, because syncing needs to read it.
+It isn't sold or used for ads.
+
+## Other services
+
+- **An AI provider** receives every photo the AI sign advisor sends, to read the sign — only while the
+    advisor is on.
+- Maps and road data are downloaded from our own server.
+- **Crash reports** — while **Settings → Privacy & security → Send crash reports** is on (the default),
+    anonymous error reports go to an error-tracking service so bugs can be fixed. Turn it off any time;
+    turning it back on takes effect after a restart.
 
 ## Lock the app
 
-On iOS and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
-fingerprint**. WhySoSlow then asks for your face or fingerprint when it opens and after 5 minutes in
-the background (on iPhone your device passcode works too). The check is done by your phone itself —
-nothing about your face or fingerprint ever reaches the app or our servers.
+Turn on **Settings → Privacy & security → Lock with Face ID / fingerprint**. WhySoSlow then asks for your face
+or fingerprint when it opens and after 5 minutes in the background (on iPhone your device passcode works
+too). The check is done by your phone itself — nothing about your face or fingerprint reaches the app or our
+servers.
 
-<Note>
-    WhySoSlow is a **personal project, not a business** — your data isn't sold or used for ads. It's
-    built to help you drive, and shared as-is.
-</Note>
+## Export or delete your data
+
+Both are in your account on burakov.net — **Account → Data & deletion**:
+
+- **Export your data → Download my data** gives you one file with your data from every app, including your
+    WhySoSlow fixes, markers and AI suggestions (not the photos).
+- **Delete my account** signs you out at once and removes your data — including the advisor's photos — from
+    **every** app on the account. You can restore it within **30 days** by signing in again.

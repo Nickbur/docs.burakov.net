@@ -1,31 +1,70 @@
 ---
 title: "FAQ"
-description: "Short answers to common questions about OMOS."
+description: "Short answers about OMOS — what it can do today, where it runs, downloads, source code, licensing and fixes for common boot problems."
+mode: "wide"
 ---
 
 <AccordionGroup>
-    <Accordion title="Can I use OMOS as my everyday operating system?">
-        Not yet. OMOS is in early development. Today it boots and runs a solid foundation on three kinds of processor, but it doesn't have a graphical desktop, networking, or app support yet — those are on the [roadmap](/omos/roadmap). For now it's for the curious, best explored in a virtual machine.
+    <Accordion title="Can I use OMOS as my operating system?">
+        Not yet. It's a developer preview: it boots, runs its built-in drivers and services, and shows a status screen
+        and a log. There's no shell, no apps and no networking. See [What you see at boot](/omos/first-boot).
     </Accordion>
-    <Accordion title="What does “many machines, one system” actually mean?">
-        It's the goal OMOS is built toward: the computers you own — laptop, desktop, a spare machine — pooling their processing, memory and storage so they act as a single private computer, with work running wherever there's room. The foundation for it exists today; the pooling layer itself is [ahead on the roadmap](/omos/roadmap), and these docs won't pretend otherwise.
+    <Accordion title="Where can I download it?">
+        Images aren't published for download yet. They'll be linked from the
+        [OMOS page](https://burakov.net/projects/omos) when they are.
     </Accordion>
-    <Accordion title="Which machines does it run on?">
-        Three families of processor: **x86_64** (most Intel/AMD computers), **ARM64** (many ARM machines and boards), and **RISC-V**. It behaves the same on all three. It needs UEFI firmware; legacy BIOS isn't supported. See [Platform support](/omos/platform-support).
+    <Accordion title="Which computers does it run on?">
+        The x86_64 image runs in QEMU with UEFI firmware. ARM64 and RISC-V run only in QEMU's `virt` machine during
+        development. Physical hardware isn't supported yet. See [Platform support](/omos/platform-support).
     </Accordion>
-    <Accordion title="How do I try it without risking my computer?">
-        Boot an image in a virtual machine with QEMU — it runs in a window and changes nothing on your real machine. The [Quickstart](/omos/quickstart) walks through it. Writing an image to a real disk is only for a spare machine you don't mind dedicating.
+    <Accordion title="Is it based on Linux?">
+        No. The kernel, drivers and services are written from scratch in Rust; only the Limine bootloader and a few
+        small libraries come from elsewhere — see [Third-party notices](/omos/third-party-notices).
+    </Accordion>
+    <Accordion title="Can it run Linux or Windows programs?">
+        No. A compatibility layer is planned after networking — see the [roadmap](/omos/roadmap).
+    </Accordion>
+    <Accordion title="Can I type commands?">
+        No — there's no shell yet. Key presses are echoed to the serial log only.
+    </Accordion>
+    <Accordion title="Is it open source?">
+        No. OMOS is proprietary and closed-source; contributions are by invitation under a CLA. See
+        [Building & contributing](/omos/contributing).
     </Accordion>
     <Accordion title="Is it free?">
-        Yes for almost everyone: personal, education, non-profit, and commercial use under $1M in annual revenue are all free, with nothing to buy. Only commercial use at $1M+ owes a royalty, on revenue above that line. See [Licensing](/omos/licensing).
+        Yes, for personal, education and non-profit use, and for commercial use under $1M in annual revenue. Above that,
+        a 5% royalty applies to the revenue over $1M. See [Licensing](/omos/licensing).
     </Accordion>
-    <Accordion title="Is OMOS open source?">
-        No. The compiled system is distributed free under the OMOS EULA, but the source code is closed and isn't licensed for use or modification. Contributions are by invitation only.
+    <Accordion title="Is it secure?">
+        Not yet. The capability model is partly in place, but drivers' hardware access isn't gated and a fault anywhere
+        stops the system. See [Security model](/omos/security#current-limitations).
     </Accordion>
-    <Accordion title="Does it collect any data about me?">
-        No. There's no account, no telemetry and no ads, and OMOS doesn't phone home. It answers only to you. See [Privacy](/omos/privacy).
-    </Accordion>
-    <Accordion title="Why build a whole new operating system?">
-        Because the idea of your own machines acting as one private computer — with security you don't have to think about and no company in the loop — didn't exist, and it's worth building. OMOS is an independent project, built in the open by [burakov](https://burakov.net).
+    <Accordion title="Does it collect data?">
+        No. It has no networking, accounts or telemetry. See [Privacy](/omos/privacy).
     </Accordion>
 </AccordionGroup>
+
+## Troubleshooting
+
+### QEMU shows "No bootable device" or drops into a firmware shell
+
+OMOS needs UEFI firmware. Check the `-drive if=pflash,…` line points to an existing OVMF file — see the
+[Quickstart](/omos/quickstart).
+
+### The window shows nothing
+
+The status screen needs a framebuffer from the firmware. Watch the terminal: the serial log shows the system booting
+either way.
+
+### No `[fat32] mounted` line
+
+Attach the disk through `virtio-blk-pci`, formatted as FAT32. NVMe and SATA disks aren't used by the filesystem yet.
+
+### The log stops with a fault message
+
+A fault in any part of OMOS currently halts the whole machine. Thanks to `-no-reboot -no-shutdown` the window stays
+open so you can read the last lines.
+
+### Typing does nothing on screen
+
+Expected — input is echoed only to the serial log in your terminal.

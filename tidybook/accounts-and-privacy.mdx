@@ -1,51 +1,58 @@
 ---
-title: "Accounts & privacy"
-description: "How Tidybook accounts work, what stays on your device, what reaches the cloud (and in what form), and the permissions the app asks for."
+title: "Account & privacy"
+description: "How you sign in to Tidybook, using it without an account, what's stored on your device and on the server, permissions, the app lock, and exporting or deleting your data."
+mode: "wide"
 ---
 
-Tidybook is **offline-first and private by default**. Here's exactly what that means for your data.
+## Using Tidybook without an account
 
-## One account, passwordless
+Importing, merging duplicates, editing, exporting and your QR card all work **without an account**, on one device.
+Your book stays on that device. An account is needed for [Sync](/tidybook/sync-and-encryption) and the features that
+come with it.
 
-Tidybook uses the shared burakov account: sign in with your email and a one-time code — **no
-password**. The same account works across every burakov app, but each app's data is separate; signing
-in to Tidybook only ever touches your contacts.
+## Your account
 
-You don't need an account to start: import, deduplicate and edit all work anonymously, and the book
-you build is adopted into your account if and when you sign in.
+Sign in with your **email and a one-time code** — no password. On iPhone you can also use **Sign in with Apple**, and
+you can sign in with Google. It's one account across the apps at [burakov.net](https://burakov.net), but each app's
+data is kept separate.
 
-## What stays on your device
+When you sign in for the first time, the book you built without an account is added to your account.
 
-Your canonical address book lives in local storage on each device and is the source of truth for
-everything you see. Without the Sync plan, **nothing leaves your device** — Tidybook is a fully usable
-single-device app.
+## What's stored where
 
-## What reaches the cloud — and how
+| On your device | On the server (with Sync) |
+| --- | --- |
+| Your full address book | Each contact, **encrypted on your device** (AES-256-GCM) |
+| My card | Your encryption key — held for you in default mode, or sealed by your passphrase with the lock on |
+| Settings | Your account (email, name) and this app's language |
 
-With **Sync** on, Tidybook uploads your contacts so your other devices can see them — but only as
-**ciphertext**. The server stores and relays sealed data it cannot read; it never sees a name, number
-or note. See [Sync & encryption](/tidybook/sync-and-encryption) for the two protection levels.
+Contacts are encrypted before they leave your device. In default mode your account can recover the key, so this
+isn't zero-knowledge; with the **passphrase lock**, only you can decrypt them. See
+[Sync & encryption](/tidybook/sync-and-encryption#encryption).
+
+Your data isn't sold or used for ads.
 
 ## Permissions
 
-- **Contacts** — so Tidybook can import your device address book. Tidybook reads your phone's
-    contacts to import them; it does **not** modify your phone's own address book.
-
-Tidybook asks for a permission only when a feature needs it, and explains why at the moment it asks.
-
-## Getting your data out
-
-Export to vCard or CSV at any time (see [Cleanup, editing & your card](/tidybook/cleanup-and-editing)).
-Your contacts are never locked inside Tidybook — the export is a plain file that belongs to you.
+| Permission | Why |
+| --- | --- |
+| **Contacts — read** | To import your phone's address book. |
+| **Contacts — change** | Only when you [push changes back](/tidybook/push-back) to your phone. |
+| **Face ID / fingerprint** | Only if you turn on the app lock. |
 
 ## Lock the app
 
-On iOS and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
-fingerprint**. Tidybook then asks for your face or fingerprint when it opens and after 5 minutes in
-the background (on iPhone your device passcode works too). The check is done by your phone itself —
-nothing about your face or fingerprint ever reaches the app or our servers.
+On iPhone and Android, turn on **Settings → Privacy & security → Lock with Face ID / fingerprint**. Tidybook then
+asks for your face or fingerprint when it opens and after 5 minutes in the background (on iPhone your device passcode
+works too). The check is done by your phone itself — nothing about your face or fingerprint reaches the app or our
+servers.
 
-<Note>
-    Deleting your account removes your data from the server. Your local book and any exports you've made
-    stay on your own devices until you remove them.
-</Note>
+## Export or delete your data
+
+- **Your contacts:** export them as vCard or CSV at any time — see [Export & share](/tidybook/export-and-share).
+- **Account data:** in your account on burakov.net, **Account → Data & deletion → Download my data** gives you one
+    file with your data from every app (Tidybook contacts in it are still encrypted — use the vCard export for a
+    readable copy).
+- **Delete my account** (same place) removes your data from **every** app on the account. You can restore it within
+    **30 days** by signing in again; after that it's gone for good. Your local book and any exports stay on your
+    devices until you remove them.

@@ -1,6 +1,7 @@
 ---
-title: "Pricing"
-description: "Flat per-server pricing for Bastion — self-hosted, managed, optional modules and enterprise — and how billing works."
+title: "Plans & buying"
+description: "Bastion's flat per-server plans — self-hosted, managed, modules and enterprise — how to buy, what you manage on Your organizations, and what happens when a payment fails or a subscription ends."
+mode: "wide"
 ---
 
 Bastion is priced **per server, not per seat** — bring your whole organization without watching a counter.
@@ -12,51 +13,57 @@ Bastion is priced **per server, not per seat** — bring your whole organization
         **$99 / month** or **$990 / year.** You run the node on your own infrastructure. Unlimited members.
     </Card>
     <Card title="Managed" icon="cloud">
-        **$249 / month** or **$2,490 / year.** The same single-tenant stack, operated, updated and backed up for you — one organization per instance, ready within one business day.
+        **$249 / month** or **$2,490 / year.** The same single-tenant stack, operated, updated, monitored and backed up for you — one organization per instance, deployed automatically: usually within minutes, always within one business day.
     </Card>
     <Card title="Extra modules" icon="puzzle-piece">
-        **+$29 / month** or **+$290 / year** per module, on any plan: **Topics** (posts, comments and polls) and the **AI assistant** (private answers across your chats and topics, running inside your own deployment).
+        **+$29 / month** or **+$290 / year** per module, on any plan: **[Topics](/bastion/topics)** and the **[AI assistant](/bastion/ai-assistant)**.
     </Card>
     <Card title="Enterprise" icon="building">
         **$1–3k / month, custom.** Larger deployments, custom terms and modules — get in touch.
     </Card>
 </CardGroup>
 
-<Note>
-    Paying **yearly** gives you two months free compared with month-to-month. Prices are in US dollars; sales tax or VAT is added where it applies.
-</Note>
+Every plan includes **encrypted chat and calls, including high-security chats**, for an unlimited number of members. Paying **yearly** costs ten months' price. Prices are in US dollars; sales tax or VAT is added where it applies. There's no free trial.
 
-## What's included
+## Buy
 
-Every plan includes the base module — **encrypted chat and calls, including high-security chats** — for an unlimited number of members. There's no per-seat billing and no free trial: pricing is flat per server so the cost is predictable as your team grows.
+On [bastion-chat.com](https://bastion-chat.com/pricing): sign in with your email (a one-time code), pick the plan, billing period and modules, name your organization and pay. Payment is processed by **Paddle**, our Merchant of Record, which also issues your invoices. Your organization is created the moment the payment clears, and **you are its owner**.
 
-## Buying
+### If you chose Managed
 
-Plans are bought on [bastion-chat.com](https://bastion-chat.com/pricing): sign in with your email (a one-time code, no password), pick the plan, billing period and modules, name your organization and pay. Payment is processed by **Paddle**, our Merchant of Record, which also issues your invoices.
+Your dedicated instance is deployed automatically as soon as the payment clears — usually within minutes, always within one business day. You get an email when it's live, and **[Your organizations](https://bastion-chat.com/account/)** shows its status, its address and the link to its admin panel. Then sign in to the Bastion app with the same email and pick your organization, and [invite your team](/bastion/administration) from the admin panel.
 
-Your organization is created the moment the payment clears, owned by the email you bought with. **[Your organizations](https://bastion-chat.com/account/)** is where you then:
+### If you chose Self-hosted
 
-- get the self-hosted node's **credentials** (organization ID and secret — the secret is shown once) and **rotate** the secret;
-- see the **license** and server status — last check-in, version, address — and, for managed, the deployment status;
-- **manage the subscription** — payment method, invoices and cancellation, through Paddle's customer portal;
-- **change modules** — the price difference is prorated and charged or credited right away;
-- **renew** an organization whose subscription ended, keeping its ID, secret and data.
+Download the node bundle and get your organization's credentials on **Your organizations** (below), then follow [Install a self-hosted node](/bastion/self-hosting).
+
+## Your organizations
+
+**[Your organizations](https://bastion-chat.com/account/)** is where the owner:
+
+- **Downloads the node bundle** for a self-hosted node — the Docker Compose setup, its configuration templates and scripts. See [Install a self-hosted node](/bastion/self-hosting).
+- **Gets credentials** for a self-hosted node — the organization ID and secret, with a ready `.env` snippet. The secret is shown **once** and never emailed; store it right away. (Managed organizations don't need credentials.)
+- **Rotates the secret** — a new secret, with the old one stopping at once. Credentials can be fetched or rotated up to 10 times an hour.
+- Sees the **license** and server status — last check-in, version and address — and, for managed, the deployment status and the link to the admin panel.
+- **Manages the subscription** — payment method, invoices and cancellation — in Paddle's customer portal. The portal stays available after a subscription has ended, so past invoices are always at hand.
+- **Changes modules** — the price difference is prorated and charged or credited right away; the license reaches the node at its next refresh. (The AI assistant also needs a model configured on the node — see [Run & maintain your node](/bastion/operations#ai-assistant-models).)
+- **Renews** an organization whose subscription ended, keeping its ID, secret and data.
 
 ## When a payment fails or a subscription ends
 
-- A failed renewal keeps everything working for **7 days** while the payment is retried — update the payment method from your organization page.
-- Cancelling stops the next renewal; the paid period runs to its end.
-- After that the server turns **read-only** (members can sign in and read), and 14 days later it stops admitting sign-ins.
-- **Nothing is deleted.** Renewing restores full use.
+| Situation | What happens |
+| --- | --- |
+| A renewal payment fails | Everything keeps working for **7 days** while the payment is retried. Update the payment method under **Manage subscription**; you get an email once the payment goes through. |
+| You cancel | The paid period runs to its end. |
+| The paid period (or the 7 days) has ended | The organization turns **read-only**: members can sign in and read, nothing new can be sent. |
+| 14 days after that | It stops admitting sign-ins. A managed instance is powered down with all its data kept; renewing brings it back. |
+| Any time | **Nothing is deleted.** Renewing restores full use, with the same organization, ID and secret. |
 
-Refunds within 14 days of purchase — see the [Refund Policy](https://burakov.net/refund). A full refund of the current
-term, or a chargeback, cancels the subscription at once (no further charge) and ends the paid term then: the server turns
-read-only for 14 days, so everyone can still read and export, then stops admitting sign-ins — nothing is deleted, and
-subscribing again restores full use. A partial refund doesn't change the subscription.
+Refunds within 14 days of purchase — see the [Refund Policy](https://burakov.net/refund). A full refund of the current term, or a chargeback, cancels the subscription at once and ends the paid term then: the organization turns read-only for 14 days, so everyone can still read and export, then stops admitting sign-ins — nothing is deleted, and subscribing again restores full use. A partial refund doesn't change the subscription.
 
-## Self-hosted vs. managed
+## Self-hosted or managed?
 
-- **Self-hosted** is for teams who want to run and own the whole stack. See [Self-hosting](/bastion/self-hosting).
-- **Managed** is the same product with the operations handled for you, if you'd rather not run a server.
+- **Self-hosted** is for teams who want to run and own the whole stack — see [Install a self-hosted node](/bastion/self-hosting).
+- **Managed** is the same product with the operations handled for you.
 
-Either way, your content stays end-to-end encrypted and, on your own node, on infrastructure you control.
+Either way, your content stays end-to-end encrypted on your organization's own server.

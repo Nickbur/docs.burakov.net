@@ -1,45 +1,47 @@
 ---
 title: "Roadmap"
-description: "Where OMOS is going — from the foundation that runs today toward a graphical system that pools many machines into one."
+description: "Where OMOS stands — what's built, what's in progress, and the planned stages from storage and graphics to networking and many machines working as one."
+mode: "wide"
 ---
 
-OMOS is being built in stages, from the core outward. This page is deliberately honest about the line between **what runs today** and **what's ahead** — the vision is big, and it's fair to know what's real.
+OMOS is built in stages, from the kernel outward. Everything under **Planned** is future work, and timelines aren't
+promised.
 
-## The foundation — done
+## Built
 
-The groundwork the rest depends on already runs on all three architectures:
-
-- Booting, and bringing up the processor and its cores.
-- Managing memory and running programs in a protected user space.
-- [Capability-based security](/omos/security) for every program and driver.
+- UEFI boot via Limine, with kernel address randomization, on x86_64 — and in QEMU `virt` on ARM64 and RISC-V.
+- Memory management, per-process address spaces and shared memory.
+- A preemptive, priority-based multicore scheduler with performance/efficiency-core detection.
+- See [Kernel](/omos/kernel) for details.
 
 ## In progress
 
-- **The plumbing between parts** — the controlled channels drivers, services and apps use to talk to each other and to the core.
-- **A driver and file-access framework** — the common ground that userspace drivers and services build on.
+| Area | Works today | Still missing |
+| --- | --- | --- |
+| **System calls and IPC** | Channels, notifications, wait sets, timers, handle rights and transfer — see [IPC & system calls](/omos/ipc) | Starting programs; capability checks for hardware access |
+| **Filesystem and drivers** | User-space drivers, the filesystem service, FAT32 on virtio — see [Drivers & storage](/omos/drivers-and-storage) | Filesystems on NVMe and SATA; per-directory capabilities; restarting a crashed driver |
 
-## Ahead
-
-These are planned, not finished — the destination, in roughly the order it's being approached:
+## Planned
 
 <Steps>
-    <Step title="Your data, sealed">
-        A built-in filesystem, **OmosFS**, that encrypts by default and keeps snapshots and integrity checks so your data can't quietly rot.
+    <Step title="Storage">
+        A native filesystem, **OmosFS**.
     </Step>
-    <Step title="A face">
-        A graphical shell — the desktop and the friendly, visible way to grant and review what your apps can do.
+    <Step title="Graphics and a desktop">
+        A graphical interface.
     </Step>
-    <Step title="Getting online">
-        Networking, and a compatibility layer so existing programs can run on OMOS.
+    <Step title="Networking">
+        A network stack, and a compatibility layer for existing programs.
     </Step>
-    <Step title="Many machines, one system">
-        The headline: pooling the processing, memory, and storage of every machine you own so they act as a single computer — work running wherever there's room to spare.
+    <Step title="Many machines as one">
+        Pooling the processors, memory and storage of several machines you own into one system.
     </Step>
-    <Step title="Running other systems">
-        A virtualization layer, so OMOS can host other operating systems alongside your own.
+    <Step title="Virtual machines">
+        Running other operating systems on top of OMOS.
     </Step>
 </Steps>
 
-<Note>
-    Timelines aren't promises. OMOS is an independent project built in the open, and the order above can shift as the groundwork settles. Follow progress on the [OMOS page](https://burakov.net/projects/omos) and its [changelog](https://burakov.net/projects/omos/changelog).
-</Note>
+Also planned along the way: a shell and command-line tools, an installer, user accounts, system updates, a Secure
+Boot chain, and closing the [current security limitations](/omos/security#current-limitations).
+
+Follow progress on the [OMOS page](https://burakov.net/projects/omos).

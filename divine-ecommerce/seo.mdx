@@ -1,0 +1,53 @@
+---
+title: "SEO & analytics"
+description: "Store-wide SEO in Divine eCommerce — meta title and description templates, robots.txt, the XML sitemap, canonical links, noindex rules and analytics tags."
+mode: "wide"
+---
+
+Store-wide SEO lives in **Tools → Search Engine Optimization**. Products, categories, brands, articles and pages also
+have their own meta title, description and keywords in their forms. Managers need the `seo` permissions to open the
+section — see [Staff & permissions](/divine-ecommerce/staff-and-permissions).
+
+## Titles and descriptions
+
+| Setting | What it does |
+| --- | --- |
+| **Meta Title Template** | Builds the title of every storefront page. Variables: `{page_title}`, `{site_name}`, `{category}`. Default: `{page_title} — {site_name}`. |
+| **Meta Description Template** | The meta description for pages that don't have their own. |
+| **Default Meta Keywords** | Meta keywords for pages that don't have their own. |
+
+`{page_title}` is the page's own meta title, or its name when the meta title is empty. `{site_name}` is the site name
+from **Settings → General**.
+
+## robots.txt and sitemap
+
+- **robots.txt content** — served at `/robots.txt`. The default allows everything and points to the sitemap:
+
+    ```text
+    User-agent: *
+    Allow: /
+
+    Sitemap: /sitemap.xml
+    ```
+
+- **XML Sitemap** — when on, `/sitemap.xml` lists the store's public pages for search engines.
+
+## Indexing
+
+| Setting | What it does |
+| --- | --- |
+| **Canonical URLs** | Adds a canonical link to every page. On by default. |
+| **No-index empty categories** | Marks categories without products `noindex`, so search engines skip them. |
+
+Filtered listings are always marked `noindex,follow`, with a canonical link to the unfiltered page — see
+[Filters and sorting](/divine-ecommerce/storefront#filters-and-sorting).
+
+## Analytics
+
+| Setting | Format |
+| --- | --- |
+| **Google Analytics ID** | `G-XXXXXXXXXX` |
+| **Google Tag Manager** | `GTM-XXXXXXX` |
+| **Facebook Pixel** | Your pixel ID |
+
+Each filled-in ID adds its tag to every storefront page; leave a field empty to leave that tag out.

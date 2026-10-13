@@ -1,0 +1,60 @@
+---
+title: "Troubleshooting"
+description: "Fixes for common Tidybook problems — importing, connected accounts, duplicates, sync and the passphrase lock."
+mode: "wide"
+---
+
+## "Could not read device contacts"
+
+Tidybook isn't allowed to read your contacts. Turn on **Contacts** access for Tidybook in your phone's settings
+(iPhone: **Settings → Tidybook → Contacts**), then import again. On the web, importing from the phone isn't available —
+import a vCard file instead.
+
+## A file imported nothing, or only names
+
+- Prefer **vCard** (`.vcf`) — it carries every field.
+- For CSV, make sure the file is **comma-separated** and saved as **UTF-8**. Spreadsheets in some regions save with
+    semicolons; export again as "CSV UTF-8".
+- Contacts with no name, phone or email are skipped.
+
+## A CardDAV account won't connect
+
+- Check the **Server URL** — use your service's CardDAV address.
+- Services with two-step sign-in (iCloud, Fastmail, Google Workspace) need an **app-specific password**.
+- In a browser, some servers block connections from other websites; connect from the iPhone or Android app instead.
+
+## Contacts appear twice after importing again
+
+Importing the same file again adds its contacts again. Open **Duplicates** and merge the copies.
+
+## Two contacts I know are the same aren't listed as duplicates
+
+Tidybook matches only identical phone numbers or email addresses. If they share neither, merge them by hand: copy the
+details into one contact and delete the other.
+
+## Changes don't reach my other devices
+
+1. Are you **signed in** with the same account on both, with an active **Sync** plan?
+2. Is the device **online**? Sync runs automatically once it is.
+3. Is the **passphrase lock** on? Each device syncs only after you unlock it on the **Encryption** screen.
+4. A very large first sync can take a while — keep the app open on **Contacts** until the spinner stops.
+
+## "Wrong passphrase — try again"
+
+Passphrases are case-sensitive. If you've forgotten it, your synced book can't be decrypted. The copy on any device
+that's still unlocked, and your vCard exports, are unaffected — export from there and start over.
+
+## My contacts are gone after logging out
+
+Logging out removes the book from the device. Sign in again to get back everything that had synced.
+
+## Sign-in messages
+
+| Message | What to do |
+| --- | --- |
+| *Too many attempts. Please wait N min.* | Wait the time shown, then request a new code. |
+| *Unable to connect…* | Check your connection. |
+
+## "Update required"
+
+Your version is too old to keep working. Tap **Update now**, or update Tidybook from your app store.

@@ -1,0 +1,65 @@
+---
+title: "Troubleshooting"
+description: "Fixes for common Rowbots AI situations — work that doesn't start, a runner that's offline, missing pull requests, blocked network access, and paused projects."
+mode: "wide"
+---
+
+## Work isn't starting
+
+Check, in this order:
+
+1. **Is the constitution confirmed?** Autonomy stays off until the onboarding interview is complete — the dashboard
+    shows how much is confirmed.
+2. **Is there budget left?** When the monthly cap is reached, work stops until you raise the cap or the month resets.
+    See [Budget & forecasts](/rowbots/budget).
+3. **Is compute connected and online?** A managed sandbox key must be valid; a self-hosted runner must show as
+    online.
+4. **Is it waiting for you?** An open escalation parks the part of the work it concerns — check **Escalations**.
+5. **Is it worth its cost?** Maintenance runs only while its value beats its cost. A quiet fleet is Rowbots doing its
+    job, not a fault.
+6. **Is the project active?** Projects over your plan's limit are paused — see below.
+
+## An item isn't starting even though budget is left
+
+Verification is never cut to save money: if the checks an item needs don't fit the remaining budget, it doesn't
+start. Raise the cap, or move it up in priority so other work makes room.
+
+## The self-hosted runner shows as offline
+
+- Check the stack is running (`docker compose ps`) and look at the runner's logs.
+- The runner needs **outbound HTTPS** to Rowbots — no inbound ports, but a firewall blocking outbound traffic will
+    keep it offline.
+- If you rotated or revoked it, enroll it again and update `ROWBOTS_RUNNER_ID` / `ROWBOTS_RUNNER_SECRET`.
+
+See [Self-hosted runner](/rowbots/self-hosted-runner).
+
+## A build fails in the sandbox but works on my machine
+
+- **A network call is blocked.** The sandbox reaches only package registries and your git host. Add the extra host
+    to `egress` in the [recipe](/rowbots/recipe#network-access).
+- **A service is missing.** Declare Postgres, Redis, MySQL or MongoDB under `services`.
+- **A secret is missing.** Attach it to the recipe as a [test secret](/rowbots/recipe#test-secrets).
+- **It takes too long.** Raise `timeouts` in the recipe.
+
+## No pull request appeared
+
+- **Git permissions.** On GitHub or GitLab, check the Rowbots app is still installed on the repository. On other
+    hosts, check the service-account token can open pull requests — a deploy key alone can't.
+- **Branch protection** is respected, never bypassed — a batch merge waits if your rules require reviews.
+- **The judge didn't pass it.** When fixes run out, the item stops with a blocker report instead of a pull request.
+    Find it under **Work**.
+
+## A project is paused
+
+After a downgrade, or when a payment failed and the 7-day grace period ended, projects over your plan's limit become
+read-only. Choose which projects stay active, or update the subscription in **Billing**. Nothing is deleted. See
+[Pricing](/rowbots/pricing).
+
+## Autonomous work stopped across the whole fleet
+
+When failures correlate across several products — a burst of reverts, judge overrides or cost spikes — Rowbots stops
+autonomous work fleet-wide and escalates to you. Answer the escalation to resume.
+
+## iOS builds don't run
+
+iOS can be built only on macOS: use a [self-hosted runner on a Mac](/rowbots/self-hosted-runner#ios-builds).

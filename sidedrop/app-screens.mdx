@@ -1,0 +1,66 @@
+---
+title: "App screens"
+description: "A tour of Sidedrop's single page — the top bar, connection status, pairing panel, drop zone, transfers table, statuses, language and theme."
+mode: "wide"
+---
+
+Sidedrop is one page that changes as you go.
+
+## Top bar
+
+The **Sidedrop** name (clicking it starts a fresh room), a **language** button that switches between
+English and Russian, and a **☾ / ☀** button for dark or light theme.
+
+- **Language** starts from your browser's language (Russian if your browser prefers it, otherwise
+    English).
+- **Theme** starts from your system's light/dark setting, otherwise dark.
+
+Both choices are remembered in this browser.
+
+## Status bar
+
+| Status | Meaning |
+| --- | --- |
+| **Connecting…** | Reaching the signaling server. |
+| **Waiting for the other device…** | Your room is ready; nobody has joined yet. |
+| **Connected** | Paired — with a **🔒 End-to-end encrypted** badge. |
+| **Reconnecting…** | The connection dropped; Sidedrop is rebuilding it. |
+
+If something goes wrong, the bar shows the error and a **New room** button.
+
+## Pairing panel
+
+Shown until a second device joins: *Open Sidedrop on your other device*, a QR code (*Scan to connect*),
+the **Share link** and the code (*Or enter this code*), each with **Copy**, and **Have a code?** with a
+field and **Join**. See [Pair two devices](/sidedrop/pairing).
+
+## Drop zone
+
+Shown once paired: *Drop files or folders here* — *or click to choose — they start sending immediately* —
+with **Choose files**, **Choose folder** and **Send text**. See [Send files, folders and text](/sidedrop/sending).
+
+If your browser can't stream incoming files to disk, a note warns: *This browser buffers incoming files in
+memory, so very large files may not fit. Chrome or Edge on desktop have no such limit.*
+
+## Transfers table
+
+Every item sent or received, with its **direction** (↑ sent, ↓ received), **name** (and folder path),
+**size**, **progress**, **speed**, **time left** and **status**:
+
+| Status | Meaning |
+| --- | --- |
+| **Queued** | Waiting for the items ahead of it. |
+| **Transferring** | Moving now. |
+| **Reconnecting…** | Paused while the connection is rebuilt; it continues where it stopped. |
+| **Ready to save** | Fully received — tap **Save**. |
+| **Saved** | On the receiving side: you saved it. On the sending side: the other device has received every byte. |
+| **Received** | A text snippet arrived — use **Copy**. |
+| **Failed** / **Canceled** | It didn't finish. |
+
+**Cancel** stops a queued, running or paused item. **Clear finished** removes saved, received, canceled and
+failed rows. **Save all** appears when two or more files are ready.
+
+## Footer
+
+Links to burakov.net, the source code, these docs, the Privacy Policy and Terms, and an optional sponsor
+link.

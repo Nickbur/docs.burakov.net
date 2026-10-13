@@ -1,6 +1,7 @@
 ---
 title: "Billing & subscriptions"
 description: "Subscriptions and in-app purchases with RevenueCat + Paddle — env-only activation, mock mode."
+mode: "wide"
 ---
 
 How billing works across the kit, how you turn it on with **env only** (no code changes), and
@@ -48,7 +49,7 @@ ledger** — deliberately out of scope.
 | Var | Meaning |
 |---|---|
 | `REVENUECAT_WEBHOOK_AUTH` | Shared secret the webhook must present in its `Authorization` header |
-| `REVENUECAT_SECRET_KEY` | *(optional)* enables `POST /sync` and promo grants |
+| `REVENUECAT_SECRET_KEY` | *(optional)* enables `POST /sync` and granting or revoking a free period from the admin panel |
 
 ## Dashboard checklist (the part env can't do)
 
@@ -100,6 +101,19 @@ an example in [Offline-first data](/shipwide/offline-sync#gate-it-behind-pro).
     unconfigured. It gates the UI only; enforce paid limits on the server with
     `requireEntitlement`.
 </Note>
+
+## Granting a free period
+
+An operator can give any account the premium entitlement (`pro` by default) for free — a
+goodwill gesture, a reviewer, a beta tester — and take it back:
+
+- **Where:** Admin → **Accounts** → open the account → its **Subscription** card → grant a free
+    period, or revoke a grant.
+- **How it works:** the grant is made through RevenueCat as a promotional entitlement, so the
+    user's devices see it like a purchase, and it lands in the `entitlements` table with the
+    store `promotional`. `requireEntitlement` and `isPro` treat it like any paid entitlement.
+- **Needs** `REVENUECAT_SECRET_KEY` in the API env. Every grant and revoke is written to the
+    admin audit log.
 
 ## Mock mode — develop with no account
 

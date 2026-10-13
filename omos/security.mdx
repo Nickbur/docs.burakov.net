@@ -1,34 +1,59 @@
 ---
-title: "Security"
-description: "OMOS uses capability-based security: every program starts with nothing and can only touch what you explicitly hand it."
+title: "Security model"
+description: "OMOS capability handles — rights, object types, narrowing and transfer, what's isolated today, and the current limitations."
+mode: "wide"
 ---
 
-Most systems work on the assumption that a program you run can reach almost everything *you* can — your files, your devices, your saved logins. OMOS is built on the opposite assumption.
+OMOS is designed around **capabilities**: a program can act on a kernel object only through a **handle** to it,
+and each handle carries a set of **rights**. This page describes what's enforced today and, just as importantly,
+what isn't yet.
 
-## Start with nothing
+## Handles and rights
 
-On OMOS, a program begins with **no access at all** — no files, no devices, no network, no view of the rest of the system. It can only touch something once you hand it a specific key, called a *capability*, for that one thing. Open a document and the program gets *that document*, not your whole disk.
+Each process has its own handle table. A handle names one kernel object and the rights the process holds on it.
 
-## Keys only ever narrow
+| Right | Allows |
+| --- | --- |
+| Read, Write | Reading from and writing to the object |
+| Execute | Executing it (code) |
+| Map | Mapping it into memory |
+| Transfer | Sending the handle to another process in a message |
+| Duplicate | Making a copy of the handle |
+| Signal, Wait | Signalling the object and waiting on it |
+| Enumerate | Listing its contents |
+| Destroy | Destroying it |
 
-A capability can be passed along — a program can give part of what it holds to something it trusts — but it can never be widened:
+**Rights can only shrink.** Duplicating a handle needs the Duplicate right and can drop rights, never add them;
+sending a handle needs the Transfer right and moves it out of the sender's table.
 
-- A program can't hand out more access than it was given.
-- It can't invent access it was never granted.
-- Trust flows outward and shrinks; it never quietly grows.
+## Object types
 
-This is enforced by the trusted core for every program and every driver, uniformly.
+Twelve kinds of kernel object are reached through handles: process, channel, notification, timer, memory region,
+shared memory object, device I/O region, interrupt, job, file, wait set and PCI device.
 
-## What it means for you
+## What's isolated today
 
-- **A mistake stays small.** Something handed one folder can't rummage through the rest of your data, because it never held the keys.
-- **Drivers are contained.** The parts that talk to your hardware get only the narrow access they need, so one stumbling doesn't put everything at risk. (See [Architecture](/omos/architecture).)
-- **Least privilege by default.** Nothing runs with broad access just because it's installed. Access is granted, not assumed.
+- Every service and driver runs in **user mode** in its **own address space**, with page permissions set per program
+    segment.
+- The kernel and programs are loaded at **randomized addresses**, and stacks have guard pages.
+- System calls that take a handle check that the handle exists and carries the needed right.
+- The service manager starts each built-in service with only the handles it needs: the serial log, its IPC
+    channels, and the PCI devices that match its driver.
 
-## Built in, not bolted on
+## Current limitations
 
-Capability-based security isn't a setting you switch on — it's how the system is built, running underneath everything else from the first boot. The goal is security you don't have to think about: you grant access the ordinary way, by opening a file or picking a folder, and the system makes sure that's *all* a program got.
+The model isn't complete yet. Today:
 
-<Note>
-    This model is implemented in OMOS today. The friendly, visible ways you'll grant and review access arrive with the graphical shell on the [roadmap](/omos/roadmap).
-</Note>
+- **Hardware access isn't gated by capabilities.** The system calls drivers use to reach device memory, I/O ports,
+    interrupts, DMA memory and PCI devices don't require a handle — any user-space program could use them.
+- **File access is ambient.** Files are opened by absolute path in one shared namespace; there are no per-directory
+    capabilities yet.
+- **A fault anywhere stops the system.** A crash in a user-space driver or service halts the whole machine — there's
+    no fault isolation or restart yet.
+- **No IOMMU protection.** Drivers that use DMA aren't restricted to their own memory.
+- **Resource quotas aren't enforced** for jobs.
+- **Randomness is weak.** The entropy source isn't cryptographic, and the randomization range for program code is
+    limited (around 18 bits).
+
+These are expected for a developer preview, and they're why OMOS shouldn't run anything you need to protect. Closing
+them is part of the [roadmap](/omos/roadmap).

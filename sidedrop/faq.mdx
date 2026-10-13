@@ -1,43 +1,44 @@
 ---
 title: "FAQ"
 description: "Limits, browsers, phones, and where the edges are."
+mode: "wide"
 ---
 
 <AccordionGroup>
     <Accordion title="Do I need an account or an app?">
-        Neither. Sidedrop is a website — open it on both devices, pair them, and drop files. There's
-        nothing to install and no sign-up, so there's also nothing about you to store.
+        Neither. Sidedrop is a website — open it on both devices, pair them, and drop files.
     </Accordion>
     <Accordion title="Is there a file size limit?">
-        There's no artificial cap. Received files stream to on-disk storage in your browser rather than
-        memory, so large files (multi-gigabyte) work — bounded in practice only by free disk space. The
-        exception is receiving a very large file on a phone, which some mobile browsers limit.
+        Sidedrop sets none. In Chrome, Edge and most desktop browsers, received files stream to the browser's
+        own storage, so multi-gigabyte files work while there's free disk space. Browsers that buffer in memory
+        (Sidedrop warns you) can't take very large files. See [Send files, folders and text](/sidedrop/sending).
     </Accordion>
     <Accordion title="Does it only work on the same Wi-Fi?">
-        No. Sidedrop works across different networks — your phone on cellular to your laptop on Wi-Fi,
-        or to someone across the world. It uses a direct peer-to-peer connection, with a relay fallback
-        for networks that won't allow a direct one.
+        No — it works across networks, for example a phone on cellular and a laptop on Wi-Fi. A few strict
+        networks block direct connections; then Sidedrop connects through a relay automatically — it forwards
+        the encrypted data without being able to read it. See
+        [Connections & reconnects](/sidedrop/how-it-works).
     </Accordion>
     <Accordion title="Can I send to another person, not just my own devices?">
-        Yes. Share the room link through any messenger; when they open it, the two of you are paired and
-        you can send. The transfer is still direct and encrypted between your two browsers.
+        Yes. Share your room's link or code; when they join, you're paired. Share it only with them — whoever
+        joins first is connected, and there's no accept step.
+    </Accordion>
+    <Accordion title="Can more than two devices join?">
+        No — a room connects exactly two devices.
     </Accordion>
     <Accordion title="What happens if my connection drops mid-transfer?">
-        It pauses and picks up where it left off once the path is re-established — only the missing
-        pieces are resent, not the whole file. This holds while both tabs stay open. Fully closing or
-        reloading a tab ends that session; Sidedrop isn't cloud storage, so there's no "resume later."
+        It pauses and continues from where it stopped once the connection is back — as long as both tabs stay
+        open. Closing or reloading a tab ends the session.
     </Accordion>
     <Accordion title="Which browsers work best?">
-        Chrome and Edge on desktop have the smoothest experience, including a native "save as" dialog and
-        folder saving. Firefox and Safari work too, saving via ordinary downloads (a zip for folders and
-        batches). Sending works everywhere, including phones.
+        Chrome and Edge on desktop: they stream large files to disk and offer a save dialog and folder saving.
+        Firefox, Safari and phones work too, saving through ordinary downloads (a zip for several files).
     </Accordion>
     <Accordion title="What does it cost?">
-        Nothing. Sidedrop is free and open source, with no paid tier and no ads. It's a showcase project
-        and a small thank-you, not a business — an optional GitHub Sponsors link is the only ask.
+        Nothing. Sidedrop is free, with no ads.
     </Accordion>
-    <Accordion title="Can I run it myself or change it?">
-        Yes. The web app is open source under the MIT license — see
-        [Run from source](/sidedrop/run-from-source) for how to run it on your own machine.
+    <Accordion title="Is it open source?">
+        The web app is, under the MIT license. The signaling server it uses isn't part of that repository —
+        see [Run from source](/sidedrop/run-from-source).
     </Accordion>
 </AccordionGroup>

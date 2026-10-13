@@ -1,28 +1,115 @@
 ---
-title: "FAQ"
-description: "Short answers to common questions about Divine eCommerce."
+title: "FAQ & troubleshooting"
+description: "Short answers about Divine eCommerce, and fixes for common problems — sign-in, emails, search, filters, uploads and production errors."
+mode: "wide"
 ---
 
+## FAQ
+
 <AccordionGroup>
-    <Accordion title="Is Divine eCommerce free?">
-        Yes — it's open source under the MIT license and free to use, including commercially. You host it yourself, so there's no subscription and no per-order fee.
+    <Accordion title="Is it free?">
+        Yes — open source under the MIT license, including for commercial use. You host it yourself, so there are no
+        subscription or per-order fees.
     </Accordion>
-    <Accordion title="Is it a fork of OpenCart or another platform?">
-        No. It's a from-the-ground-up engine on its own modular PHP framework. It draws on the experience of running real shops, but it doesn't inherit another platform's code or structure.
+    <Accordion title="Is it a fork of another platform?">
+        No. It runs on its own small framework built from standard PHP components — see
+        [Architecture](/divine-ecommerce/architecture).
     </Accordion>
     <Accordion title="What do I need to run it?">
-        Docker and Docker Compose. PHP, PostgreSQL and Redis all run in containers — see the [Quickstart](/divine-ecommerce/quickstart).
+        Docker with Docker Compose, and Git. PHP, PostgreSQL and Node all run in containers. See the
+        [Quickstart](/divine-ecommerce/quickstart).
     </Accordion>
-    <Accordion title="Which database does it use?">
-        PostgreSQL. Search and the safe-write layer are built around it, so Postgres is the supported database.
+    <Accordion title="Can I use MySQL?">
+        No — PostgreSQL is the only supported database.
     </Accordion>
-    <Accordion title="How do customers pay?">
-        Checkout ships with cash on delivery and store pickup. An online card gateway (LiqPay) is included and can be enabled with your keys — see [Configuration](/divine-ecommerce/configuration).
+    <Accordion title="How do customers pay and get their orders?">
+        Through the delivery and payment methods you set up in **Settings → Delivery** and **Settings → Payments** —
+        for example store pickup or Nova Poshta, payment on delivery, or online card payment through LiqPay. See
+        [Checkout, orders & returns](/divine-ecommerce/checkout-and-orders).
+    </Accordion>
+    <Accordion title="Can I sell in another currency or language?">
+        Not yet. Amounts are in UAH, and the storefront is in English. The admin's **Currency** and
+        **Translations** sections don't affect the store yet.
+    </Accordion>
+    <Accordion title="Does it support several stores or vendors?">
+        No — one store per installation.
     </Accordion>
     <Accordion title="Can I add features without forking?">
-        Yes. The [plugin system](/divine-ecommerce/plugins) lets a feature bring its own routes, views, migrations and assets, so you can extend the store without editing the core and keep updating cleanly.
+        Yes. A [plugin](/divine-ecommerce/plugins) can add routes, services, event listeners, templates, database
+        tables and assets, and is installed and activated from the admin. Storefront look and feel is changed by
+        editing the templates directly.
     </Accordion>
     <Accordion title="Where's the source code?">
         On [GitHub](https://github.com/Nickbur/divine-ecommerce). Issues and contributions are welcome.
     </Accordion>
 </AccordionGroup>
+
+## Troubleshooting
+
+### I can't sign in with `admin`
+
+Sign in with the **email address** — `admin@divine-ecommerce.burakov.net` on the demo data. The login name isn't
+accepted.
+
+### Sign-in or forms fail in production
+
+With `APP_ENV=prod` the session cookie only travels over HTTPS. Serve the store through a TLS reverse proxy — see
+[HTTPS](/divine-ecommerce/deployment#https). A "403 — CSRF token mismatch" page on every form is the typical
+symptom.
+
+### Emails aren't arriving
+
+- Check the `SMTP_*` values — the templates ship placeholders.
+- Look in `src/Logs/app.log`: failed sends are logged there.
+- An unreachable SMTP server makes checkout slow, because emails are sent while the page loads.
+
+### Links in emails point to the wrong site
+
+Outside `APP_ENV=dev`, email links use **Settings → Branding → Store Website**. Set it to your domain.
+
+### Search doesn't find something
+
+- New categories, brands, articles and pages take up to a minute to appear — and never appear if the `cron`
+    container isn't running. Run `make search-refresh` to update immediately.
+- Every word must match the start of a word in the item.
+- Only Latin letters, Cyrillic letters and digits are indexed — accented letters such as *é* or *ü* are dropped,
+    so words containing them may not match.
+
+### Filters show wrong counts, or a new specification isn't a filter
+
+Make sure the specification is **filterable**, then press **Rebuild** in **Catalog Filters** (or run
+`make reindex-facets`).
+
+### A product isn't visible
+
+Check its status is **Active** — new and imported products start as **Draft**.
+
+### Uploads fail
+
+The File Manager accepts images (JPEG, PNG, GIF, WebP, SVG), PDF, ZIP, CSV and XLSX, up to **10 MB** per file;
+requests are capped at 64 MB. In production, `public/storage` must be writable by uid 82.
+
+### Imports or "Send now" campaigns stop part-way
+
+Requests time out after 30 seconds. Split large CSV files, and schedule big campaigns instead of sending them from the
+browser.
+
+### Where do I find errors in production?
+
+Unexpected errors are written to `src/Logs/app.log`; visitors see a plain error page (403, 404, 500, or an
+expired-form page for a stale CSRF token). For full traces, reproduce the problem with `APP_DEBUG=true` on a
+non-public copy.
+
+### Template changes don't show up
+
+Production caches compiled templates and code. Rebuild and restart: `make prod-build && make prod-up`. Locally, run
+`make cache-clear`.
+
+### The worker logs errors right after install
+
+Expected until `make composer-install` and `make migrate` have run.
+
+### PostgreSQL won't start after an upgrade
+
+A data volume from an older PostgreSQL version can't be used by PostgreSQL 18. Restore your data into a new volume —
+see [Back up and restore](/divine-ecommerce/deployment#back-up-and-restore).

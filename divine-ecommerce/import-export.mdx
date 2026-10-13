@@ -1,0 +1,74 @@
+---
+title: "Import & export (CSV)"
+description: "Export products, categories, brands, orders, customers and settings to CSV, and import products, categories and brands — file format, columns, modes and permissions."
+mode: "wide"
+---
+
+Both screens are under **Tools**: **Data Export** and **Data Import**.
+
+## File format
+
+| | |
+| --- | --- |
+| Delimiter | `;` (semicolon) — what Excel expects in most European locales |
+| Encoding | UTF-8 **with BOM**, so Excel opens Cyrillic text correctly |
+| Quotes | `"` around cells that need them |
+| Header row | Required. Column names are case-insensitive; unknown columns are ignored. |
+
+Cells that start with `=`, `+`, `-`, `@`, a tab or a carriage return are prefixed on export so spreadsheets don't run them as formulas; import
+removes the prefix again, so an exported file can be imported back unchanged.
+
+## Export
+
+| Entity | Columns |
+| --- | --- |
+| Products | id, name, slug, sku, price, compare_at_price, cost_price, quantity, status, brand_id, short_description, created_at |
+| Categories | id, name, slug, parent_id, position, is_active, meta_title, meta_description, created_at |
+| Brands | id, name, slug, website, position, is_active, created_at |
+| Orders | id, order number, customer name, email and phone, subtotal, discount, tax, shipping, total, currency, status, payment status, shipping and payment method, created_at |
+| Customers | Accounts with the customer role |
+| Settings | All store settings |
+
+Each entity needs the matching **view** permission (for example `orders.view`).
+
+## Import
+
+| Entity | Required columns | Optional columns | Matched on |
+| --- | --- | --- | --- |
+| Products | name, sku, price | slug, compare_at_price, cost_price, quantity, status, short_description, description, brand_id | `sku` |
+| Categories | name | slug, parent_id, position, is_active, description, meta_title, meta_description | `slug` |
+| Brands | name | slug, website, position, is_active, description | `slug` |
+
+- Every row needs a value in each required column; rows without one, or with a different number of cells than the
+    header, are counted as errors and skipped.
+- A missing slug is generated from the name.
+- Empty cells are left out, so they never overwrite existing values.
+
+### Modes
+
+| Mode | Existing match | New row |
+| --- | --- | --- |
+| **Skip** (default) | Left as is | Inserted |
+| **Update** | Overwritten with the file's non-empty cells | Inserted |
+
+The result message reports how many rows were imported, updated, skipped and failed.
+
+<Warning>
+    Imported products **without a `status` column start as Draft** — invisible in the store. Add `status` with
+    `active`, or activate them in the admin. Import doesn't assign **categories** or **images**; set those in the
+    product form afterwards.
+</Warning>
+
+### Permissions
+
+Besides access to the import tool itself (the `import` permissions), importing an entity needs that entity's
+**create** permission — new rows are inserted in both modes — and the **Update** mode also needs its **edit**
+permission (for example `products.create` and `products.edit`). Administrators have everything. See
+[Staff & permissions](/divine-ecommerce/staff-and-permissions).
+
+<Tip>
+    Imports run in a single request with a 30-second limit. Split very large files into several smaller ones.
+</Tip>
+
+After an import, the filter index is updated for the changed products automatically, and search catches up within
+about a minute.

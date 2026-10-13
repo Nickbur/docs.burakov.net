@@ -1,26 +1,36 @@
 ---
 title: "Quietletter"
 description: "Words that arrive if you go quiet — a zero-knowledge digital dead man's switch that delivers what matters if you ever stop checking in."
+mode: "wide"
 ---
 
 Quietletter is a **digital dead man's switch**. You set up what should happen if something
 happens to you — a farewell message, an encrypted file for your family, account credentials,
-or a private page — and keep a simple periodic **check-in** to prove you're still around.
-Miss it, and only after repeated warnings and a generous grace period, your switch fires
-exactly as you set it.
+or a private note — and keep a simple periodic **check-in** to prove you're still around.
+Miss it, and only after repeated warnings and a grace period of at least 48 hours, your switch
+fires exactly as you set it.
+
+It runs on **iPhone, Android and the web**, as a hosted service — or on your own server with the
+open-source core.
 
 <CardGroup cols={2}>
-    <Card title="How it works" icon="heart-pulse" href="/quietletter/how-it-works">
-        Check-ins, the grace window, warnings, and how a switch fires.
+    <Card title="Quickstart" icon="rocket" href="/quietletter/quickstart">
+        Sign in, create your first switch and check in for the first time.
     </Card>
-    <Card title="Zero-knowledge" icon="lock" href="/quietletter/zero-knowledge">
-        Your files and secrets are encrypted on your device — we can never read them.
+    <Card title="Create and edit a switch" icon="pen-to-square" href="/quietletter/create-a-switch">
+        Recipients, actions, encryption and passphrases.
     </Card>
-    <Card title="Self-hosting" icon="server" href="/quietletter/self-hosting">
-        Run the open-source core yourself — it outlives any single company.
+    <Card title="Schedule, grace & warnings" icon="heart-pulse" href="/quietletter/how-it-works">
+        How often you check in, how long the grace is, and how you're warned.
     </Card>
-    <Card title="FAQ" icon="circle-question" href="/quietletter/faq">
-        Recovery, false-fire safety, pricing, and the honest limits.
+    <Card title="What your recipients receive" icon="envelope-open-text" href="/quietletter/recipients">
+        The email, the release page, and how they unlock encrypted items.
+    </Card>
+    <Card title="Encryption & privacy" icon="lock" href="/quietletter/zero-knowledge">
+        What's encrypted on your device, and exactly what the server can see.
+    </Card>
+    <Card title="Run your own instance" icon="server" href="/quietletter/self-hosting">
+        Self-host the open-source core and connect the app to it.
     </Card>
 </CardGroup>
 
@@ -28,27 +38,27 @@ exactly as you set it.
 
 <Steps>
     <Step title="Create a switch">
-        Give it a title, choose a safety preset (how often you check in and how long the grace
-        period is), add the people who should receive it, and compose your actions.
+        Give it a title, choose how often you'll check in and how long the grace period is, add the
+        people who should receive it, and compose what they'll get.
     </Step>
     <Step title="Check in">
-        Open the app and confirm you're here. Each check-in resets the deadline. You choose the
-        rhythm — weekly, monthly, or every few months.
+        Open the app and confirm you're here with your PIN. Each check-in resets the deadline — weekly,
+        monthly, or every few months, as you choose.
     </Step>
     <Step title="If you ever stop">
-        After the deadline passes you get repeated warnings across push, email (and SMS on Pro).
-        Only if you still don't check in — after the full grace period — does the switch fire.
+        After the deadline passes, the switch enters its grace period and warns you by push and email
+        (and SMS on Pro). Only if you still don't check in by the end of the grace period does it fire.
     </Step>
     <Step title="Your people receive it">
-        Recipients get a link. Encrypted items open only with the passphrase you shared with them
-        ahead of time. Plain messages arrive as normal email.
+        Each recipient gets an email. Readable messages are right in it; encrypted items open on a
+        private web page with the passphrase you shared with them ahead of time.
     </Step>
 </Steps>
 
 <Note>
-    Quietletter is designed so it **fires when it should and never when it shouldn't**. Generous
-    grace periods, multi-channel warnings, and a one-tap "I'm here" in every warning protect you
-    from an accidental trigger.
+    Quietletter is designed to **fire when it should and never when it shouldn't**: a grace period of
+    at least 48 hours, warnings on more than one channel, and a fire decision made on the server, so a
+    phone that's offline or lost doesn't matter either way.
 </Note>
 
 ## Links

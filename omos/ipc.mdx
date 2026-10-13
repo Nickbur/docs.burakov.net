@@ -1,0 +1,50 @@
+---
+title: "IPC & system calls"
+description: "How OMOS programs talk to each other and to the kernel — channels, notifications, wait sets and timers, their limits, and the system-call groups."
+mode: "wide"
+---
+
+Programs in OMOS communicate by **message passing**. Every IPC object is reached through a
+[capability handle](/omos/security), so a program can only talk to what it has been given a handle for.
+
+## Primitives
+
+| Primitive | What it is | Limits |
+| --- | --- | --- |
+| **Channel** | A two-way message pipe between two endpoints. A message carries data and, optionally, handles. | 64 KiB of data and 64 handles per message; up to 64 queued messages per direction |
+| **Notification** | A lightweight signal carrying a 32-bit value — for "something happened" without a full message. | — |
+| **Wait set** | Waits on several channels and notifications at once and reports which one is ready. | Up to 64 entries |
+| **Timer** | A kernel object that fires after a set time; can be waited on like the others. | — |
+
+## Passing handles
+
+Handles sent in a message are **moved**: the sender loses them and the receiver gains them. Sending a handle requires
+its **Transfer** right. This is how access is handed out — the service manager, for example, gives each driver the
+channel and device handles it needs at start-up.
+
+## System calls
+
+The kernel offers **38 system calls**, entered with `SYSCALL` on x86_64, `SVC` on AArch64 and `ECALL` on RISC-V.
+
+| Group | Covers |
+| --- | --- |
+| Basic I/O and lifetime | Write, read, exit, start a process, yield, sleep, read the clock |
+| Channels | Create, send, receive |
+| Notifications | Create, signal, wait |
+| Wait sets | Create, add, wait |
+| Handles | Duplicate (with narrower rights), close, transfer |
+| Memory | Map and unmap, create shared memory objects |
+| Timers | Create, set |
+| Jobs | Create a job |
+| Files | Open, stat, list a directory, create, delete, truncate |
+| Hardware access for drivers | Map device memory and I/O ports, attach to and acknowledge interrupts, allocate DMA memory, read and write PCI configuration, open a PCI device |
+
+<Note>
+    Starting a process is reserved but not functional yet — the call doesn't run a program. Today only the built-in
+    services run, started by the kernel's service manager.
+</Note>
+
+## Local only, for now
+
+All IPC happens on one machine. Message passing between machines — the basis of the multi-machine system — is
+planned, not built. See the [roadmap](/omos/roadmap).

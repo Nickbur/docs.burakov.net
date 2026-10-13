@@ -1,54 +1,100 @@
 ---
 title: "Architecture"
-description: "How the engine is put together — core, modules, middleware and templates."
+description: "How Divine eCommerce is built — stack, folders, modules, the request pipeline, events and hooks, templates and database conventions."
+mode: "wide"
 ---
 
-Divine eCommerce is its own modular PHP framework, not a fork of an existing shop. If you're going to extend it, this is the shape of the thing.
+Divine eCommerce is built on its own small PHP framework assembled from standard PSR components — not a fork of
+another shop.
 
-## The stack
+## Stack
 
-- **PHP 8.5** on a custom framework built from PSR components: Laminas Diactoros (PSR-7), League Route, PHP-DI (PSR-11), Twig, Doctrine DBAL, Monolog and Phinx for migrations.
-- **PostgreSQL** for data; sessions are stored as files. A **Redis** container ships with the stack for future caching — the app doesn't use it yet.
-- **Front end**: Vite + TypeScript, UIkit, htmx and Alpine.js — progressive enhancement over server-rendered HTML.
+| Layer | Technology |
+| --- | --- |
+| Runtime | PHP 8.5 (FPM, Alpine), nginx 1.28 |
+| HTTP | Laminas Diactoros (PSR-7), League Route (PSR-15 middleware), PHP-DI (PSR-11) |
+| Data | PostgreSQL 18 via Doctrine DBAL, Phinx migrations, brick/money for amounts |
+| Views | Twig 3, server-rendered |
+| Mail, logs, CSV, events | Symfony Mailer, Monolog, league/csv, league/event |
+| Front-end | TypeScript and SCSS built by Vite; UIkit loaded from a CDN |
+| Services | A background worker container; Redis ships with the stack but isn't used yet; sessions are files |
 
-## Layout
+## Folders
 
 ```text
 src/
-  Core/         Framework: bootstrap, DI container, middleware,
-                module loader, plugin system, Twig extensions
-  App/          Application shell — routes and the Frontend views (Twig + SCSS)
-  Modules/      The store, split into focused domain modules
+  Core/         Framework: bootstrap, config and DI, middleware, plugin system,
+                hook and asset registries, Twig extensions, support classes
+  App/Frontend/ Twig views (views/), SCSS (scss/) and TypeScript (ts/)
+  Modules/      The store, one folder per domain module
   Database/     Phinx migrations and seeders
-public/         Web root (index.php front controller + built assets)
-plugins/        Drop-in plugins (see the Plugins page)
+  Logs/         Application log
+  Temp/         Template, DI and session caches
+public/         Web root: index.php, built assets, storage/ for uploads
+plugins/        Plugins and state.json
+bin/console     Command-line tasks
 ```
 
 ## Modules
 
-Each area of the store is a module under `src/Modules/`, and each module carries its own routes, controllers and models:
+Each module under `src/Modules/` owns its routes, controllers, models and services:
 
-<CardGroup cols={2}>
-    <Card title="Storefront & Catalog" icon="bag-shopping">
-        Home, product and category pages, brands, search and filtering.
-    </Card>
-    <Card title="Cart & Order" icon="cart-shopping">
-        Cart, checkout, order lifecycle, returns and payment gateways.
-    </Card>
-    <Card title="Customer & Pricing" icon="user">
-        Accounts, the customer cabinet, loyalty points and coupons.
-    </Card>
-    <Card title="Content & Media" icon="newspaper">
-        Blog, CMS pages, sliders, uploads and settings.
-    </Card>
-</CardGroup>
+| Module | Covers |
+| --- | --- |
+| Storefront | Home page, collections, bundles page |
+| Catalog | Products, categories, brands, specifications, options, filters, search, reviews, bundles |
+| Cart | Cart and checkout |
+| Order | Order placement, orders, returns, quick and unfinished orders |
+| Customer | Sign-in, registration, password reset, account pages, wishlist, compare |
+| Pricing | Coupons, gift certificates, loyalty points, taxes, discounts, currency |
+| Inventory | Warehouses, suppliers |
+| Content | Articles, pages, menus, contacts page, SEO, comments, landings |
+| Media | File Manager |
+| Newsletter | Subscriptions and campaigns |
+| Store | Settings storage and the store's identity, stores, delivery and payment methods |
+| Slider | Home slider |
+| Admin | Dashboard, users and roles, import and export, settings, review moderation, translations |
 
-## Requests and safety
+## Request pipeline
 
-Every request flows through a **PSR-15 middleware** pipeline — including CSRF protection, authentication and role-based access control (RBAC), which guards the `/admin` and `/account` areas.
+nginx passes every non-static request to `public/index.php`, then through PSR-15 middleware in this order:
 
-Database writes go through a small repository layer (`BaseRepository`) with boolean-safe helpers, and a build-time guard (`make lint-writes`, also run in CI) fails the build if a model bypasses them. It's a guardrail that keeps Postgres from choking on the little type mismatches that usually surface only in production.
+1. **Error handler** — error pages and the application log, plus detailed traces when `APP_DEBUG=true`.
+2. **Security headers.**
+3. **Session.**
+4. **Method override** — HTML forms can send PUT and DELETE through a `_method` field.
+5. **Authentication** — loads the signed-in account and its role permissions.
+6. **CSRF** — every POST, PUT, PATCH and DELETE needs a valid token, except under `/api/`.
+7. **Clockwork profiler** — only when `APP_DEBUG=true`.
+
+Route groups add **access checks**: manager or higher for `/admin` (with per-section permissions — see
+[Staff & permissions](/divine-ecommerce/staff-and-permissions)), a signed-in account for `/account`.
+
+## Events and hooks
+
+The core dispatches four events — `OrderCreated`, `ProductUpdated`, `CartItemAdded` and `CustomerRegistered` —
+through league/event; the core itself listens to `ProductUpdated` to keep the filter index current. Templates expose
+hook positions (`home.before_content`, `home.after_content`) that modules and plugins fill with
+`HookRegistry::register()`. Details in [Write a plugin](/divine-ecommerce/plugins).
 
 ## Templates
 
-Views are Twig templates under `src/App/Frontend/views`, styled with SCSS compiled by Vite. Modules and plugins can register their own view paths, so a feature can ship its own templates without editing the shell.
+- Pages live in `src/App/Frontend/views/` — `page/`, `components/`, `layouts/`, `emails/` and `errors/`. The base
+    layouts are `layouts/base/client.twig` and `layouts/base/admin.twig`.
+- Each module's `Views/` folder is available as a Twig namespace named after the module, for example `@slider`; so is
+    each active plugin's, for example `@example_hello`.
+- There's no theme or override layer: customize the store by editing these templates and the SCSS.
+- Useful Twig functions: `csrf_field()`, `method_field()`, `asset()`, `menu('header')`, `hook('…')`,
+    `module_styles()` / `module_scripts()`, `admin_can('/admin/…')`.
+
+## Database
+
+- **PostgreSQL only.** Search and the write layer depend on it.
+- **Writes go through `BaseRepository`** helpers — `insertRow()`, `updateRow()`, `insertAndGetId()` — which convert
+    booleans safely for PostgreSQL. `make lint-writes` (also part of `make check` and CI) fails when a model writes
+    another way.
+- **Money** is handled with brick/money, in a single currency, **UAH**.
+- **Search** reads products directly and everything else from a materialized view, `search_index`, which the worker
+    refreshes within about a minute of a change.
+- **Filters** are served from precomputed facet tables (`product_facets`, `facet_settings`), rebuilt per product
+    on every change and in full by **Rebuild** or `make reindex-facets`.

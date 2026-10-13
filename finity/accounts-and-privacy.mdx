@@ -1,29 +1,77 @@
 ---
 title: "Accounts & privacy"
-description: "One account across your devices, offline-first storage, and what stays on your device versus what syncs."
+description: "How you sign in to Finity, what stays on your device and what syncs, which services see what, locking the app, and how to export or delete your data."
+mode: "wide"
 ---
 
-## One account, every device
+## Sign in
 
-You sign in once with a **passwordless email code** — no password to forget. The same account works
-across every app in the burakov line, and it carries your Finity data across **phone, web and
-desktop**.
+You sign in with your **email and a one-time code** — no password. If you don't have an account yet,
+signing in creates one. You can also use **Sign in with Google**, and on iPhone
+**Sign in with Apple**. You can ask for a new code after 90 seconds; after five wrong codes in a row, Finity makes you wait five minutes.
 
-## Offline-first
+It's one account across the apps at [burakov.net](https://burakov.net), and it carries your Finity
+data to every device you sign in on.
 
-Everything you see lives in a **local database on your device** and works with **no connection**.
-Sync happens quietly in the background: when you're online, your data reconciles to your account and
-appears on your other devices; when you're offline, you keep working and it catches up later.
+## What works offline
 
-## What stays private
+Finity keeps your data in a **local database on your device**, so you can browse and edit your
+countdowns, chapters, milestones and journal with **no connection**. When you're back online — or
+when you open the app — it syncs in the background. If the same thing was changed on two devices, the
+most recent change wins.
 
-Your data starts on your device and syncs only to **your own account**. Signing out clears the local
-data on that device. Notifications are handled locally by default; email reminders (Pro) are sent
-from the server only for the countdowns you've asked to be reminded about.
+Some things need a connection: signing in, saving your Life answers, uploading photos, generating an
+AI summary yourself, character reads, opening your Character, and purchases. Automatic weekly
+summaries are written on our server and arrive with the next sync.
+
+## Signing out and switching accounts
+
+**Log out** (in the menu) removes Finity's data from that device straight away, without asking —
+including changes that haven't synced yet. Go online and let Finity sync before you log out.
+
+If someone signs in with a different account on the same device, the previous account's data is
+removed from it first.
+
+## What leaves your device
+
+| Data | Goes to | When |
+| --- | --- | --- |
+| Countdowns, chapters, milestones, journal entries, your Life answers | Your Finity account on our server | When it syncs |
+| A smaller copy of each journal photo | Your Finity account on our server | When you add it — the original never leaves your device |
+| The text of a week you wrote in | An AI provider | When the week ends, or when you tap **Generate summary** |
+| The entries of a year | An AI provider | Only when you generate your year in review (Pro) |
+| Your character's numbers (never your journal text) | An AI provider | Only when you reveal your character read |
+| Your rough location | A location lookup service, to find your country | Only when you tap **Detect** |
+| Purchase details | The App Store, Google Play or the web payment provider | When you subscribe |
+| Error details with an account identifier (not your name or email), your time zone, and occasionally a recording of the app screen with all text masked and images hidden | A crash-reporting service | Only if **Send crash reports** is on (it is by default) — turn it off in Settings |
+| An account identifier and this device's push address | A push notification service | After you sign in (iPhone, Android and the web) |
+| Your sign-in request | Google or Apple | Only if you choose **Sign in with Google** / **Sign in with Apple** |
+
+Email reminders (Pro) are sent from our server, only for the countdowns where you turned them on.
 
 ## Lock the app
 
-On iOS and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
-fingerprint**. Finity then asks for your face or fingerprint when it opens and after 5 minutes in
-the background (on iPhone your device passcode works too). The check is done by your phone itself —
-nothing about your face or fingerprint ever reaches the app or our servers.
+On iPhone and Android you can turn on **Settings → Privacy & security → Lock with Face ID /
+fingerprint**. Finity then asks for your face or fingerprint when it opens and after 5 minutes in the
+background (on iPhone your device passcode works too). Turning the lock on or off needs a successful
+check too. The check is done by your phone itself — nothing about your face or fingerprint ever
+reaches the app or our servers.
+
+## Export or delete your data
+
+Both are in your account on burakov.net — **Account → Data & deletion**:
+
+- **Export your data → Download my data** gives you one file with your data from every app, Finity
+    included.
+- **Delete my account** signs you out at once and removes your data from **every** app on the
+    account. You can change your mind for **30 days**: sign in again and choose **Restore my
+    account**. After that, the data is erased for good.
+
+<Warning>
+    Deleting your account doesn't cancel a subscription bought through the App Store or Google Play.
+    Cancel it there first.
+</Warning>
+
+## Support
+
+Questions or problems? Open a request from your account on burakov.net — **Account → Support**.

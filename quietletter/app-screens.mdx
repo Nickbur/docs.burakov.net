@@ -1,0 +1,52 @@
+---
+title: "App screens"
+description: "A tour of the Quietletter app — navigation, every screen, switch states, and the options in Settings."
+mode: "wide"
+---
+
+## Getting around
+
+The bottom bar has **Menu** and **Switches**. The menu holds **Switches**, **About**, **Settings** and
+**Log out**. When the app is connected to your own instance, the top of the menu shows that
+instance's address.
+
+## Screens
+
+| Screen | What it's for |
+| --- | --- |
+| **Sign in** | Your email and a one-time code — or **Connect your instance** to use your own server. |
+| **Switches** | Every switch as a card with its state and *Check in within …* countdown, and a **Check in** button. **+** creates a switch. |
+| **Switch detail** | The state and countdown, the **Schedule**, **Recipients** and **Actions**, with **Check in**, **Disarm** and **Delete** — or **Re-arm** on a disarmed switch. The pencil icon opens **Edit switch** until the switch fires. |
+| **New switch / Edit switch** | Title, safety preset, recipients and actions — see [Create and edit a switch](/quietletter/create-a-switch). |
+| **PIN** | Set or confirm your check-in PIN. Also confirms re-arming a switch, and exporting and importing switches. |
+| **Settings** | The options below. |
+| **Subscription** | Pro plans and **Restore purchases**, or your current subscription. |
+| **About** | The app version and update notice, a link to these docs, the Privacy Policy and Terms. |
+| **Release page** | What a recipient opens in the browser when a switch fires — see [What your recipients receive](/quietletter/recipients). |
+
+## Switch states
+
+| State | Meaning |
+| --- | --- |
+| **Active** | Counting down to the next check-in. |
+| **Grace period** | The deadline has passed; you're being warned. Check in to return to Active. |
+| **Fired** | Delivered to the recipients. Final — shown as *Fired on …*; it can't be edited, checked in or disarmed. |
+| **Disarmed** | Turned off; it won't count down or fire until you **Re-arm** it. |
+
+## Settings
+
+| Setting | Options | Notes |
+| --- | --- | --- |
+| **Appearance** | Auto, Light, Dark | — |
+| **Language** | System language, English, Русский | Also the language of your warning emails and your recipients' emails. |
+| **Notifications → Send test notification** | — | Checks that push notifications reach this device (hosted service). |
+| **Subscription → Manage subscription** | — | Hosted service only. |
+| **Lock with Face ID / fingerprint** | On / Off (off by default) | iPhone and Android. Asks when the app opens and after 5 minutes in the background. |
+| **Confirm check-ins with Face ID / fingerprint** | On / Off (off by default) | iPhone and Android. Your PIN still works if the scan fails. |
+| **Backup & transfer** | **Export switches**, **Import switches** | See [Back up and move your switches](/quietletter/backup-and-transfer). |
+| **Self-hosted instance** | Connect, or **Use the hosted service** | See [Run your own instance](/quietletter/self-hosting#connect-the-app). |
+
+## Update prompts
+
+When a new version is out, **About** says *A new version is available*. If your version is too old to
+keep working with the server, an **Update required** screen asks you to update first.

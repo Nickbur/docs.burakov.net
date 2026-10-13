@@ -1,0 +1,51 @@
+---
+title: "Drivers & storage"
+description: "OMOS device drivers, how storage works today — the boot archive, the filesystem service and FAT32 — and what isn't supported yet."
+mode: "wide"
+---
+
+## Drivers
+
+| Driver | Runs in | Supports |
+| --- | --- | --- |
+| **virtio-blk** | User space | Virtio block devices, legacy and modern |
+| **NVMe** | User space | NVMe drives — detected, not yet used by a filesystem |
+| **AHCI** | User space | SATA drives — detected, not yet used by a filesystem |
+| **FAT32** | User space | The FAT32 filesystem |
+| **virtio-input** | User space | Virtio keyboards and other input devices |
+| **PS/2 keyboard** | Kernel (x86_64 only) | US layout |
+| **Serial** | Kernel | Log output |
+| **Display** | Kernel | Text on the framebuffer the firmware provides, 8×8 font |
+
+User-space drivers find their hardware on **PCI bus 0** (the only bus scanned today). The service manager gives each
+driver a handle to the devices that match it, by vendor and device ID or by device class.
+
+**Not supported yet:** networking, audio, GPU acceleration, USB, and additional PCI buses.
+
+## Storage
+
+OMOS has two storage layers today:
+
+| Layer | Where | Access |
+| --- | --- | --- |
+| **Boot archive** (initrd) | Inside the ISO, mounted at `/` | Read-only |
+| **FAT32 disk** | A virtio block device | Read and write |
+
+A file request goes to the boot archive first; any path not found there is forwarded to the **filesystem service**,
+which hands it to the **FAT32** driver, which reads and writes blocks through **virtio-blk**.
+
+### FAT32
+
+- Partitioned disks (MBR or GPT) and unpartitioned volumes.
+- Long file names.
+- Read, write, create, delete, truncate and rename.
+- Only disks attached through **virtio-blk** are used — NVMe and SATA drives aren't connected to the filesystem yet.
+
+<Note>
+    Nothing in OMOS reads or writes the FAT32 disk on its own yet — there are no programs to do so. The disk is
+    mounted at boot, and the log confirms it with `[fat32] mounted`.
+</Note>
+
+## Planned
+
+A native filesystem (OmosFS), more drivers and networking are on the [roadmap](/omos/roadmap).

@@ -1,46 +1,74 @@
 ---
 title: "Sync & encryption"
-description: "How Tidybook keeps one address book identical across your devices, why the server stays blind, and the difference between the default and the zero-knowledge passphrase lock."
+description: "How Tidybook keeps one address book on all your devices, how edits from different devices combine, and the two levels of encryption — default and the zero-knowledge passphrase lock."
+mode: "wide"
 ---
 
-Sync is the point of Tidybook: one tidy book, everywhere, private. It's part of the **Sync** plan.
+With the [Sync plan](/tidybook/pricing), your book stays the same on your phone, tablet and the web. Each device keeps
+its own full copy, so Tidybook works offline and syncs whenever it's online.
 
-## Multi-device, offline-first
+## Turn it on
 
-Your book lives on each device, so every screen is instant and works with no connection. When you're
-online, Tidybook reconciles your devices in the background.
+Sign in from the menu with the same account on each device, and subscribe to **Sync**. If you built a book before
+signing in, it's kept and added to your account — anything that matches contacts already there shows up in
+**Duplicates**.
 
-Edits **fold together at the level of individual fields**, so two devices editing the same person
-don't fight — the changes combine. Tidybook is deliberately cautious about removals: if one device
-adds a phone number while another removes it, it **keeps** the number. With contacts, quietly losing
-a number is the worst outcome, so ties go to keeping your data. You'll never see a "which version
-wins?" dialog.
+## When it syncs
 
-## The server is blind
+Automatically — shortly after every change, when you open the app, and when your connection comes back. A spinner in
+the **Contacts** header shows that a sync is running. There's nothing to press.
 
-Encryption happens on your device **before anything leaves it**. What reaches the server is
-**ciphertext** — a sealed blob it cannot open. It relays that blob to your other devices and never
-sees a name, number or note. Running the service, I only ever see encrypted data.
+## How edits combine
 
-## Default mode vs. the passphrase lock
+Tidybook merges changes **field by field**, so edits from two devices don't overwrite each other:
 
-Tidybook offers two honest levels of protection:
+| What changed | Result |
+| --- | --- |
+| Different fields of the same contact | Both changes are kept. |
+| The same single field (name, company, birthday, note, photo) | The most recent edit wins. |
+| Lists — phones, emails, addresses, websites | Additions from every device are kept. If one device adds a number while another removes it, the number **stays**. |
+| A contact deleted on one device | It's deleted everywhere, even if another device edited it meanwhile. |
 
-- **Default (convenient).** Tidybook manages your encryption key so you can recover your book simply
-    by signing in on a new device. Your data is encrypted in transit and at rest — but because the key
-    is recoverable through your account, this is **not** zero-knowledge.
-- **Passphrase lock (zero-knowledge).** Set a passphrase and your key is derived from something only
-    you know. After that, **not even Tidybook can decrypt your contacts**. New devices need the
-    passphrase (or your one-time recovery code).
+You never see a "which version wins?" dialog.
 
-## Recovery — read this before locking
+## Encryption
 
-The trade with the passphrase lock is real and stated plainly: if you lose both the passphrase and
-the recovery code, **no one can recover your book** — that's what zero-knowledge means. Always keep a
-[vCard / CSV export](/tidybook/cleanup-and-editing) as an independent cold backup before you enable
-the lock.
+Every contact is encrypted on your device with **AES-256-GCM** before it's uploaded. Tidybook's server stores and
+relays these sealed records to your other devices.
 
-<Note>
-    Whichever mode you choose, a vCard / CSV export is your key-independent safety net. Make one before
-    changing your encryption settings.
-</Note>
+You choose between two levels of protection on the **Encryption** screen:
+
+| | Default | Passphrase lock |
+| --- | --- | --- |
+| **Who holds the key** | Your account keeps it, so a new device gets it when you sign in | Only you — it's derived from your passphrase |
+| **New device** | Just sign in | Sign in, then enter your passphrase |
+| **Forgot your passphrase?** | — | Your synced book **can't be decrypted** by anyone |
+| **Zero-knowledge** | No — the key is recoverable through your account | Yes |
+
+### Passphrase lock
+
+<Steps>
+    <Step title="Make a backup first">
+        Export your book as a [vCard file](/tidybook/export-and-share). It's your safety net if you ever lose the
+        passphrase.
+    </Step>
+    <Step title="Set the passphrase">
+        On **Encryption**, tap **Set passphrase lock** and enter a passphrase of at least 8 characters, twice.
+    </Step>
+    <Step title="Unlock on each device">
+        Each device asks for the passphrase before it syncs. Until you unlock, the device keeps working with its own
+        copy and syncs once unlocked.
+    </Step>
+</Steps>
+
+To remove the lock, unlock first, then tap **Remove passphrase lock**.
+
+<Warning>
+    With the passphrase lock on, nobody — including Tidybook — can recover your synced book without the passphrase.
+    Keep a vCard export somewhere safe.
+</Warning>
+
+## Logging out
+
+Logging out removes your book from that device. Everything that had synced comes back when you sign in again — so let
+a sync finish before logging out.

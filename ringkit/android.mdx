@@ -1,11 +1,26 @@
 ---
 title: "Android setup"
 description: "Deliver the wake push and request the runtime permissions — RingKit's opt-in FCM service, or your own push handler."
+mode: "wide"
 ---
 
 RingKit's permissions and components merge into your app automatically. You provide an FCM
 project (`google-services.json`) and a way to deliver a **high-priority data message** that
 wakes the device.
+
+## Minimum SDK
+
+RingKit's Android library requires **API 26** (Android 8.0). Capacitor 8 projects start at
+`minSdkVersion = 24`, so raise it in your app's `android/variables.gradle`:
+
+```gradle
+ext {
+    minSdkVersion = 26
+    // …
+}
+```
+
+Without it, the Android build stops at the manifest merge with a `minSdkVersion` error.
 
 ## What merges in automatically
 

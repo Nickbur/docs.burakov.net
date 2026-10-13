@@ -1,36 +1,88 @@
 ---
-title: "Storefront"
-description: "Catalog, options and variants, cart and checkout, search, loyalty and bundles."
+title: "Storefront tour"
+description: "What shoppers see and can do in a Divine eCommerce store — pages, product pages, filters, search, cart, checkout and customer accounts."
+mode: "wide"
 ---
 
-This is what your customers see and do. Everything here works out of the box after seeding.
+The storefront is server-rendered HTML with TypeScript on top, so pages work without JavaScript and get faster
+interactions when it's on.
 
-## Catalog
+## Pages
 
-Products live in categories and belong to brands, each with its own page. Product pages support **options** at the SKU level (colour, storage, size — combinations that share a product but have their own price and stock) and **cross-variants** (closely related products, like the same phone in different capacities, linked and switchable from the page). Shoppers can build a **compare** list and a **wishlist**.
+| Page | URL | What it shows |
+| --- | --- | --- |
+| Home | `/` | The slider, product sections and anything plugins add to the page. |
+| Catalog | `/products` | Every active product, with filters. |
+| Category / brand | `/category/{id}`, `/brand/{id}` | One category or brand, with filters. `/brands` lists all brands. |
+| Collections | `/latest`, `/special`, `/featured` | Newest products; products whose *compare-at* price is above their price; featured products. |
+| Bundles | `/bundles` | Product sets sold together at a discount. |
+| Product | `/product/{slug}` | Image gallery, options, cross-variants, specifications, bundles, reviews, 1-click order. |
+| Search | `/search` | Results across the whole store. |
+| Blog & pages | `/blog`, `/blog/{slug}`, `/pages/{slug}` | Articles and info pages. |
+| Contacts | `/contacts` | Contact details, map and a contact form. |
+| Cart & checkout | `/cart`, `/checkout` | See [Checkout, orders & returns](/divine-ecommerce/checkout-and-orders). |
+| Lists | `/wishlist`, `/compare` | Saved and compared products. |
+| Account | `/account/…` | The customer's own area. |
+| For search engines | `/robots.txt`, `/sitemap.xml` | See [SEO & analytics](/divine-ecommerce/seo). |
 
-## Search & filters
+Only products with the **Active** status appear anywhere or can be bought.
 
-- **Instant search** suggests results as the customer types, across products, categories, brands, articles and pages.
-- A full **search page** covers the whole store.
-- **Faceted filters** narrow a listing by brand, price or any attribute, updating in place. Filtering is automatic and scales with the catalogue, and it still works with JavaScript disabled.
+## Product page
 
-## Cart & checkout
+- **Gallery** — the product's images, with zoom and a full-screen view.
+- **Options** — a product can have several option axes (colour, storage…) and a SKU for each combination, with its
+    own price, compare-at price, stock and image. The shopper picks a combination before adding to cart; listings
+    show the cheapest active SKU's price.
+- **Cross-variants** — separate products grouped together (for example the same phone in different colours) with a
+    switcher between them.
+- **Specifications** — grouped attributes, also used by filters and the compare list.
+- **Reviews** — anyone can leave a 1–5 rating, a title, the review text, and pros and cons. Every review waits for
+    approval in the admin. Reviews from customers who bought the product are marked **Verified purchase**.
+- **1-click order** — a short form that sends a quick order to the admin (**Quick orders**).
+- **Points preview** — how many reward points the product earns.
+- **Warranty and returns** — the product's own warranty and return window, set in the product form.
 
-Add to cart from any listing or product page. The cart shows a single, always-correct total computed in one place, so the number never disagrees with itself. Checkout supports **guest checkout** (no account required) and currently offers **store pickup** and **cash on delivery**; online card payment is available via an optional gateway (see [Configuration](/divine-ecommerce/configuration)).
+<Note>
+    The delivery lines and the store list on the product page are fixed text in
+    `src/App/Frontend/views/components/product-buy.twig` — edit them to match your store.
+</Note>
 
-## Loyalty & promotions
+## Filters and sorting
 
-- **Reward points** — earn on orders and redeem at checkout, with rules you set in the admin.
-- **Coupons** — percentage or fixed discounts, with per-customer usage limits.
-- **Gift certificates** — spend like store balance.
-- **Product bundles** — sell a set of products together at a bundle price.
-- **Promo banner** — a store-wide announcement you can toggle and edit.
+Every listing — catalog, category, brand, search, collections and wishlist — has the same filter panel:
 
-## Content
+- Brand, option values, filterable specifications (number ranges, yes/no, value lists), **in stock**, **on sale**,
+    price range and rating.
+- Sort by relevance, name, price, rating, popularity, views or newest; 16, 24, 48 or 96 per page.
 
-A built-in **blog** can attach products to an article ("shop the story"), and **CMS pages** cover the static content every shop needs. Header and footer **contact details** — phones, socials, address, a map — are edited from the admin, not hard-coded.
+Filters update in place, and the same URLs work without JavaScript. Filtered pages are marked `noindex,follow` for
+search engines. Which attributes appear is set in **Catalog Filters** — see
+[Set up your catalog](/divine-ecommerce/catalog#filters).
 
-## Accounts
+## Search
 
-Customers get an account area with their orders, addresses, wishlist and loyalty balance. Accounts are optional for buying, thanks to guest checkout.
+Suggestions appear from the second character typed: live products, plus categories, brands, articles and pages.
+The search page requires every word to match, and matches word beginnings. New categories, brands, articles and
+pages show up in search within about a minute.
+
+## Customer accounts
+
+- **Register** with name, email and a password of at least 6 characters. Email isn't verified.
+- **Sign in** with email and password. **Forgot password** emails a link that works for 60 minutes (one request
+    every 2 minutes).
+- **Account pages:** profile, addresses, orders, wishlist, compare, waiting list, reviews, newsletter subscriptions
+    and the points history.
+- Guests can use the **wishlist** and **compare** (up to 4 products); a guest wishlist is merged into the account on
+    sign-in. Buying never requires an account.
+
+<Warning>
+    The **waiting list** records interest in out-of-stock products, but no back-in-stock email is sent yet.
+</Warning>
+
+## Contacts and newsletter
+
+- The phones, hours, socials, address and map in the **header and footer** come from **Settings → Contacts**.
+- The `/contacts` page itself is a static template with sample content —
+    edit `src/App/Frontend/views/page/contacts.twig`. Its contact form emails each message to the contact email set
+    in **Settings → Contacts**.
+- The newsletter sign-up uses double opt-in: subscribers confirm by email before they receive campaigns.

@@ -1,0 +1,63 @@
+---
+title: "Building & contributing"
+description: "How contributions to OMOS work — invitation only, under the OMOS CLA — and how invited contributors build and run it."
+mode: "wide"
+---
+
+OMOS is **closed-source** and developed privately. The source code isn't published and no rights to it are granted
+by default. Contributions are accepted **by invitation only**.
+
+## Contributor License Agreement
+
+Every contributor agrees to the **OMOS Contributor License Agreement (CLA)** before their first contribution is
+accepted. In short:
+
+- You keep the copyright and moral rights in your contribution.
+- You grant the project a perpetual, irrevocable, non-exclusive licence to use, change and distribute it —
+    including in the proprietary OMOS product — plus a patent licence for it.
+- Revenue sharing with contributors is possible, but not promised.
+- The CLA is governed by the laws of Ukraine.
+
+**To sign as an individual**, either return a signed copy of the CLA to
+[burakov.work@gmail.com](mailto:burakov.work@gmail.com), or post this statement in the contribution channel you were
+given (for example, your first pull request):
+
+```text
+I have read the OMOS CLA and I agree to its terms.
+```
+
+**Companies** contributing through employees can arrange a corporate CLA at the same address.
+
+## Building (for invited contributors)
+
+The build runs in Docker, so the host needs only a few tools:
+
+| Tool | Why |
+| --- | --- |
+| Docker | Runs the build container (Ubuntu with the Rust nightly toolchain, the three targets, xorriso and cargo-deny). |
+| Node.js 24.16 or later | Runs the project scripts; older versions are refused. |
+| QEMU, `qemu-img`, `mkfs.fat` | Boot the result and create a test disk. |
+
+```bash
+npm install
+npm run os:build
+```
+
+`os:build` checks formatting, then builds every architecture inside the container. Before building it runs the
+**dependency licence and advisory check** (`cargo deny`) and a publishability check — the build fails if either does.
+Images land in `build-result/` as `omos-<arch>.iso`.
+
+## Running and debugging
+
+| Script | Does |
+| --- | --- |
+| `npm run run:iso:mac` / `run:iso:lin` / `run:iso:win` | Create the test disk if needed and boot the x86_64 image in QEMU (Windows via WSL). |
+| `npm run debug:iso:mac` / `debug:iso:lin` / `debug:iso:win` | Boot paused, waiting for a debugger on GDB's default port (`1234`). |
+| `npm run verify` / `npm run deny` | Run the pre-build checks on their own. |
+| `npm run fix` | Reformat the repository. |
+| `npm run clean` | Remove build output. |
+
+## Rules for dependencies
+
+Third-party code must be licensed under **MIT** or **Apache-2.0** — the dependency check rejects anything else.
+Every bundled component is listed in [Third-party notices](/omos/third-party-notices).

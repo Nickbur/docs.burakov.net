@@ -1,84 +1,70 @@
 ---
-title: "Quickstart"
-description: "Get into Bastion — join an organization, buy a managed workspace, or stand up your own node."
+title: "Get started"
+description: "Sign in to Bastion, join your organization, start your first chat, and restore your encryption key on a new device."
+mode: "wide"
 ---
 
-There are three ways to start with Bastion. Pick the one that fits.
-
-## Option A — Join your organization (nothing to install)
-
-If your organization already runs Bastion, you only need to sign in.
+If your organization already uses Bastion, there's nothing to install or configure — you only need to
+sign in. (Setting Bastion up for your team? Start with [Plans & buying](/bastion/pricing).)
 
 <Steps>
     <Step title="Open the app">
-        Use the web app in your browser, or install Bastion for desktop, iOS or Android — see [Download](https://bastion-chat.com/download). It's one app for every organization — nothing to configure.
+        Use the web app at [app.bastion-chat.com](https://app.bastion-chat.com), or install Bastion for
+        desktop, iOS or Android — see [Download](https://bastion-chat.com/download). It's one app for every
+        organization.
     </Step>
     <Step title="Sign in with your email">
-        Enter your email address. Bastion sends a one-time code — no password to remember. The same account works on every device.
+        Enter the email address your organization invited and type the one-time code you receive — no
+        password. If you don't have an account yet, this creates one. You can also continue with
+        **Google**, and on iPhone with **Sign in with Apple**.
     </Step>
-    <Step title="Choose your organization">
-        Bastion lists the organizations you're a member of and connects to the one you pick. If you belong to just one, it opens straight away. Belong to several? Switch any time from the side menu or **Settings → Organization**. Invitations wait at the top of the same screen — nobody joins an organization without tapping **Join** — and organizations that let everyone with your work email in appear under **You can join**. You can leave an organization any time from its **⋯** menu.
+    <Step title="Join your organization">
+        The **Organizations** screen shows your **Invitations** — tap **Join** (or **Decline**); it says
+        which role you're invited as. Organizations that let everyone with your work email in appear under
+        **You can join**. If you belong to just one organization, it opens straight away.
     </Step>
     <Step title="Start talking">
-        Open a chat or start a call. Everything is end-to-end encrypted by default — see [Security](/bastion/security).
+        Open **Chats**, start a **New chat**, pick people from your organization and type. Everything is
+        end-to-end encrypted by default — see [Security & encryption](/bastion/security).
+    </Step>
+    <Step title="Back up your key">
+        Your encryption key lives on your device. Open **Encryption keys** in the menu and back it up with a
+        passphrase, so you can read your chats on a new device. See
+        [Your key, your backup](/bastion/security#your-key-your-backup).
     </Step>
 </Steps>
 
 <Tip>
-    Don't see your organization? Ask its admin to invite the email you signed in with (or to add your company's email domain) — then tap **Check again**.
+    Don't see your organization? Ask its admin to invite the email you signed in with (or to add your
+    company's email domain), then tap **Check again**.
 </Tip>
 
-## Option B — Managed (we run the server)
+## Your organizations
 
-<Steps>
-    <Step title="Buy the Managed plan">
-        On [bastion-chat.com](https://bastion-chat.com/pricing), choose **Managed**, sign in with your email, name your organization and pay. You own the organization from that moment.
-    </Step>
-    <Step title="Wait for the go-live email">
-        We deploy your dedicated instance — it's usually ready within one business day. You get an email when it's live, and **[Your organizations](https://bastion-chat.com/account/)** shows its status and address.
-    </Step>
-    <Step title="Sign in and invite your team">
-        Sign in to the Bastion app with the same email, pick your organization and invite members from the [admin panel](/bastion/administration).
-    </Step>
-</Steps>
+- **Several organizations?** Switch any time from the side menu or **Settings → Organization → Switch
+    organization**. Switching reconnects to that organization's server and warns you if you have
+    unsent messages.
+- **Leave an organization** from its **⋯** menu on the Organizations screen. The organization's owner
+    can't leave it.
+- Each organization shows a status: **Active**, **Suspended**, **Payment due** (everything keeps
+    working for 7 days while the payment is retried), **Subscription ended — read-only**, **Awaiting
+    payment**, or **Server not connected yet**. In the read-only state you can still sign in and read,
+    but not send.
 
-## Option C — Self-hosted (your own server)
+## On a new device
 
-Run the whole platform on a server you control. You'll need a Linux host with **Docker** and a **domain name** pointing at it.
-
-<Steps>
-    <Step title="Buy the Self-hosted plan">
-        On [bastion-chat.com](https://bastion-chat.com/pricing), choose **Self-hosted**, sign in with your email, name your organization and pay. Your organization exists as soon as the payment clears.
-    </Step>
-    <Step title="Get your organization's credentials">
-        Open **[Your organizations](https://bastion-chat.com/account/)** and choose **Get credentials**. You get the organization ID and secret with a ready `.env` snippet. The secret is shown **once** — store it right away. Lost it? **Rotate secret** issues a new one (the old one stops working immediately).
-    </Step>
-    <Step title="Get the node and generate its config">
-        The node ships as a container image, run by one `docker compose` setup:
-        ```bash
-        docker pull registry.burakov.net/bastion-node:latest
-        npm run setup      # strong, unique secrets + your domains, written into .env
-        ```
-        Then add the two credential lines (`BASTION_ORG_ID`, `BASTION_ORG_SECRET`) to `.env`. The stack refuses to start if a required secret is missing, so it can't boot with a weak default.
-    </Step>
-    <Step title="Bring it up">
-        ```bash
-        docker compose --profile prod up -d
-        ```
-        HTTPS certificates are issued and renewed automatically. Your database and storage bind to localhost — only the parts that must be public are exposed. Once online, the node proves its public address to the control plane, so the Bastion apps can find it, and fetches its license.
-    </Step>
-    <Step title="Invite your team">
-        Sign in to the Bastion app with the email you bought with — you're the organization's owner — and invite members from the [admin panel](/bastion/administration). Members sign in to the regular Bastion app and pick your organization — no custom build, no server address to type.
-    </Step>
-</Steps>
+Sign in as usual. If this device doesn't have your encryption key yet, the chat list says *Restore your
+encryption key to read your chats on this device* — open **Encryption keys** and restore it from your
+backup file or the copy you kept on the server. Lost your key entirely? See
+[Start over with a new key](/bastion/security#lost-your-key-start-over).
 
 ## Next
 
 <CardGroup cols={2}>
-    <Card title="Self-hosting" icon="server" href="/bastion/self-hosting">
-        Requirements, TLS, credentials and how the pieces fit together.
+    <Card title="Chat" icon="comments" href="/bastion/chat">
+        Kinds of chat, messages, threads, notifications and search.
     </Card>
-    <Card title="Administration" icon="users-gear" href="/bastion/administration">
-        Invite members, set roles, and configure retention.
+    <Card title="Calls" icon="phone" href="/bastion/calls">
+        Audio and video calls, screen sharing and incoming calls.
     </Card>
 </CardGroup>

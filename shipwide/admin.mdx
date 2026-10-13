@@ -1,6 +1,7 @@
 ---
 title: "Admin"
 description: "shipwide_admin — a Vue 3 SPA operator panel on its own origin, gated behind a network boundary."
+mode: "wide"
 ---
 
 The operator admin panel — a Vue 3 SPA on its own origin, run against `shipwide_api`. It reads
@@ -8,6 +9,25 @@ every account's data and every support thread, so serve it **separately** from t
 it behind a network gate (Cloudflare Access, IP allowlist). Single-app: no product registry or
 multi-app machinery — the surface is what a single-app operator needs (accounts, sessions,
 support tickets, uploads, push, audit, ops).
+
+## Screens
+
+Twelve screens, all in the side navigation or one click from it:
+
+| Screen | What you do there |
+|--------|-------------------|
+| **Dashboard** | What the system is doing right now: open tickets, active accounts, new sign-ups today, live sessions, uploads, accounts awaiting purge. |
+| **Accounts** | Search and filter everyone with an account — active or deleted, user or admin. |
+| **Account detail** | One account: profile, second factor, sessions, subscription and entitlements, username history. Make or remove an admin, mark a test/review account, sign it out everywhere, delete, restore or purge it, and [grant a free period](/shipwide/billing#granting-a-free-period). |
+| **Support** | The ticket inbox — filter by status and topic, search by subject. See [Support & tickets](/shipwide/support). |
+| **Ticket** | One thread: reply (the user gets it by email and push), change the status, or delete the ticket. |
+| **Sessions** | Every live session across the app, the website and this panel; revoke any of them. |
+| **Uploads** | Files users uploaded — moderate content and clear out failed or stuck uploads. |
+| **Push** | Send a notification to one account or broadcast it to every subscribed device. |
+| **Audit** | Every change made through the panel, with who made it and what it changed. |
+| **Ops** | API health and the configuration it runs with; run the retention purge by hand. |
+| **Settings** | The app version policy (latest and minimum supported version) — see "App version policy & upgrade gate" in [Backend](/shipwide/backend). |
+| **Your account** | Set up or turn off the second factor (TOTP) for your own sign-in and get new recovery codes. |
 
 ## Design & i18n
 
@@ -36,11 +56,25 @@ agree.
 The sign-in screen offers only what `GET /v1/admin/auth/methods` reports:
 
 1. **Root credentials** — `ADMIN_LOGIN` + `ADMIN_PASSWORD` (API env). Independent of mail —
-    works when everything else is broken.
-2. **Emailed one-time code** — staff-only passwordless route at `/v1/admin/auth/code`.
+    works when everything else is broken. The password can be plaintext or a `scrypt$…` hash
+    (`npm run admin:password -- 'pw'` in the API prints one). Per-login lockout plus a per-IP
+    rate limit; leave both vars empty to switch this route off.
+2. **Emailed one-time code** — staff-only passwordless route at `/v1/admin/auth/code`. The first
+    admin comes from `ADMIN_EMAILS`: a listed address is made admin (or created) when it signs in.
 
 If TOTP is enrolled, neither route returns a session directly — both hand back a 5-minute
 challenge; a recovery code works in the same box.
+
+### Security model (API side)
+
+- **TOTP is offered, never forced** — once enrolled on an account (on **Your account**), every
+    sign-in demands it. The secret is encrypted at rest (AES-256-GCM under
+    `DATA_ENCRYPTION_KEY`); recovery codes are stored hashed, so they still work if that key is
+    ever lost.
+- **Roles** are `user` and `admin`. The API re-reads the role on every request, so a demotion
+    takes effect on the next call.
+- **Every change is audited** — each mutating admin action is written to the audit log shown on
+    the **Audit** screen. Reads aren't recorded.
 
 ## Architecture
 

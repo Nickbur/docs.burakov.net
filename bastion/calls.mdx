@@ -1,6 +1,7 @@
 ---
 title: "Calls"
 description: "Encrypted audio and video calls in Bastion — one-to-one and group, with screen sharing, native incoming-call screens and calls in high-security chats."
+mode: "wide"
 ---
 
 Bastion has **encrypted audio and video calls** built in — one-to-one or as a group, with screen sharing. The media runs through a server that lives inside your own node, so the call itself never travels through anyone else's cloud.
@@ -16,8 +17,8 @@ Open a chat and tap the **call** or **video** button, or start one from the **Ca
 ## During a call
 
 - **Mute**, turn the **camera** on or off (an audio call can become a video call), **flip** between front and back cameras, and switch the **speaker** on phones.
-- **Share your screen** from the web app and the desktop app.
-- **Pick devices** — microphone, camera and, where the browser allows, speakers.
+- **Share your screen** from the web app and the desktop app (not from phones).
+- **Pick devices** — microphone, camera and, where the browser allows, speakers — on web and desktop. On phones, the **speaker** button switches between earpiece and loudspeaker.
 - **Add people:** open the participants list and ring chat members who aren't in the call yet.
 - **Keep using the app:** leave the call screen and a small bar stays on top of every page with mute and hang-up; tap it to go back.
 
@@ -29,10 +30,13 @@ A call is only useful if you notice it. Bastion rings you like a real phone:
 
 <Steps>
     <Step title="On your phone">
-        Incoming Bastion calls use the native system call screen on iOS and Android — they ring on the lock screen, before you've opened the app. Being online on a computer doesn't stop your phone from ringing.
+        Incoming Bastion calls use the native system call screen on iOS and Android — they ring on the lock screen, before you've opened the app. Every phone you're signed in on rings — being online on a computer, or having Bastion open on another phone, doesn't stop it.
     </Step>
     <Step title="On web and desktop">
-        A full-screen ringer with accept and decline does the same job in the browser and the desktop app, with a system notification when the tab is in the background. A second call while you're ringing waits in line; during a call it shows as **call waiting**, which you can decline or take by ending the current call.
+        A full-screen ringer with accept and decline does the same job in the browser and the desktop app, with a system notification when the browser tab is in the background. A second call while you're ringing waits in line; during a call it shows as **call waiting**, which you can decline or take by ending the current call.
+        <Note>
+            When none of your phones is online, an incoming call also reaches your browser as a system notification — even with no Bastion tab open — once you've allowed notifications for Bastion. The desktop app rings while it's running.
+        </Note>
     </Step>
     <Step title="Answer or decline">
         Accept to join the call; decline to send it away. If the caller cancels first, the ring dismisses itself. Unanswered calls stop ringing after 45 seconds.
@@ -41,7 +45,9 @@ A call is only useful if you notice it. Bastion rings you like a real phone:
 
 ## Missed calls and history
 
-The **Calls** tab lists your recent calls — including chats hosted by other organizations you take part in — answered, missed or declined, with a one-tap **call back**, and shows a badge for calls you missed. A chat's info page lists that chat's recent calls with their duration.
+The **Calls** tab has **Quick call** to start one, and **Recent** calls — including chats hosted by other organizations you take part in — marked **In progress**, **Answered**, **Missed**, **Declined** or **No answer**, with a one-tap **call back** and a badge for calls you missed. A chat's info page lists that chat's recent calls with their duration.
+
+When a call ends unexpectedly, Bastion says why — for example the other person was busy or moved the call to another device, your browser can't encrypt the call (update it, or use the app), or a high-security chat's key changed (call again).
 
 ## What's encrypted
 

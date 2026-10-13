@@ -1,0 +1,98 @@
+---
+title: "Rule fields & file format"
+description: "Every field of a Cronch rule — its label in the editor, its key in the export file, default, limits and validation messages — and the full JSON format used by export and import."
+mode: "wide"
+---
+
+## Editor fields
+
+| Field in the editor | Export key | Default | Rules |
+| --- | --- | --- | --- |
+| **Name** | `name` | — | Required. |
+| **Enabled** | `enabled` | On | — |
+| **Catch up if missed** | `catch_up` | On | See [Missed runs](/cronch/catch-up). |
+| **Command** | `command` | — | Required. A command or the path to a script. |
+| **Shell** | `shell` | The first shell detected | A detected shell, **Custom…**, or **Direct (no shell)**. |
+| **Shell binary path** *(Custom)* | `shell.path` | — | Required for a custom shell. |
+| **Argument template** *(Custom)* | `shell.arg_template` | `-c {cmd}` | Must contain `{cmd}`. |
+| **Schedule** | `schedule` | Interval, every 5 minutes | **Interval**, **Cron** or **Once**. |
+| Interval value and unit | `schedule.value.seconds` | 5 minutes | 1–1,000,000 seconds / minutes / hours / days; the total must be between 1 second and 100 years. Stored in seconds. |
+| Cron expression | `schedule.value.expr` | `0 9 * * *` | Must be a valid expression — see [Cron syntax](/cronch/cron-syntax). |
+| Once time | `schedule.value.at` | — | `YYYY-MM-DD HH:MM` in local time; must be in the future; can't fall in a skipped or repeated daylight-saving hour. Stored as an exact instant (RFC 3339). |
+| **If already running** | `overlap` | Skip | `Skip`, `Queue` or `Parallel` — see [Commands & shells](/cronch/commands-and-shells). |
+| **Timeout** (seconds) | `timeout_secs` | 300 | `0` (no limit) to `604800` (7 days). |
+| **Working directory** | `working_dir` | Blank = your home directory | A full path; `~` and `%VARIABLES%` aren't expanded. |
+| **Environment variables** | `env` | None | One `KEY=VALUE` per line; invalid lines are ignored. |
+
+## Validation messages
+
+If something isn't valid, **Save** shows the reason and keeps your input:
+
+| Message | Fix |
+| --- | --- |
+| Name must not be empty | Give the rule a name. |
+| Command must not be empty | Enter a command. |
+| Please choose a shell | Pick a shell, **Custom…** or **Direct**. |
+| Custom shell path must not be empty | Enter the path to the shell binary. |
+| Custom argument template must contain {cmd} | Add `{cmd}` where the command should go. |
+| Invalid argument template: … | Fix the quoting in the template. |
+| Interval must be at least 1 second / at most 100 years | Change the interval. |
+| Invalid cron expression: … | Correct the expression. |
+| Once time must be in the form YYYY-MM-DD HH:MM | Use that exact format, for example `2026-12-24 18:00`. |
+| Once time must be in the future | Choose a later time. |
+| Ambiguous or invalid local time | The time falls in a daylight-saving jump; choose a time outside that hour. |
+| Timeout must be 0 (no limit) or a positive number of seconds | Enter a whole number. |
+| Timeout must be at most 7 days (604800 seconds) | Lower the timeout, or use `0` for no limit. |
+| Save failed: … | Cronch couldn't save the rule to its database. Try again; if it keeps happening, see [Cronch's own log](/cronch/troubleshooting). |
+
+## The export file format
+
+**Export rules…** writes a JSON **array** with one object per rule:
+
+```json
+[
+  {
+    "id": "2f1c7a1e-3b6d-4c1f-9a51-6f0e2b9d4c11",
+    "name": "Nightly backup",
+    "enabled": true,
+    "command": "/Users/me/bin/backup.sh",
+    "shell": { "kind": "Detected", "key": "zsh" },
+    "schedule": { "kind": "Cron", "value": { "expr": "0 2 * * *" } },
+    "catch_up": true,
+    "overlap": "Skip",
+    "working_dir": null,
+    "env": [{ "key": "BACKUP_TARGET", "value": "/Volumes/Backup" }],
+    "created_at": "2026-10-01T09:00:00Z",
+    "timeout_secs": 3600,
+    "last_run": null,
+    "next_run": null,
+    "last_exit_code": null,
+    "last_status": "Never"
+  }
+]
+```
+
+### `shell`
+
+| Kind | Shape |
+| --- | --- |
+| A detected shell | `{ "kind": "Detected", "key": "zsh" }` — keys: `cmd`, `powershell`, `pwsh`, `gitbash`, `wsl` on Windows; `zsh`, `bash`, `sh`, `fish` on macOS |
+| Custom | `{ "kind": "Custom", "path": "/usr/local/bin/nu", "arg_template": "-c {cmd}" }` |
+| Direct | `{ "kind": "Direct" }` |
+
+### `schedule`
+
+| Kind | Shape |
+| --- | --- |
+| Interval | `{ "kind": "Interval", "value": { "seconds": 900 } }` |
+| Cron | `{ "kind": "Cron", "value": { "expr": "0 9 * * 1-5" } }` |
+| Once | `{ "kind": "Once", "value": { "at": "2026-12-24T16:00:00Z" } }` |
+
+### Required and optional keys when importing
+
+- **Required:** `id`, `name`, `enabled`, `command`, `shell`, `schedule`, `catch_up`, `overlap`, `env`, `created_at`.
+- **Optional:** `working_dir` (default: home directory) and `timeout_secs` — **if omitted, the rule has no timeout**.
+- `last_run`, `next_run`, `last_exit_code` and `last_status` are ignored on import: imported rules always start fresh.
+- Unknown keys are ignored.
+
+A structural problem — invalid JSON, a missing required key, or an `overlap` other than `Skip`/`Queue`/`Parallel` — rejects the **whole** file. A rule that is well-formed but invalid (an empty command, a broken cron expression) is skipped on its own. See [Import, export & moving machines](/cronch/import-export).

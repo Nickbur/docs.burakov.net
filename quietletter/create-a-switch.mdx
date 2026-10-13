@@ -1,0 +1,90 @@
+---
+title: "Create and edit a switch"
+description: "Set up a Quietletter switch — its title, recipients and actions, readable versus encrypted content, passphrases, and what happens when you edit it later."
+mode: "wide"
+---
+
+A **switch** is one bundle of things to deliver: a title, the people who receive it, the actions
+they get, and the schedule that decides when it fires.
+
+## Create a switch
+
+Tap **+** on the Switches screen (or **Create a switch** if you have none yet). The **New switch**
+screen has **Cancel** at the top left and **Save** at the top right.
+
+| Part | What to enter |
+| --- | --- |
+| **Title** | Required, up to 300 characters. **Recipients see it** — in the subject of their email and on their release page. |
+| **Safety preset** | How often you check in, how long the grace period is, and how you're warned. Starts as **Balanced**. See [Schedule, grace & warnings](/quietletter/how-it-works). |
+| **Recipients** | At least 1, up to 50. **Email** is required; **Name** and **Phone** are optional. |
+| **Actions** | At least 1, up to 20 — what your recipients receive. |
+
+**Every recipient receives every action** of the switch. To send different things to different
+people, create separate switches.
+
+The check-in timer starts the moment you save.
+
+## Actions
+
+| Action | Encryption | Plan |
+| --- | --- | --- |
+| **Message** | **Readable** by default — delivered as a normal email and labelled *Delivered as a normal email — not encrypted*. Switch it to **Encrypted** to protect it with a passphrase. Optional **Subject**. | Free |
+| **File** | Always encrypted. Up to **1 MB** (tap **Choose file**). | Pro |
+| **Secret** | Always encrypted — a password, a key, account details or instructions. | Pro |
+| **Private page** | Always encrypted — a longer note shown on your recipients' release page. | Pro |
+
+A readable message can be up to 200,000 characters.
+
+## Passphrases
+
+Each encrypted action has its own **Passphrase** field. Your device encrypts the content with it
+before anything is uploaded; the passphrase itself never leaves your device. Your recipient needs it
+to open that item — **give it to them outside the app**, ahead of time.
+
+<Warning>
+    A passphrase must be at least **12 characters**, and as you type the app rates it **Weak**,
+    **Fair** or **Strong** — four or more random words work well. A short passphrase is much easier
+    to guess for anyone who gets hold of the encrypted data. If the passphrase is lost, the content
+    can't be recovered by anyone.
+</Warning>
+
+## What stays readable
+
+Encryption covers the **contents** of encrypted items. These are not encrypted, because the service
+needs them to deliver your switch: the **title**, **recipients** (emails, names and phones), the
+**subject** of a message, the **names, types and sizes** of files, and readable messages. See
+[Encryption & privacy](/quietletter/zero-knowledge).
+
+## If content didn't upload
+
+Content is uploaded right after the switch is saved. If that fails, you'll see *Couldn't upload some
+content. Please try again.* — the switch is saved, but without that content. Open **Edit switch** and
+enter it again.
+
+## Edit a switch
+
+Open the switch and tap the pencil icon.
+
+- **Saved content and passphrases are never shown again** — not even to you. Leave a content field
+    **blank to keep** what's already saved; to replace it, enter the new content together with a
+    passphrase.
+- **Editing is not a check-in.** When you change the schedule, the new deadline is counted from your
+    **last check-in**, not from now.
+- **A fired switch can't be edited.** Firing is final — see
+    [Turn off or delete a switch](/quietletter/turn-off-or-delete#a-switch-that-has-fired).
+
+<Note>
+    An edit never moves the deadline into the past. If a shorter interval would, the deadline becomes
+    the moment you save: the switch enters its grace period right away, and every warning still goes
+    out before it can fire. If a longer interval moves the deadline back into the future, a switch in
+    its grace period returns to **Active**. Once the grace period has started, an edit never makes the
+    switch fire sooner: with a shorter grace period it still fires when it would have, its warnings go
+    out again first, and it may show **Active** until the new grace period begins. To give a new
+    interval a full run, check in first, then edit.
+</Note>
+
+## Plan limits
+
+The free plan includes **1 live switch** (one that has fired no longer counts) with **Message**
+actions. **Pro** adds more switches, plus files, secrets and private pages. See
+[Pricing](/quietletter/pricing).
