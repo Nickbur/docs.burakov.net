@@ -9,9 +9,10 @@ commands, and where the app answers once it's running. The executor and the judg
 the confirmed recipe.
 
 Rowbots proposes a recipe during the [onboarding interview](/rowbots/setup) from what it
-finds in the repository; an **Owner or Admin** confirms it. The confirmed recipe lives in the dashboard
-(**Connections → Repositories**), and a copy arrives in the repository as `.rowbots/recipe.yaml` by pull request. To
-change it, edit it in the dashboard — the copy in the repository follows.
+finds in the repository; an **Owner or Admin** confirms it. The confirmed recipe is shown on the project's page
+(**Projects** → the project → **Recipes**), and a copy arrives in the repository as `.rowbots/recipe.yaml` by pull
+request. Changes go through the same interview (**Onboarding**) and are confirmed the same way — the copy in the
+repository follows.
 
 ## Example
 
@@ -69,6 +70,7 @@ api:
 | `web` | Turns on the web-UI checks: the app's `url`, plus `viewports` and `themes` | off |
 | `api` | Turns on the API checks: the `baseUrl`, and an optional `openapi` document path | off |
 | `timeouts` | `setupSeconds` (30–3600) and `commandSeconds` (30–7200) | 900 / 1200 |
+| `platform` | `linux`, or `macos` for iOS and macOS builds — such a repository's work runs only on a [self-hosted runner on a Mac](/rowbots/self-hosted-runner#ios-builds) | `linux` |
 
 With `web` on, pages are checked at **1280×800** and **390×844**, in **light** and **dark**, unless you list your own
 (up to 4 viewports). See [Verification](/rowbots/verification) for what each layer runs.

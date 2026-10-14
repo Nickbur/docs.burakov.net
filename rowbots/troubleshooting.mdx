@@ -14,7 +14,7 @@ Check, in this order:
     See [Budget & forecasts](/rowbots/budget).
 3. **Is compute connected and online?** A managed sandbox key must be valid; a self-hosted runner must show as
     online.
-4. **Is it waiting for you?** An open escalation parks the part of the work it concerns — check **Escalations**.
+4. **Is it waiting for you?** An open escalation parks the part of the work it concerns — check **Questions**.
 5. **Is it worth its cost?** Maintenance runs only while its value beats its cost. A quiet fleet is Rowbots doing its
     job, not a fault.
 6. **Is the project active?** Projects over your plan's limit are paused — see below.
@@ -29,7 +29,7 @@ start. Raise the cap, or move it up in priority so other work makes room.
 - Check the stack is running (`docker compose ps`) and look at the runner's logs.
 - The runner needs **outbound HTTPS** to Rowbots — no inbound ports, but a firewall blocking outbound traffic will
     keep it offline.
-- If you rotated or revoked it, enroll it again and update `ROWBOTS_RUNNER_ID` / `ROWBOTS_RUNNER_SECRET`.
+- If it was revoked, enroll a new runner and update `ROWBOTS_RUNNER_ID` / `ROWBOTS_RUNNER_SECRET`.
 
 See [Self-hosted runner](/rowbots/self-hosted-runner).
 
@@ -47,12 +47,12 @@ See [Self-hosted runner](/rowbots/self-hosted-runner).
     hosts, check the service-account token can open pull requests — a deploy key alone can't.
 - **Branch protection** is respected, never bypassed — a batch merge waits if your rules require reviews.
 - **The judge didn't pass it.** When fixes run out, the item stops with a blocker report instead of a pull request.
-    Find it under **Work**.
+    Find it on the **Inbox** page's **Work** tab.
 
 ## A project is paused
 
 After a downgrade, or when a payment failed and the 7-day grace period ended, projects over your plan's limit become
-read-only. Choose which projects stay active, or update the subscription in **Billing**. Nothing is deleted. See
+read-only. Choose which projects stay active, or update the subscription in **Plan**. Nothing is deleted. See
 [Pricing](/rowbots/pricing).
 
 ## Autonomous work stopped across the whole fleet

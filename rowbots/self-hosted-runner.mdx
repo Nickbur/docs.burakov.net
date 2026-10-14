@@ -15,12 +15,18 @@ two ways:
 This page covers the self-hosted runner. It is the choice when your code, keys and secrets must stay
 inside your own perimeter, when you use a model on your own network, or when you need iOS builds.
 
+The runner is published openly — source at
+[github.com/Nickbur/rowbots_runner](https://github.com/Nickbur/rowbots_runner), images on the GitHub Container
+Registry — so you can read exactly what runs on your machine.
+
 ## How the runner talks to Rowbots
 
 - **Outbound only.** The runner phones home over HTTPS: it picks up jobs, sends heartbeats and reports
   results. Rowbots never needs to reach into your network, so you don't open any ports.
 - **Its own identity.** When you enroll a runner in your workspace, you get a **runner ID and a secret,
   shown once**. The runner trades the secret for short-lived tokens. You can revoke a runner at any time.
+- **Rides out short outages.** If Rowbots is unreachable, the runner keeps finishing the work it holds for up to
+  24 hours, then pauses until the connection is back.
 - **Resumable.** Jobs are checkpointed, so a restart resumes the work or rolls it back cleanly.
 
 ## What stays on your machine
@@ -30,46 +36,82 @@ inside your own perimeter, when you use a model on your own network, or when you
 - your model keys and git credentials.
 
 Only job status, verdict summaries, pull request links, cost and usage, decision logs and escalations
-reach Rowbots.
+reach Rowbots. The runner applies the same [retention rules](/rowbots/security-and-privacy#your-data) to its own
+store: once a day it deletes traces older than 90 days, and the code index and hidden exams of projects you
+disconnected more than 30 days ago.
 
 ## Requirements
 
-- A Linux server (or a Mac — see [iOS builds](#ios-builds)) with **Docker**.
+- A **Linux** server, **x86-64 or ARM64**, with **Docker Engine** and the **Compose** plugin (or a Mac — see
+  [iOS builds](#ios-builds)).
 - **gVisor** registered with Docker as the `runsc` runtime — it is what isolates the sandbox from your
-  host. See the [gVisor install guide](https://gvisor.dev/docs/user_guide/install/).
-- Enough resources for parallel sandboxes: by default each one gets 2 CPUs and 4 GB of memory.
+  host. See the [gVisor install guide](https://gvisor.dev/docs/user_guide/install/); after installing, run
+  `sudo runsc install` and restart Docker.
+- Resources for parallel sandboxes: each sandbox gets 2 CPUs and 4 GB of memory by default, so the default two
+  parallel jobs want **at least 4 CPUs, 8 GB of memory and 80 GB of disk**.
+- Outbound HTTPS to Rowbots, your git host, your model providers, the GitHub Container Registry and the package
+  registries your projects use.
 
 ## Set it up
 
 <Steps>
     <Step title="Enroll the runner">
-        In your workspace, add a self-hosted runner. Copy the **runner ID** and the **secret** — the
-        secret is shown only once.
+        In **Connections → Compute → Runners**, name the runner and choose **Enroll runner**. Copy the three lines it
+        shows — `ROWBOTS_API_URL`, `ROWBOTS_RUNNER_ID` and `ROWBOTS_RUNNER_SECRET`. The secret is shown only once.
+    </Step>
+    <Step title="Get the runner">
+        On your server:
+
+        ```bash
+        git clone https://github.com/Nickbur/rowbots_runner && cd rowbots_runner
+        cp env/env.prod .env
+        ```
     </Step>
     <Step title="Configure it">
-        Put the runner's settings into its `.env` file (see below): the ID and secret, your model keys,
-        and credentials for any self-hosted git server.
+        In `.env`, set:
+
+        - the three values from enrollment;
+        - `EGRESS_ADMIN_TOKEN` — a long random token, for example the output of `openssl rand -hex 32`;
+        - `ROWBOTS_PROVIDERS` — your model providers and keys (see [below](#model-providers));
+        - `ROWBOTS_GIT_CREDENTIALS` — only for git hosts other than the Rowbots GitHub App (see
+          [below](#git-and-tool-credentials)).
     </Step>
     <Step title="Start the stack">
-        Start it with Docker Compose. The stack has three services: the **runner**, an **egress proxy**
-        that is the sandbox network's only way out, and a local **custody database** for the code index
-        and hidden exams.
+        ```bash
+        docker compose up -d
+        ```
+
+        The stack has three services: the **runner**, an **egress proxy** that is the sandbox network's only way
+        out, and a local **custody database** for the code index and hidden exams.
     </Step>
     <Step title="Check it's online">
-        The runner appears as online in your workspace. New work for your projects is now executed on
-        this machine.
+        The runner shows as online in **Connections → Compute**, with its platform and sandbox runtime. On the
+        server, `docker compose ps` shows the services as healthy. New work for your projects now runs on this
+        machine.
     </Step>
 </Steps>
+
+<Warning>
+    The runner refuses to start while `EGRESS_ADMIN_TOKEN` is the template placeholder or shorter than 32
+    characters. The token guards the list of hosts each sandbox may reach, so it must never be guessable.
+</Warning>
 
 ## Configuration
 
 | Setting | What it is |
 |---|---|
-| `ROWBOTS_RUNNER_ID`, `ROWBOTS_RUNNER_SECRET` | the runner's identity from enrollment |
+| `ROWBOTS_API_URL`, `ROWBOTS_RUNNER_ID`, `ROWBOTS_RUNNER_SECRET` | the control plane and the runner's identity, from enrollment |
+| `EGRESS_ADMIN_TOKEN` | a random token shared by the runner and its egress proxy |
 | `RUNNER_CONCURRENCY` | how many jobs run at once (default 2) |
 | `SANDBOX_CPUS`, `SANDBOX_MEMORY_MB`, `SANDBOX_PIDS` | resources per sandbox (defaults: 2 CPUs, 4096 MB, 1024 processes) |
+| `DOCKER_RUNTIME` | the sandbox runtime: `runsc` (gVisor, default), or `kata-runtime` / `kata-fc` (see [Stronger isolation](#stronger-isolation)) |
+| `SANDBOX_IMAGE`, `SANDBOX_IMAGE_FULL` | the sandbox images (defaults: the published `standard` and `full` images) |
 | `ROWBOTS_PROVIDERS` | your model providers as a JSON list — keys stay on this machine |
-| `ROWBOTS_GIT_CREDENTIALS` | credentials for self-hosted git servers, as a JSON list |
+| `ROWBOTS_GIT_CREDENTIALS` | credentials for git hosts other than the GitHub App, as a JSON list |
+| `ROWBOTS_MCP_CREDENTIALS` | credentials for the [MCP tools](/rowbots/security-and-privacy#tools-from-other-services) you allow, as a JSON list |
+| `LOG_LEVEL` | `debug`, `info` (default), `warn`, `error` |
+
+### Model providers
 
 A provider list with OpenRouter and a local Ollama looks like this:
 
@@ -86,13 +128,93 @@ A provider list with OpenRouter and a local Ollama looks like this:
 ```
 
 The adapters are `openrouter`, `anthropic`, `openai`, `replicate`, `bedrock`, `vertex`, `foundry` and
-`local` (any OpenAI-compatible endpoint) — see [Your own models](/rowbots/your-own-models).
+`local` (any OpenAI-compatible endpoint) — see [Your own models](/rowbots/your-own-models). Put the list on one
+line in `.env`.
+
+### Git and tool credentials
+
+Repositories connected through the **Rowbots GitHub App** need nothing here: the runner receives a short-lived token
+for each job. For any other git host — GitLab, Gitea or your own server — the credentials stay on the runner: give it
+a token or an SSH deploy key per host:
+
+```json
+[{ "baseUrl": "https://git.example.com", "username": "rowbots", "token": "…" }]
+```
+
+Credentials for MCP tools are listed by the server's name in **Connections → Tools (MCP)**, with a token, extra
+headers or environment variables:
+
+```json
+[{ "server": "sentry", "token": "…" }]
+```
+
+## Images and updates
+
+| Image | Tags | What it is |
+|---|---|---|
+| `ghcr.io/nickbur/rowbots-runner` | `1`, `1.2`, `1.2.3`, `latest` | the engine and the egress proxy |
+| `ghcr.io/nickbur/rowbots-sandbox` | `1`, `1.2.3` | the **standard** sandbox: JavaScript / TypeScript and Python toolchains, plus the check tools (secret and dependency scanners, static analysis, browser tests, mutation and property tests) |
+| `ghcr.io/nickbur/rowbots-sandbox` | `1-full`, `1.2.3-full` | the **full** sandbox: standard plus Go, Rust and load testing |
+
+Every image is built for x86-64 and ARM64. The `1` tags follow the latest 1.x release; pin an exact version such as
+`1.2.3` if you prefer to update by hand. The runner pulls the sandbox images itself the first time it needs them.
+
+To update:
+
+```bash
+git pull
+docker compose pull
+docker compose up -d
+```
+
+A stopping runner gives its in-flight jobs **5 minutes** to finish; a job that takes longer is picked up again
+after the restart.
+
+## Stronger isolation
+
+gVisor gives every sandbox its own user-space kernel. If your policy requires hardware virtualization, install
+[Kata Containers](https://katacontainers.io/), register it with Docker as a runtime and set `DOCKER_RUNTIME` to that
+runtime's name — for example `kata-runtime`, or `kata-fc` for Kata on Firecracker microVMs. Nothing else changes.
 
 ## iOS builds
 
-iOS apps can only be built on macOS. A runner on a Mac can run builds in a **macOS virtual machine with
-Xcode** (via Tart) instead of a Docker sandbox; you point it at the VM image and the SSH user and key
-authorized in it.
+iOS apps can only be built on macOS. On a Mac, the runner builds in a **macOS virtual machine with Xcode**
+(via [Tart](https://tart.run)) instead of a Docker sandbox, so it runs directly on the Mac rather than in Docker:
+
+<Steps>
+    <Step title="Prepare the Mac">
+        Install [Tart](https://tart.run) and Node.js 24, and create an SSH key the runner will use to reach the VM.
+    </Step>
+    <Step title="Configure the runner">
+        In `.env`, set `SANDBOX_DRIVER=tart`, `TART_IMAGE` (default: Cirrus Labs' macOS image with Xcode),
+        `TART_SSH_USER` and `TART_SSH_KEY` (the path to the private key authorized in the image), plus the enrollment
+        values and your model providers.
+    </Step>
+    <Step title="Start it">
+        ```bash
+        npm install && npx tsc -p tsconfig.json && node dist/main.js
+        ```
+    </Step>
+</Steps>
+
+Projects whose recipe declares `platform: macos` are then sent only to this runner.
+
+## Revoking a runner
+
+Revoke a runner in **Connections → Compute → Runners**. It stops receiving work immediately, and the work it
+held is handed to another runner. A revoked runner is refused the next time it starts; to move to a new machine,
+enroll a new runner there and revoke the old one.
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| `EGRESS_ADMIN_TOKEN is still the template placeholder` / `must be at least 32 characters` | Set a random token: `openssl rand -hex 32`. |
+| `Docker runtime "runsc" is not registered with the daemon` | Install gVisor, run `sudo runsc install` and restart Docker. |
+| `ROWBOTS_RUNNER_ID and ROWBOTS_RUNNER_SECRET are required` | Paste the values from enrollment into `.env`. |
+| `runner enrollment refused` | The runner was revoked or the secret is wrong — enroll a new runner. |
+| The runner is **unhealthy** in `docker compose ps` | It hasn't reached Rowbots for over 24 hours — check outbound HTTPS from the server. |
+| The runner never shows as online | Check `docker compose logs runner`; the first lines name the problem. |
 
 <Note>
     The sandbox never receives your model keys or git credentials. The runner pushes branches and opens

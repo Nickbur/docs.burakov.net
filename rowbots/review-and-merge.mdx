@@ -9,11 +9,12 @@ budget, so both arrive ranked by what they're worth.
 
 ## The merge queue
 
-Every pull request waiting for you appears in the **Queue**, ranked by **blast radius × the judge's confidence ×
+Every pull request waiting for you appears in the **Merge queue**, ranked by **blast radius × the judge's confidence ×
 value × cost**:
 
 | Tier | What's in it | How you handle it |
 | --- | --- | --- |
+| **Urgent** | A fix for something already hurting — above all a revert after a regression | It reaches you at once, on your highest-priority channel |
 | **Batch** | Small, safe, well-verified changes — a dependency bump, a fixed typo, a covered bug fix | Glance over the list and **approve the batch**; Rowbots merges them through your git host |
 | **Focused** | Changes with a wider blast radius or lower confidence | Open the pull request in your git host and review it like any other |
 
@@ -53,7 +54,8 @@ invariant — is refused outright. See [Rowbots pushes back](/rowbots/feeding-wo
 
 ## Notifications
 
-Choose where Rowbots reaches you in **Settings → Notifications**:
+Choose where Rowbots reaches you on the **Notifications** page (the bell); the Owner sets the workspace defaults in
+**Settings**:
 
 | Channel | Notes |
 | --- | --- |

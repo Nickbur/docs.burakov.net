@@ -22,24 +22,35 @@ In **Connections → Repositories**:
 | **GitHub**, **GitLab.com** | Install the Rowbots app on your account or organization and pick the repositories. It gets narrow, revocable permissions — enough to push branches and open pull requests. |
 | **Self-hosted GitLab, Gitea, any other server** | A service-account token for pull requests, plus a deploy key for git over SSH. |
 
-Rowbots never asks for a broad personal access token. Your **14-day Studio trial** starts when you connect your first
-git account — see [Pricing](/rowbots/pricing).
+Rowbots never asks for a broad personal access token. With a [self-hosted runner](/rowbots/self-hosted-runner), the
+token and deploy key for any host other than the GitHub app stay in the runner's own configuration instead. Your
+**14-day Studio trial** starts when you connect your first git account — see [Pricing](/rowbots/pricing).
 
-## 3. Connect model providers
+## 3. Choose where code runs
 
-In **Connections → Models**, add at least one key — OpenRouter, Anthropic, OpenAI, Replicate, Claude through
-Bedrock, Vertex AI or Foundry — or an OpenAI-compatible endpoint you host. Connect two different model families if
-you can, so the judge's exam is written by a different family than the code. See
-[Your own models](/rowbots/your-own-models).
+Your code always runs on **your** compute. The **Owner** picks the mode in **Settings → Where the work runs**:
 
-## 4. Choose where code runs
+- **Managed** — in **Connections → Compute**, add your **E2B**, **Daytona** or **Modal** API key;
+- **Self-hosted** — in **Connections → Compute**, enroll a **self-hosted runner**.
 
-Your code always runs on **your** compute. In **Connections → Compute**, either add your **E2B**, **Daytona** or
-**Modal** API key, or enroll a **self-hosted runner**. See [Compute & sandboxes](/rowbots/compute).
+See [Compute & sandboxes](/rowbots/compute).
+
+## 4. Connect model providers
+
+Bring at least one key — OpenRouter, Anthropic, OpenAI, Replicate, Claude through Bedrock, Vertex AI or Foundry — or an
+OpenAI-compatible endpoint you host. Where it goes depends on the mode:
+
+- **Managed** — add it in **Connections → Models**; it's kept encrypted in Rowbots' vault;
+- **Self-hosted** — put it in the runner's configuration (`ROWBOTS_PROVIDERS`); it never reaches Rowbots. See
+    [Self-hosted runner](/rowbots/self-hosted-runner#model-providers).
+
+Connect two different model families if you can, so the judge's exam is written by a different family than the code.
+See [Your own models](/rowbots/your-own-models).
 
 ## 5. Add projects
 
-A **project** is one product, made of one or more repositories. In **Fleet**, add a project and pick its repositories.
+A **project** is one product, made of one or more repositories. In **Projects**, choose **Add project** and pick its
+repositories.
 When one repository holds several products, give each project the paths it owns; paths no project claims are treated
 as your **shared platform**. See [Projects & your fleet](/rowbots/projects-and-fleet).
 
@@ -63,11 +74,11 @@ it.
 | --- | --- | --- |
 | **Monthly spending cap** | **Budget** | — (required) |
 | **Compute cap** *(managed sandbox providers)* | **Budget** | off |
-| **Attention budget** | **Settings** | 30 min a day |
+| **Daily attention budget** | **Settings** | 30 min a day |
 | **Commit authorship** | **Settings** | `rowbots[bot]` |
-| **Artifact language** — for the constitution, pull requests and commits | **Settings** | English |
-| **Post-merge observation window** | **Settings** | 72 hours |
-| **Notifications** | **Settings → Notifications** | in-app and email |
+| **Language of plans and pull requests** — for the constitution, pull requests and commits | **Settings** | English |
+| **Observation after merge** | **Settings** | 72 hours |
+| **Notifications** — your own channels | the **Notifications** page (the bell); workspace defaults in **Settings** | in-app and email |
 
 ## 8. Autonomy switches on
 
