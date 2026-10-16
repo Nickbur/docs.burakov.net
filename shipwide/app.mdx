@@ -26,7 +26,8 @@ src/
 │   ├── pages/account/, _settings/— placeholder screens for you to build out
 │   └── components/               — ready-made components
 ├── services/
-│   ├── networkRequests/api/      — api client: core/ + auth, account, sessions, upload
+│   ├── networkRequests/api/      — api client: core/ (authenticatedAPI, publicAPI,
+│   │                               errorHandler) + one file per area (auth, account, sessions, upload…)
 │   ├── localStorage/             — encrypted storage layer + per-domain helpers
 │   └── offline/                  — offline-first SQLite + sync layer
 ├── stores/                       — Pinia (accountStore, systemStore, settingsStore…)
@@ -93,7 +94,9 @@ single entry point:
     changes). Without it, the auto-generated username from the email stays.
 
 Errors arrive as `{ code, message }` — switch on the code with `extractApiErrorCode()`, never show
-`message`. The backend side is in [Backend](/shipwide/backend).
+`message`. Every request follows the shared [wire contract](/shipwide/architecture#shared-wire-contract)
+(`/v1`, camelCase, ISO-8601, UUIDv7) and carries a **Bearer** token; a `401` refreshes the token
+pair (with rotation) and retries. The backend side is in [Backend](/shipwide/backend).
 
 ## Support screen
 
@@ -142,15 +145,23 @@ builds (iOS / Android); the crash-report switch appears wherever Sentry is confi
     the app-switcher preview is hidden. Keep `PrivacyScreen.preventScreenshots: true` in
     `capacitor.config.ts` — without it iOS hides only the preview, not screenshots.
 - **Send crash reports** — shown only when `VITE_SENTRY_DSN` is set, web included. Off closes the
-    running Sentry client at once and keeps it from starting on later launches; on takes effect
-    after a restart. Reports carry only the account's opaque id and time zone — never the username
+    running Sentry client at once and keeps it from starting on later launches (`beforeSend` drops
+    anything in between); on takes effect after a restart. Reports carry only the account's opaque id and time zone — never the username
     or email (`composables/useSentry.ts`) — and Session Replay masks all text and inputs and blocks
     media.
 
-All three are `settingsStore` flags (`fingerprintFaceIdProtection`, `preventScreenshots`,
-`collectReports`). The lock and screenshot flags reset on logout; the crash-report choice belongs
-to the device and survives it. Native config is in place: `NSFaceIDUsageDescription` in
-`Info.plist` (reword it for your app) and `USE_BIOMETRIC` in `AndroidManifest.xml`.
+All three are `settingsStore` flags written through at once (`fingerprintFaceIdProtection`,
+`preventScreenshots`, `collectReports`). The lock and screenshot flags reset on logout; the
+crash-report choice belongs to the device and survives it (`views/pages/_base/Logout.vue`). Native
+config is in place: `NSFaceIDUsageDescription` in `Info.plist` (reword it for your app) and
+`USE_BIOMETRIC` in `AndroidManifest.xml`.
+
+## Push notifications
+
+Push is wired end-to-end: on sign-in the app logs the device into OneSignal under the account's
+id (`user.id`, the OneSignal **External ID**) and out again on sign-out — all from
+`views/core/OneSignalInitializer.vue` — and the server targets that alias, so a push reaches every
+device the user is signed in on. See [Push & VoIP](/shipwide/push).
 
 ## Offline-first data & self-hosted instances
 
@@ -186,36 +197,51 @@ error, it just reads `undefined`.
 
 | Variable | What it does |
 |----------|--------------|
-| `VITE_BACKEND_URL` | API base. **Required.** A non-local origin is auto-upgraded to HTTPS. |
-| `VITE_BACKEND_FALLBACK` | Optional backup API; health-checked and failed over to when set. |
-| `VITE_APP_NAME` | Namespace prefix for **everything local** (storage, settings, cache, deep-link scheme). Changing it orphans existing local data. |
+| `VITE_BACKEND_URL` | API base. **Required.** Resolved through `getAvailableServer()`; a non-local origin is auto-upgraded to HTTPS. `npm run build` stops if it is still a `REPLACE_ME_*` placeholder. |
+| `VITE_BACKEND_FALLBACK` | **Optional** backup API. When set, `getAvailableServer()` health-checks both and fails over to it if the primary is down. Leave empty for a single backend — the failover path stays dormant. |
+| `VITE_APP_NAME` | Namespace prefix for **everything local** (encrypted storage, settings, file cache, tab state, deep-link scheme). Changing it orphans existing local data. |
 | `VITE_OFFLINE_DB_NAME` | Name of the offline SQLite database ([Offline-first data](/shipwide/offline-sync)). Empty → falls back to `VITE_APP_NAME`; the templates set `shipwide`. Changing it after launch orphans the local database, unsynced changes included. |
 | `VITE_APP_VERSION` | Reported to Sentry as the release. |
 | `VITE_APP_ENV` | `production` switches on `isProduction()` (logging, Sentry). |
-| `VITE_CLIENT_ID` | Which app this is, sent on every sign-in. Must be listed in the API's `CLIENT_IDS` (defaults to `app`). |
+| `VITE_CLIENT_ID` | Which app this is, sent on every sign-in. Must match an entry in the API's `CLIENT_IDS`, or sign-in fails with `unknown_client`. The kit's templates set both to `shipwide` — rename them together. (Left empty, the app sends `app`.) |
 | `VITE_ENABLE_ONBOARDING` | `'true'` routes a fresh sign-in through onboarding. |
 | `VITE_GOOGLE_CLIENT_ID` | Google sign-in. Optional. |
-| `VITE_SENTRY_DSN` | Error tracking. Optional — empty disables Sentry. |
-| `VITE_ONESIGNAL_APP_ID` | Push. Optional. (The REST **key** is a server secret — never a `VITE_*`.) |
+| `VITE_SENTRY_DSN` | Error tracking. Optional — empty disables Sentry. Users can switch reports off (see **Privacy & security** above). |
+| `VITE_ONESIGNAL_APP_ID` | Push. Optional — empty disables OneSignal. (The REST **key** is a server secret — never a `VITE_*`.) |
 | `VITE_LEGAL_PRIVACY_URL` · `VITE_LEGAL_TERMS_URL` | Privacy / Terms links. Optional — placeholders if unset. |
 | `VITE_DOCS_URL` | Your user guide — the "Documentation" item on the About page. Optional — a placeholder if unset. |
 | `VITE_DEVELOPER_URL` | Your website, shown on About as "Developed by …". Optional — empty hides the row. |
-| `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Store links, per platform. |
+| `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Store links for the About "Update" button and the "Update required" screen, per platform. Optional. |
 
-The `VITE_REVENUECAT_*` billing variables are covered in [Billing](/shipwide/billing).
+The `VITE_REVENUECAT_*` billing variables are covered in [Billing](/shipwide/billing). That's the
+complete list — anything else is unused.
+
+The optional integrations — Google, Sentry, OneSignal, the legal, docs, developer and store links,
+and the RevenueCat keys — are read through `envSetting()` (`src/helpers/env.ts`): a value that is
+still the `env.prod` template's `REPLACE_ME_*` placeholder counts as unset, so the integration
+stays off (no Google button, no push, default legal links) instead of running with a bogus key.
 
 ## Native builds (Capacitor 8 / Tauri)
 
 | Target | Requirement |
 |--------|-------------|
 | Both | Node **24.16+** |
-| iOS | Xcode **26+**, target 15. Cap 8 generates an **SPM**-based project (no CocoaPods `.xcworkspace`). |
-| Android | SDK **36** (min 24), JDK **21**, Gradle 8.14.3 / AGP 8.13. |
+| iOS | Xcode **26+**, deployment target 15. Cap 8 generates an **SPM**-based project (no CocoaPods `.xcworkspace`). |
+| Android | SDK **36** (compile/target 36, min 24), JDK **21** (Android Studio's JBR works), Gradle 8.14.3 / AGP 8.13. |
 | Desktop | Rust stable; `src-tauri/icons/` generated from `public/pwa-512.png` via `npx tauri icon`. |
 
 One `npm run build` serves every target: the web/PWA deploy gets pre-compressed `.gz`/`.br`
 assets for the HTTP server, and the last step (`cap sync --inline`) copies the bundle into `ios/`
 and `android/` — open Android Studio / Xcode right after it. Android drops the `.gz`/`.br` copies
 at packaging (`ignoreAssetsPattern` in `android/app/build.gradle`; AGP would otherwise fail on
-duplicate assets), iOS carries them unused, and the Tauri desktop build only compiles and skips
-them. The `ios/` and `android/` projects are **committed**.
+`app.js` + `app.js.gz` as duplicate assets), iOS carries them unused, and the Tauri desktop build
+(`beforeBuildCommand`) only compiles and skips them (Vite sees Tauri's `TAURI_ENV_PLATFORM`).
+
+The `ios/` and `android/` native projects are **committed** (regenerate with
+`npx cap add <platform>` only for a clean slate); the desktop app lives in `src-tauri/`.
+
+**Scripts:** `serve` (dev server on :8100) · `serve:desktop` (Tauri dev) · `fix` (auto-fix by hand:
+Prettier + `eslint --fix`) · `build` (the full gate: Prettier + ESLint + vue-tsc + tests + web
+build + cap sync) · `license-check` (production-dependency licences) · `bump` (version, across
+`package.json` and every native project) — plus `switch_to_dev` / `switch_to_prod`, `setup-https`
+([HTTPS in dev](/shipwide/https-dev)) and `re-install-deps` (clean reinstall).

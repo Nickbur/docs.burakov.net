@@ -34,9 +34,14 @@ Twelve screens, all in the side navigation or one click from it:
 - **Design system is the Shipwide site's** — same tokens/buttons/badges/`<dialog>`/header/footer,
     plus an `Admin` mark beside the brand so it's never mistaken for the public site.
 - **Multilingual (en + ru to start).** Language + theme switch from the header and sign-in
-    screen, both remembered.
+    screen, both remembered; dates and relative times follow the chosen language.
+- **The language picker scales** to dozens of languages — endonyms, a filter box once there are
+    more than eight, and a list that scrolls.
 - **Add a language** by dropping `<code>.json` into `src/i18n/locales/` + one line in
-    `src/i18n/locales.ts` (`rtl: true` for RTL). Bundles load on demand.
+    `src/i18n/locales.ts` (`rtl: true` for RTL). The i18n machinery carries no product text, so a
+    new language is just JSON.
+- **Bundles load on demand** — only English (the fallback) is in the main chunk; every other
+    language loads as a separate chunk (`import.meta.glob` + `setLocaleMessage`).
 - **RTL wired** — a `rtl` flag drives `dir`; CSS uses flexbox + logical flow.
 
 ## Quick start
@@ -50,6 +55,11 @@ npm run serve                # http://localhost:5176
 Vite inlines `VITE_*` at build time → switch to prod **before** building. The API must allow
 this origin: `ADMIN_URL` in the API env is added to CORS, so `ADMIN_URL` and the port here must
 agree.
+
+**Scripts:** `switch_to_dev|prod` · `serve` (Vite :5176, `strictPort`) · `fix` (Prettier +
+`eslint --fix`) · `build` (the quality gate: Prettier check + ESLint + `vue-tsc` → `dist/`) ·
+`setup-https` ([HTTPS in dev](/shipwide/https-dev)) · `license-check` (production-dependency
+licences) · `re-install-deps` (clean reinstall).
 
 ## Signing in
 
@@ -67,14 +77,18 @@ challenge; a recovery code works in the same box.
 
 ### Security model (API side)
 
-- **TOTP is offered, never forced** — once enrolled on an account (on **Your account**), every
-    sign-in demands it. The secret is encrypted at rest (AES-256-GCM under
-    `DATA_ENCRYPTION_KEY`); recovery codes are stored hashed, so they still work if that key is
-    ever lost.
-- **Roles** are `user` and `admin`. The API re-reads the role on every request, so a demotion
-    takes effect on the next call.
-- **Every change is audited** — each mutating admin action is written to the audit log shown on
-    the **Audit** screen. Reads aren't recorded.
+- **Short-lived sessions** — both routes land on an admin session (`client_id: admin`): 15-minute
+    access and 12-hour refresh by default (`ADMIN_ACCESS_LIFETIME_MINUTES` /
+    `ADMIN_REFRESH_LIFETIME_HOURS` in the API env).
+- **TOTP is offered, never forced** — standard RFC 6238 codes, implemented on `node:crypto`. Once
+    enrolled on an account (on **Your account**), every sign-in demands it. The secret is encrypted
+    at rest (AES-256-GCM under `DATA_ENCRYPTION_KEY`) and bound to its own account row, so it can't
+    be moved to another one. Recovery codes are stored hashed, so they still work if that key is
+    ever lost — a TOTP check without the key answers `503 mfa_key_unavailable`.
+- **Roles** are `user` and `admin`. `requireRole` reads the role fresh from the database on every
+    request, so a demotion takes effect on the next call.
+- **Every change is audited** — each mutating admin action is written to the `admin_audit` table,
+    shown on the **Audit** screen. Reads aren't recorded.
 
 ## Architecture
 
@@ -83,7 +97,11 @@ src/
 ├── config/          # everything product-specific, driven by VITE_*
 ├── i18n/            # vue-i18n setup + en/ru locale files
 ├── core/            # the reusable half — assumes nothing about the product
-│   ├── api/ auth/ storage/ ui/ composables/
+│   ├── api/         # axios client, error classification, wire types
+│   ├── auth/        # token pair, expiry maths
+│   ├── storage/     # AES-GCM over IndexedDB
+│   ├── ui/          # formatting
+│   └── composables/ # confirm dialog
 ├── modules/         # every API call, in one file
 ├── stores/          # auth + chrome (Pinia)
 ├── components/      # header, footer, dialog, toasts, table pieces
@@ -92,21 +110,27 @@ src/
 ```
 
 <Note>
-    **`core/` never names the product** — so you rebrand by editing `.env`, not code. Anything that
-    would be a hardcoded string lives in `src/config/`.
+    **`core/` never names the product** — it keeps the reusable half free of assumptions about which
+    API it administers or what the product is called, so you rebrand by editing `.env`, not code.
+    Anything that would be a hardcoded string lives in `src/config/`.
 </Note>
 
 ### Pieces that are easy to get wrong
 
-- **One axios instance, not a factory.** Refresh is single-flight — two concurrent 401s don't
-    each spend a rotating token.
-- **Refresh happens before expiry**, not only on a 401 — admin sessions are short.
-- **Tokens in an encrypted IndexedDB store** (non-exportable `CryptoKey` + canary). Keeps
-    credentials out of plaintext at rest; not an XSS defence.
+- **One axios instance, not a factory.** Refresh is single-flight — every caller awaits the same
+    promise, so two concurrent 401s don't each spend a rotating token.
+- **Refresh happens before expiry**, not only on a 401 — admin sessions are short and the panel
+    sits open between bursts.
+- **Tokens in an encrypted IndexedDB store** (non-exportable `CryptoKey` + canary), loaded into
+    memory before the app mounts. Keeps credentials out of plaintext at rest; not an XSS defence.
 - **The router gate is not a security boundary** — the API authorises every request and re-reads
-    the role each time.
+    the role each time. The gate only stops a dashboard that will never load.
+- **Every `VITE_*` is declared in `src/vite-env.d.ts`** — a typo arrives as `undefined`, not a
+    type error.
 - **TypeScript pinned to 6.x, not 7.x** — TS 7 drops the JS `tsc` that `vue-tsc` 3 patches, so
     `build` throws under TS 7.
+- **i18n in composition mode** — `errors.*` keys mirror the API's error codes; `en`/`ru` are kept
+    at exact key parity.
 
 ## Environment
 
@@ -117,6 +141,9 @@ src/
 | `VITE_BRAND` | `Shipwide` | Header and footer — set to your product name |
 | `VITE_SITE_URL` | — | Linked from the footer; empty hides the link |
 | `VITE_DOCS_URL` | — | Your documentation, linked from the footer; empty hides the link |
+
+Vite inlines these at build time → a change means a rebuild (and for Docker, the right
+`--build-arg`).
 
 ## Deployment
 

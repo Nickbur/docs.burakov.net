@@ -48,7 +48,7 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
         Check `VITE_BACKEND_URL`. On non-localhost the client **enforces HTTPS**; and the API's
         `CORS_ORIGINS` must list the app's web origin.
     </Accordion>
-    <Accordion title="Sign-in says the app isn't allowed">
+    <Accordion title="Sign-in says &quot;This app isn't allowed to sign in to this server&quot;">
         The API answered `unknown_client`: the app's `VITE_CLIENT_ID` isn't in the API's
         `CLIENT_IDS`. Make them match (and rebuild the app if you changed `VITE_CLIENT_ID`).
     </Accordion>
@@ -70,13 +70,19 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
 
 <AccordionGroup>
     <Accordion title="Push isn't delivered">
-        It's **off until configured** — set `ONESIGNAL_APP_ID` + `ONESIGNAL_API_KEY` (server). See
-        [Push & VoIP](/shipwide/push).
+        It's **off until configured** — set `ONESIGNAL_APP_ID` + `ONESIGNAL_API_KEY` (server).
+        Identity is the account `user.id` as the OneSignal External ID on both sides; `delivered`
+        means OneSignal reported `recipients >= 1`. See [Push & VoIP](/shipwide/push).
     </Accordion>
     <Accordion title="Paywall is hidden / webhook 401s">
         Billing is **off until configured** — set the RevenueCat keys (client) +
         `REVENUECAT_WEBHOOK_AUTH` (server). To develop with no account, set `VITE_REVENUECAT_MOCK=true`.
         See [Billing](/shipwide/billing).
+    </Accordion>
+    <Accordion title="Web vs store billing">
+        Store IAP on iOS/Android; the web/desktop build uses a RevenueCat web engine (Web
+        Billing/Stripe **or** Paddle) — a dashboard choice, same client code. See
+        [Billing](/shipwide/billing).
     </Accordion>
 </AccordionGroup>
 
@@ -92,11 +98,13 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
         Correct — Capacitor 8 generates an **SPM**-based project. Needs Xcode 26+.
     </Accordion>
     <Accordion title="VoIP calls don't ring in the Simulator">
-        They can't — test CallKit / VoIP pushes on a **physical device**.
+        They can't — test CallKit / VoIP pushes on a **physical device**. See
+        [Push & VoIP](/shipwide/push).
     </Accordion>
     <Accordion title="Can't inspect the WebView on a device">
-        By design for release builds — Capacitor makes only debug builds inspectable. Install the app
-        with Run from Android Studio / Xcode (a debug build) to use the inspector.
+        `chrome://inspect` / Safari shows nothing? By design for release builds — Capacitor makes
+        only debug builds inspectable. Install the app with Run from Android Studio / Xcode (a debug
+        build) to use the inspector.
     </Accordion>
 </AccordionGroup>
 
@@ -120,9 +128,13 @@ Most "it's broken" turns out to be an unset or mismatched env var — see
         the English source; RU regenerates.
     </Accordion>
     <Accordion title="npm audit reports vulnerabilities">
-        The advisories all come from **`@ionic/cli`** — the dev-only tool behind `npm run serve`. They
-        are **not** in your shipped app: `npm audit --omit=dev` reports **0**. Nothing there bundles
-        into the iOS / Android / web / desktop build.
+        The advisories (a `critical` among them) come from dev-only tooling — chiefly
+        **`@ionic/cli`**, the tool behind `npm run serve`, via its transitive dependencies. They are
+        **not** in your shipped app: `npm audit --omit=dev` reports **0**. Nothing there bundles into
+        the iOS / Android / web / desktop build, so the product is unaffected. `@ionic/cli` has no
+        clean upstream fix; it's a known Ionic CLI issue. Prefer not to depend on it? `npm run serve`
+        also works if you drop `@ionic/cli` and point the script at `vite` directly — you'd lose the
+        `ionic …` CLI commands.
     </Accordion>
     <Accordion title="Why are some exports not used anywhere?">
         That's intentional. The kit ships ready-to-use pieces — an exported

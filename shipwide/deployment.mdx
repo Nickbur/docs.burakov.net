@@ -17,15 +17,19 @@ needs a decision — see [Install scripts](/shipwide/install-scripts).
 ## Backend (`shipwide_api`)
 
 - **Docker**: the container boots `migrate → seed → serve`. Migrations + the idempotent seed run
-    automatically. Provide a managed Postgres 17 + Redis 7 (or run them alongside).
+    automatically. Provide a managed Postgres 17 + Redis 7 (or run them alongside). The repo's
+    `docker-compose.yml` is a local-dev setup: its Postgres/Redis use dev credentials (Redis has no
+    password) and listen on `127.0.0.1` only — in production give both strong credentials (a
+    password in `REDIS_URL`).
 - **Purge cron** (required): run daily — `node dist/jobs/purge.js` (compiled path; `tsx` is
     dev-only). It's the physical half of account deletion + support-ticket retention; idempotent.
 - **Email**: point `SMTP_*` at a transactional provider (e.g. Postmark). Set **SPF, DKIM, DMARC**
     on the sending domain — with passwordless auth, a code in spam means nobody can sign in.
     `MAIL_REPLY_TO` is your support inbox: ticket notifications answer to it, and the website's
     support form (`POST /v1/support`) delivers its messages there.
-- **CORS**: `CORS_ORIGINS` = your exact web origin(s). Native schemes (`capacitor://localhost`,
-    `tauri://localhost`) and the admin's `ADMIN_URL` are always allowed.
+- **CORS**: `CORS_ORIGINS` = your exact web origin(s). The native app origins
+    (`capacitor://localhost` iOS, `https://localhost` Android, `tauri://localhost` macOS/Linux,
+    `http://tauri.localhost` Windows) and the admin's `ADMIN_URL` are always allowed.
 - **Client allowlist**: `CLIENT_IDS` = your app's `VITE_CLIENT_ID` (comma-separated for several
     clients). Only those ids (plus the admin's `admin`) can sign in.
 - **Reverse proxy**: `TRUST_PROXY` = whose `X-Forwarded-For` the API trusts. The default
@@ -42,12 +46,14 @@ needs a decision — see [Install scripts](/shipwide/install-scripts).
 
 ## App (`shipwide_app`)
 
-- **Web / PWA**: `npm run build` → static output (keeps pre-compressed `.gz`/`.br` assets). Serve
-    from any static host / CDN. Its origin must be in the API's `CORS_ORIGINS`.
+- **Web / PWA**: `npm run build` → static output (keeps pre-compressed `.gz`/`.br` assets, useful
+    to an HTTP server). Serve from any static host / CDN. Its origin must be in the API's
+    `CORS_ORIGINS`.
 - **iOS / Android**: the same `npm run build` (its `cap sync` step copies the bundle into the
     native projects; Android skips the `.gz`/`.br` copies at packaging) — run it after
     `npm run switch_to_prod` (production backend), then open the committed `ios/` /
-    `android/` projects in Xcode / Android Studio to archive and submit.
+    `android/` projects in Xcode / Android Studio to archive and submit. Toolchain:
+    [App](/shipwide/app) → Native builds.
 - **Desktop**: Tauri bundles from `src-tauri/` (Rust stable). Icons via `npx tauri icon`.
 
 ## Admin (`shipwide_admin`)

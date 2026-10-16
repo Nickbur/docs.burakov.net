@@ -11,25 +11,42 @@ pages that load their own data.
 
 ## How it works
 
-A **single shared bar instance** — there is never more than one bar on screen:
+A **hybrid** built on a **single shared bar instance** — there is never more than one bar on screen:
 
 1. **Automatic (router-driven).** The router shows the bar during navigation, most visibly on the
-    web where visiting a route downloads its lazy-loaded chunk. Every page gets this for free.
+    web where visiting a route for the first time downloads its lazy-loaded chunk. Every page gets
+    this for free; static pages need no code.
 2. **Opt-in (page-driven).** A page that fetches its own data drives the same bar through the
-    fetch, so the bar reflects the real load.
+    fetch, so the bar reflects the real load — not just the navigation.
 
-The two are **mutually exclusive per route**, which guarantees a single, non-conflicting bar.
+The two are **mutually exclusive per route** (a route is either router-driven or page-driven,
+never both at once), which guarantees a single, non-conflicting bar.
 
-- **Trickle:** `start()` shows the bar and lets it creep toward 90% on its own; `done()` finishes
-    it to 100% and hides it. It looks alive even when the duration is unknown.
+- **Trickle:** `start()` shows the bar and lets it creep toward 90% on its own, easing out as it
+    goes; `done()` finishes it to 100% and hides it. It looks alive even when the duration is
+    unknown, and never sits at a dead 0%.
 - **Show-delay (200 ms):** navigations faster than this never flash the bar. On native builds route
-    chunks are bundled, so navigation is instant and the router bar simply doesn't appear.
-- **Accessibility:** honors `prefers-reduced-motion` — the slide transition and stream dots switch off.
+    chunks are bundled, so navigation is instant and the router bar simply doesn't appear — only
+    real data-loading pages show a bar there.
+- **Accessibility:** honors `prefers-reduced-motion` — the fill's slide transition and the animated
+    stream dots switch off.
+
+## Files
+
+| File | Role |
+|------|------|
+| `src/composables/useSharedPageProgress.ts` | Low-level keyed progress store: `start` / `set` / `done`, plus `useCombinedPageProgress`. Generic, reusable. |
+| `src/composables/useRouteProgress.ts` | The single global instance (with trickle) + `installRouteProgress(router)` (show-delay, meta coordination). |
+| `src/router/index.ts` | Calls `installRouteProgress(router)` once, after the app's other guards. |
+| `src/router/routes.ts` | `RouteMeta` type augmentation + `meta.managesProgress` on data pages. |
+| `src/views/components/PageProgressBar.vue` | The `ion-progress-bar` presentation (renders nothing when `progress === 1`). |
+| `src/views/core/App.vue` | Mounts the one global `PageProgressBar`. |
+| `src/styles/components/page-progress-bar.scss` | Fixed bottom position, thickness, reduced-motion. |
 
 ## Quick start: nothing to do
 
 For a normal page that just renders (no data fetch on entry), **do nothing** — the router-driven
-bar already covers it. This is every static page in the kit.
+bar already covers it. This is every static page in the kit (Home, Account, Settings, etc.).
 
 ## Adding a data-loading page
 
@@ -40,6 +57,7 @@ bar already covers it. This is every static page in the kit.
         ```ts
         {
             path: '/reports',
+            name: 'Reports',
             component: () => import('@/views/pages/reports/Reports.vue'),
             meta: { requiresAuth: true, managesProgress: true },
         }
@@ -47,13 +65,15 @@ bar already covers it. This is every static page in the kit.
     </Step>
     <Step title="Drive it — always complete in a finally">
         ```ts
+        import { onMounted } from 'vue';
         import { useRouteProgress } from '@/composables/useRouteProgress';
+
         const pageProgress = useRouteProgress();
 
         onMounted(async () => {
             pageProgress.start();          // show + auto-trickle
             try {
-                await loadReports();
+                await loadReports();         // your data fetch
             } finally {
                 pageProgress.done();         // ALWAYS complete, even on error
             }
@@ -61,7 +81,7 @@ bar already covers it. This is every static page in the kit.
         ```
     </Step>
     <Step title="(Optional) multi-step">
-        Call `set()` between stages for a determinate bar (this stops the auto-trickle):
+        Call `set()` between stages for a determinate bar (this stops the auto-trickle and puts you in control):
 
         ```ts
         pageProgress.start();
@@ -77,35 +97,128 @@ bar already covers it. This is every static page in the kit.
     exactly this way — copy from them.
 </Tip>
 
-## API — `useRouteProgress()`
+## Driving the bar from an action
 
-The global bar, used 99% of the time. All calls target the same shared instance.
+The same instance can visualize a multi-step action on the current page — e.g. the sign-in flow in
+`src/views/pages/_base/Login.vue`:
 
-| Member | Description |
-|--------|-------------|
-| `progress` | `Ref<number>` `0..1`; `1` = idle/hidden. |
-| `start()` | Show the bar and let it trickle forward automatically until `done()`. |
-| `set(p, b?)` | Jump to an explicit value; **stops** the trickle (you drive it now). |
-| `done()` | Complete to 100% and hide. Safe to call multiple times. |
+```ts
+const pageProgress = useRouteProgress();
+// ...
+pageProgress.set(0.3);   // request started
+pageProgress.set(0.6);   // request succeeded
+pageProgress.done();     // finished (put this in a finally block)
+```
 
-For a bar that must be separate from the global one (e.g. inside a modal), use the low-level keyed
-`useSharedPageProgress(key)`, or `useCombinedPageProgress(...keys)` to wait on several sources.
+Use `set()` (not `start()`) here when you want explicit, meaningful percentages rather than an
+automatic trickle.
+
+## API
+
+### `useRouteProgress()` — the global bar
+
+Used 99% of the time. All calls target the same shared instance.
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `progress` | `Ref<number>` | Current value `0..1` (read-only in practice); `1` = idle/hidden. |
+| `buffer` | `Ref<number>` | Buffer value `0..1`. Below `1` shows Ionic's animated stream dots. |
+| `start()` | `() => void` | Show the bar and let it trickle forward automatically until `done()`. |
+| `set(p, b?)` | `(number, number?) => void` | Jump to an explicit value; **stops** the trickle (you drive it now). `b` defaults to `p + 0.1`. |
+| `done()` | `() => void` | Complete to 100% and hide; stops the trickle. Safe to call multiple times. |
+
+### `useSharedPageProgress(key)` — low-level, keyed
+
+Returns `{ progress, buffer, start, set, done }` for an independent instance identified by `key`.
+No trickle (its `start()` just sets `0` / `0.1`). Use it only when you need a bar that is **not**
+the global one (see [Advanced](#advanced-an-independent-bar)).
+
+### `useCombinedPageProgress(...keys)`
+
+Returns read-only `{ progress, buffer }` where `progress` is the minimum of all sources — a single
+bar that waits for several keyed sources to finish.
 
 ## Best practices
 
-- **Always `done()` in a `finally`.** If the fetch throws and you don't complete, the bar stays visible.
-- **Don't mark static pages `managesProgress`.** Set the flag but never call `done()` and the bar hangs.
-- **Prefer the global bar.** Two global-position bars would overlap.
-- **`start()` vs `set()`:** `start()` = "I don't know how long, show activity"; `set()` = "I know the real percentage".
+- **Always `done()` in a `finally`.** If the fetch throws and you don't complete, the bar stays
+    visible. The `try/finally` pattern above guarantees completion.
+- **Don't mark static pages `managesProgress`.** If you set the flag but never call `done()`, the
+    router won't complete the bar for you and it hangs. Only add the flag together with the
+    `start()`/`done()` wiring.
+- **Prefer the global bar.** Reach for `useSharedPageProgress` with a custom key only for a
+    genuinely separate bar (e.g. inside a modal). Two global-position bars would overlap.
+- **`start()` vs `set()`:** `start()` = "I don't know how long, show activity" (auto-trickle);
+    `set()` = "I know the real percentage".
+- **In-content spinners are optional.** Some kit pages also show a centered `ion-spinner` during
+    load. Keep it, or remove it and rely on the bar alone — your call.
+- **Keep the buffer below 1 for the moving dots.** Ionic only shows the animated stream when
+    `buffer < 1`. The trickle and `set()` defaults already do this.
+
+## Advanced: an independent bar
+
+For a bar that must be separate from the global one — for example inside a modal that loads its
+own content — use a keyed instance and render your own bar:
+
+```vue
+<template>
+    <PageProgressBar :progress="progress" :buffer="buffer" />
+</template>
+
+<script setup lang="ts">
+import PageProgressBar from '@/views/components/PageProgressBar.vue';
+import { useSharedPageProgress } from '@/composables/useSharedPageProgress';
+
+const { progress, buffer, start, set, done } = useSharedPageProgress('my-modal');
+// start(); set(0.5); done();
+</script>
+```
+
+Combine several sources into one bar that waits for all of them:
+
+```ts
+import { useCombinedPageProgress } from '@/composables/useSharedPageProgress';
+
+const { progress, buffer } = useCombinedPageProgress('my-modal:list', 'my-modal:details');
+```
 
 ## Customization
 
-All in `useRouteProgress.ts` and `styles/components/page-progress-bar.scss`:
+All in `useRouteProgress.ts`, `PageProgressBar.vue` and `styles/components/page-progress-bar.scss`:
 
 | Want to change | Where |
 |----------------|-------|
-| Color | `--progress-background` in the scss |
+| Color | The `color` prop on `ion-progress-bar` in `PageProgressBar.vue` (default `secondary` — any Ionic colour name). It takes precedence over `--progress-background` in the scss; drop the prop to set a custom colour there. |
 | Thickness | `height` in the scss (default `3px`) |
-| Vertical position | `bottom` in the scss (swap for `top` to pin under the status bar) |
+| Vertical position | `bottom` in the scss (defaults to above the home indicator via `--ion-safe-area-bottom`). Swap for `top: var(--ion-safe-area-top, 0)` to pin it under the status bar instead. |
+| Stacking / overlap | `z-index` in the scss (default `1000`; the bar is `pointer-events: none`) |
 | Show-delay | `SHOW_DELAY_MS` in the composable (default `200`) |
-| Trickle speed / ceiling | `TRICKLE_INTERVAL_MS` (260) / `TRICKLE_CEILING` (0.9) |
+| Trickle speed / ceiling | `TRICKLE_INTERVAL_MS` (260) / `TRICKLE_CEILING` (0.9 — the bar never auto-passes this) |
+
+## Gotchas & edge cases
+
+- **Single shared instance.** Because there is exactly one bar, a page that navigates away
+    *before* its own fetch resolves and then calls `done()` late can briefly hide a bar that the
+    next page had already started. This is cosmetic (the bar just vanishes a little early — never a
+    stuck or wrong state) and is the accepted trade-off of the single-bar model. Fetches that
+    resolve while the page is still on screen are unaffected.
+- **Native = usually no router bar.** Bundled chunks make navigation instant, so the router bar
+    stays hidden; only real data-loading pages show a bar. This is intentional (no fake progress).
+- **Reduced motion.** Under `prefers-reduced-motion` the fill transition and stream dots are
+    disabled; the value still updates, just without the decorative animation.
+- **Guard order.** `installRouteProgress` is registered *after* the app's auth/redirect guards and
+    never blocks or alters navigation — it only observes it.
+
+## Testing tips
+
+- **Type-check:** `npx vue-tsc --noEmit` (also part of `npm run build`).
+- **See it locally:** dev navigations are fast, so throttle the network (DevTools → Network →
+    Slow 3G) and navigate to a lazy route to watch the router bar; or visit a data page
+    (`/subscription`, `/support`) to watch a page-driven bar.
+- **Drive it from the console** (dev server) to inspect states without a real load:
+
+    ```js
+    const { useRouteProgress } = await import('/src/composables/useRouteProgress.ts');
+    const p = useRouteProgress();
+    p.start();      // watch it trickle
+    p.done();       // hide it
+    ```

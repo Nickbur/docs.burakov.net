@@ -7,7 +7,9 @@ mode: "wide"
 The marketing site for a single app: a fast, custom-designed site built with **Astro** (static
 output), a **hand-written SCSS design system** (no UI framework), **astro-i18next** for
 translations, and **Iconify** for icons. No account portal — this is the public marketing site.
-Everything ships as placeholder content: drop in your brand, copy and assets and go.
+Everything ships as placeholder content: drop in your brand, copy and assets and go. See
+[Customization](/shipwide/customization) for the design system, [Deployment](/shipwide/deployment)
+to ship.
 
 ## Quick start
 
@@ -31,6 +33,7 @@ npm run build           # Prettier check + ESLint + astro-i18next generate + ast
 | `public/locales/en/*.json` | All human-readable copy, one file per namespace. |
 | `src/content/blog/*.md` · `changelog/*.md` | Blog posts / release notes — one Markdown file each. |
 | `src/styles/` | The SCSS design system (tokens, base, components, utilities). |
+| `src/components/` · `src/layouts/` · `src/pages/` | Astro components, layouts, routes. |
 
 <Note>
     **Rule of thumb:** language-neutral facts (URLs, prices, handles) live in `src/data/`; anything
@@ -45,8 +48,10 @@ npm run build           # Prettier check + ESLint + astro-i18next generate + ast
         driven entirely by `site.name`) and `src/data/product.ts` (download links, prices, features).
     </Step>
     <Step title="Assets">
-        Replace `public/favicon.svg` (optionally add `public/og-default.png`); drop your app
-        screenshots into `src/screenshots/` (`01-…`, `02-…`) and delete the demo images.
+        Replace the icon set in `public/` (`favicon.ico`, `favicon-16/32/48.png`,
+        `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon-512-maskable.png`) and the
+        1200×630 social card `public/og-default.png`, and put your name in `public/site.webmanifest`;
+        drop your app screenshots into `src/screenshots/` (`01-…`, `02-…`) and delete the demo images.
     </Step>
     <Step title="Domain & copy">
         Set `PUBLIC_SITE_URL` in `env/env.prod`; swap the copy in `public/locales/en/*.json`.
@@ -103,30 +108,97 @@ Colours, fonts, radii, spacing, elevation and motion are CSS custom properties i
 - **Accent** is a dusty-indigo ramp (`--accent-50…900`) — change `--accent-400` (dark) /
     `--accent-600` (light) and it propagates everywhere.
 - **Neutrals** are warm greys, not pure zinc.
-- **Fonts are a pairing:** a display face — **Golos Text**, self-hosted via
-    `@fontsource/golos-text` — on headings (`--font-display`), and the system stack for body/UI.
-    Any OFL font with Cyrillic works.
+- **Fonts are a pairing:** a display face — **Golos Text** — on headings (`--font-display`), and
+    the system stack for body/UI (`--font-sans`). The display face is self-hosted: its woff2 files
+    sit in `public/fonts/`, declared by the `@font-face` blocks in `src/styles/base/_fonts.scss`, and
+    `src/layouts/Base.astro` preloads the weight the page heading uses. To swap it: replace the woff2
+    files in `public/fonts/`, update the `@font-face` blocks in `_fonts.scss`, point
+    `--font-display` at the new family, and update the preloaded file (`preloadFont`) in
+    `Base.astro`. Any OFL font with Cyrillic works; the kit ships one so it's legal to redistribute.
+
+The header theme switcher persists the choice and follows the OS preference until the reader chooses.
+
+## Craft layer
+
+`src/styles/utilities/_effects.scss` holds the depth/motion primitives — all token-driven and
+`prefers-reduced-motion`-safe: a designed focus ring, `data-reveal` (fade-up on scroll),
+`.spotlight` (cursor-follow on cards), `.ambient-glow` (hero bloom), `.text-gradient`.
+
+Navigation uses Astro **View Transitions** (`<ClientRouter />` in `Base.astro`). The site's scripts
+— the reveal/spotlight script in `Base.astro`, the home hero gallery, the header — re-initialise on
+every `astro:page-load`.
+
+<Warning>
+    Any interactive script you add must bind on `astro:page-load`, not just at module top level: a
+    module script runs once, and the elements it bound to are swapped out on the next navigation.
+</Warning>
 
 ## Languages
 
-Ships **English + Russian**; the switcher is in the header. Adding a third language is five steps
-(codes in `astro-i18next.config.ts`, `astro.config.mjs`, `Header.astro` + `nav.json`, copy
-`public/locales/en/` → `<code>/` and translate, then `npm run build`). English-only: drop `"ru"`
-from the three lists and delete `public/locales/ru/`.
+Ships **English + Russian**; the switcher is in the header. Adding a third language (e.g. `de`) is
+five steps:
+
+<Steps>
+    <Step title="Register the code">
+        Add it to `locales` in `astro-i18next.config.ts` (`["en", "ru", "de"]`) and to the sitemap
+        `i18n` block's `locales` in `astro.config.mjs`.
+    </Step>
+    <Step title="Wire the components">
+        Add it to `locales` in `src/components/Header.astro` and a label under `langs` in every
+        `public/locales/*/nav.json`; to `LOCALES` in `src/layouts/Base.astro` and
+        `src/components/Breadcrumbs.astro`; and to `inLanguage` in
+        `src/components/StructuredData.astro`. `Base.astro` also maps each language to its Open
+        Graph locale (`ogLocale`) and preloaded font subset (`preloadFont`) — extend both.
+    </Step>
+    <Step title="Allow it in the content schema">
+        Add it to both `lang: z.enum([...])` lists (blog, changelog) in `src/content.config.ts`.
+    </Step>
+    <Step title="Translate">
+        Copy `public/locales/en/` → `public/locales/<code>/` and translate. For blog/changelog, add
+        `<slug>-<code>.md` with `lang: "<code>"`; a blog translation carries the same
+        `translationKey` as the other language versions of that post — that's what links them for
+        hreflang.
+    </Step>
+    <Step title="Build">
+        `npm run build` runs `astro-i18next generate`, producing the localized page tree under
+        `src/pages/<code>/` — rebuilt each build, never edited. Add `src/pages/<code>/` next to
+        `src/pages/ru/` in `.gitignore` and in the ESLint ignores in `eslint.config.mjs`.
+    </Step>
+</Steps>
+
+English-only: drop `"ru"` from those lists and delete `public/locales/ru/` + the `*-ru.md` files.
 
 <Warning>
     `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit the
     English source; the Russian tree regenerates.
 </Warning>
 
+**Generator gotchas:**
+
+- **No `---` after a page's closing frontmatter fence** (e.g. a `// --- section` comment in a
+    `<script>`): `astro-i18next generate` matches the frontmatter greedily and rewrites the
+    **English source** into unparseable output. Inside the frontmatter it's fine.
+- The localized copy sits one folder deeper, and only the frontmatter's relative `import` paths
+    are rewritten — write path strings such as `import.meta.glob` root-relative (`/src/…`), and
+    import `src/data/` into a page `<script>` through the `@data/*` alias.
+- Locale JSON is read once at dev-server start — restart `npm run serve` after editing
+    `public/locales/*`.
+
 ## Content, support form, monitoring
 
-- **Blog & changelog** are Astro content collections — add a Markdown file, it appears.
+- **Blog & changelog** are Astro content collections — add a Markdown file, it appears. Schemas in
+    `src/content.config.ts`. Pages read from `src/data/` + locale JSON, so nothing is hardcoded.
 - **Support form:** set `PUBLIC_SUPPORT_ENDPOINT` to the full URL of your API's
     **`POST /v1/support`** (e.g. `https://api.example.com/v1/support`) and add the site's origin to
     the API's `CORS_ORIGINS`. It posts without an account; the API emails each message to its
     `MAIL_REPLY_TO` (Reply-To = the sender, so you answer from your mail client), allows 5 messages
     per IP per 10 minutes, and silently drops bots (a hidden honeypot field + a minimum fill time).
-    Empty (default) = demo mode ("email us" notice), no posting.
+    Empty (default) = **demo mode**: it validates but shows an "email us" notice instead of
+    posting. No code change on launch day — set the variable and rebuild.
 - **Sentry** loads only when `PUBLIC_SENTRY_DSN` is set, cookies are accepted, and it's not
-    `localhost`.
+    `localhost`. Empty DSN = off.
+
+## Stack
+
+Astro (+ View Transitions) · SCSS · astro-i18next · astro-seo · `@astrojs/sitemap` ·
+astro-robots-txt · astro-compress · Iconify (lucide + simple-icons) · `@sentry/browser`.

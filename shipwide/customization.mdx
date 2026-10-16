@@ -15,15 +15,19 @@ neutrals, **Golos Text** display font). Here's how to make each part yours.
         nav. `src/data/product.ts` — download links, pricing plans, features, screenshots.
     </Step>
     <Step title="Assets & domain">
-        Replace `public/favicon.svg` (optionally add `public/og-default.png`); set `PUBLIC_SITE_URL`
-        in `env/env.prod`.
+        Replace the icon set in `public/` (`favicon.ico`, `favicon-16/32/48.png`,
+        `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon-512-maskable.png`) and the
+        social card `public/og-default.png`, and put your name in `public/site.webmanifest`; set
+        `PUBLIC_SITE_URL` in `env/env.prod`.
     </Step>
     <Step title="Copy & screenshots">
-        Swap the copy in `public/locales/en/*.json`; drop your store screenshots into
-        `src/screenshots/` named `01-…`, `02-…` (they render as a fan of phone mockups); delete the
-        demo images.
+        Swap the copy in `public/locales/en/*.json` (words live here; facts live in `src/data/`);
+        drop your store screenshots into `src/screenshots/` named `01-…`, `02-…` (they render as a
+        fan of phone mockups); delete the demo images.
     </Step>
 </Steps>
+
+Full detail: [Website](/shipwide/website).
 
 ## Design tokens & fonts (site + admin share the system)
 
@@ -31,10 +35,14 @@ neutrals, **Golos Text** display font). Here's how to make each part yours.
 - **Accent**: a dusty-indigo ramp `--accent-50…900`. Change `--accent-400` (dark) /
     `--accent-600` (light) and it propagates everywhere.
 - **Neutrals** are warm greys, not pure zinc.
-- **Display font**: Golos Text, self-hosted via `@fontsource/golos-text` (imported in
-    `Base.astro`), on headings (`--font-display`); system stack for body. To swap:
-    `npm install @fontsource/<name>`, change the two imports, point `--font-display` at it. Any OFL
-    font (with Cyrillic if you keep RU) works.
+- **Display font**: Golos Text on headings (`--font-display`); system stack for body
+    (`--font-sans`). Any OFL font (with Cyrillic if you keep RU) works. To swap it:
+    - **Site** — it self-hosts the woff2 files from `public/fonts/` via the `@font-face` blocks in
+        `src/styles/base/_fonts.scss`: replace the files, update those blocks, point
+        `--font-display` at the new family, and update the preloaded file (`preloadFont`) in
+        `src/layouts/Base.astro`.
+    - **Admin** — it imports `@fontsource/golos-text` (weights 600 + 700) in `src/main.ts`:
+        `npm install @fontsource/<name>`, change the two imports, point `--font-display` at it.
 
 ## App
 
@@ -42,13 +50,27 @@ neutrals, **Golos Text** display font). Here's how to make each part yours.
     scheme). Set it **before** launch; changing it later orphans existing local data.
 - **`VITE_CLIENT_ID`** — your app's id on every sign-in (the kit ships `shipwide`). If you change
     it, put the same value in the API's `CLIENT_IDS`, or sign-in fails with `unknown_client`.
+- **App identity**: the kit ships named "Shipwide" with the id `com.example.shipwide`. Put your
+    own name and id in each place before your first release (store ids can't change once
+    published):
+    - Web/PWA: the `manifest` in `vite.config.ts` (`name`, `short_name`, `description`,
+        `theme_color`, `background_color`) and the `<title>` in `index.html`.
+    - Capacitor: `appId` and `appName` in `capacitor.config.ts`.
+    - Android: `applicationId` in `android/app/build.gradle` and the names in
+        `android/app/src/main/res/values/strings.xml`.
+    - iOS: the bundle identifier (Xcode → target → Signing & Capabilities) and
+        `CFBundleDisplayName` in `ios/App/App/Info.plist`.
+    - Desktop: `productName`, `identifier` and the window `title` in `src-tauri/tauri.conf.json`.
 - **Icons**: desktop `src-tauri/icons/` is generated from `public/pwa-512.png` via
-    `npx tauri icon`; replace the PWA/app icons in `public/`.
+    `npx tauri icon`; regenerate the mobile icons and splash screens from your own source images in
+    `assets/` (`icon.png`, `splash.png`, `splash-dark.png`); replace the PWA/app icons in `public/`.
 - **Links**: `VITE_STORE_*_URL` (About "Update" button, per platform), `VITE_LEGAL_PRIVACY_URL`
     / `VITE_LEGAL_TERMS_URL`, `VITE_DOCS_URL` (your user guide), `VITE_DEVELOPER_URL` (About
     "Developed by …").
 - **Screens**: the account / sessions / settings screens are stubs — build your product screens
     on the composables and api layer the kit provides.
+- **Theme/design tokens** live in `src/styles/_variables/` (`colors.scss`, `custom.scss`,
+    `fonts.scss`, `theme.scss`) — the same accent/neutral language as the site.
 - **Dark theme overrides**: Ionic's own dark palette sets the surface colours
     (`--ion-background-color`, `--ion-text-color`, `--ion-toolbar-background`,
     `--ion-item-background`, `--ion-card-background`, …) on `.ion-palette-dark.md` /

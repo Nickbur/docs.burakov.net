@@ -5,7 +5,9 @@ mode: "wide"
 ---
 
 The backend half of the kit — Fastify + Drizzle + PostgreSQL + Redis. Single-app: one
-deployment serves one product.
+deployment serves one product. Every route follows the shared
+[wire contract](/shipwide/architecture#shared-wire-contract) — versioning, field format, errors and
+Bearer auth.
 
 ## Module architecture
 
@@ -58,44 +60,54 @@ code never creates one. Every fixed-code sign-in is logged at `warn`.
 
 | Area | Routes |
 |------|--------|
-| Auth | `POST /v1/auth/code` · `/code/verify` · `/restore` · `/token/refresh` · `/sign-out` · `/google` · `/apple/*` |
-| Account | `GET/PATCH /v1/account/me` · `/username/check` · `/username` · `/email` · `/email/confirm` · `DELETE /v1/account` |
+| Auth | `POST /v1/auth/code` · `/code/verify` · `/restore` · `/token/refresh` · `/sign-out` · `/google` · `/apple/mobile` · `/apple/web` · `/apple/web/callback` · `/apple/web/exchange` |
+| Account | `GET/PATCH /v1/account/me` · `GET /username/check` · `POST /username` · `POST /email` · `/email/confirm` · `DELETE /v1/account` |
 | Sessions | `GET /v1/sessions` · `/current` · `DELETE /v1/sessions` · `/:id` · `PUT /:id` |
-| Upload | `POST /v1/upload` + chunked upload start/append/status/complete/abort · file delete/serve |
+| Upload | `POST /v1/upload` · `/upload/chunk/start` · `/chunk/:uploadId/:chunkIndex` · `GET /chunk/:uploadId/status` · `POST /chunk/:uploadId/complete` · `DELETE /chunk/:uploadId/abort` · `DELETE /file/:id` · `GET /files/:filename` |
 | Push | `POST /v1/push/test` (verify delivery to the signed-in user's own devices) |
-| Support | `POST /v1/support` — the website's support form: **no session**, 5 per IP / 10 min, honeypot + fill-time bot check, emailed to `MAIL_REPLY_TO` (not stored) · signed-in tickets: `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `/:id/reply`. See [Support & tickets](/shipwide/support) |
+| Support | `POST /v1/support` — the website's support form: **no session**, 5 per IP / 10 min, honeypot + fill-time bot check, emailed to `MAIL_REPLY_TO` (not stored) · signed-in tickets: `POST /v1/support/tickets` · `GET /v1/support/tickets` · `/:id` · `POST /:id/reply`. See [Support & tickets](/shipwide/support) |
 | Notes | `GET /v1/notes` · `PUT /:id` (upsert by client id) · `DELETE /:id` (idempotent) — sync endpoints for the app's offline-first Notes example. See [Offline-first data](/shipwide/offline-sync) |
-| Subscriptions | `POST /v1/subscriptions/webhook` · `GET /me` · `POST /sync` · `GET /premium-example` — off until configured |
-| Admin | auth methods + TOTP · stats · users (role, delete/restore/purge, sessions, entitlements) · sessions · tickets · uploads · push · audit · app settings (version policy) · ops |
-| Health | `GET /v1/health` · `/version` · `/app-version` (client version policy) |
+| Subscriptions | `POST /v1/subscriptions/webhook` (RevenueCat) · `GET /me` · `POST /sync` · `GET /premium-example` (entitlement-gated) — off until configured |
+| Admin | `GET /v1/admin/auth/methods` · `POST /auth/code` · `/auth/code/verify` · `/auth/login` · `/auth/mfa/verify` · signed in: `GET /me` · TOTP (`/auth/mfa/setup` · `/enable` · `/recovery-codes`, `DELETE /auth/mfa`) · `stats` · `users` (+`:id`, role, delete/restore/purge, sessions, entitlements) · `sessions` · `tickets` · `uploads` · `POST /push` · `audit` · `app-settings` (version policy) · `ops/health` · `ops/purge`. Security model: [Admin](/shipwide/admin#security-model-api-side) |
+| Health | `GET /v1/health` · `/version` (this API's build) · `/app-version` (client version policy `{ latest, minSupported }`) |
 
 Interactive reference at `/docs` (Swagger UI). Other mechanics: **username** (auto from email,
-live availability, 30-day change cooldown), **email change** by code, **account deletion** that
-feels instant (sessions killed now) with physical purge after `PURGE_AFTER_DAYS`.
+live availability, 30-day change cooldown; old names stay reserved in `username_history`),
+**email change** by code, **account deletion** that feels instant (sessions killed now) with
+physical purge after `PURGE_AFTER_DAYS` — and a way back: signing in during that window returns
+`deletion_pending` with a `restoreToken`, which `POST /v1/auth/restore` exchanges to restore the
+account and sign in.
 
 ## App version policy & upgrade gate
 
 The app publishes a version policy the client honours — set it in **Admin → Settings**, no deploy:
 
-- **Latest version** → a soft "update available" dot when the installed build is older. A nudge.
-- **Min. supported version** → a **hard gate**: a build below it is blocked. Enforced two ways —
-    the app checks `/v1/app-version` on launch + hourly, **and** every request sends
-    `X-App-Version` so the API answers **`426 Upgrade Required`** for a stale build. Recovery
-    endpoints (`/health`, `/version`, `/app-version`) are never gated.
+- **Latest version** → a soft "update available" dot (bottom bar, side menu and About) and an
+    **Update** store-link button on About when the installed build is older. A nudge.
+- **Min. supported version** → a **hard gate**: a build below it is blocked with a
+    non-dismissable "Update required" screen. Enforced two ways — the app checks
+    `/v1/app-version` on launch + hourly, **and** every request sends `X-App-Version` so the API
+    answers **`426 Upgrade Required`** for a stale build (the app's interceptor then shows the
+    block). Recovery endpoints (`/health`, `/version`, `/app-version`) are never gated, and a
+    request without the header isn't either — so tooling and monitors keep working.
 
-Leave a field empty to disable that half. Separately, `API_DEPRECATION` / `API_SUNSET` add the
-RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
+Leave a field empty to disable that half. Bump **Latest** each release; raise **Min. supported**
+only to force everyone off a broken build (e.g. a bad billing or security release).
+
+**API deprecation.** Separately, `API_DEPRECATION` / `API_SUNSET`, when set, add the RFC 8594
+`Deprecation` / `Sunset` headers to every response — a standards-compliant way to signal that the
+API version is winding down. Unset by default.
 
 ## Scripts
 
 | Script | What it does |
 |--------|--------------|
 | `switch_to_dev` / `switch_to_prod` | copy `env/env.dev\|prod` → `.env` |
-| `serve` | tsx watch |
+| `serve` | apply pending migrations (`db:migrate`), then tsx watch |
 | `fix` | run by hand: Prettier `--write`, then `eslint --fix` |
 | `build` | the quality gate: Prettier check (4-space style) + ESLint (type-aware; `no-console` is an error — log through the logger) + `tsc` → `dist/` + Vitest (no database needed). The pre-commit hook formats and lint-fixes staged files — see [Code quality](/shipwide/quickstart#code-quality-all-four-parts) |
 | `start` | run compiled |
-| `db:generate` / `db:migrate` / `db:push` / `db:studio` | migration from schema / apply / push schema / Drizzle Studio (`postdb:generate` then formats the new migration automatically) |
+| `db:generate` / `db:migrate` / `db:push` / `db:studio` | migration from schema / apply / push schema / Drizzle Studio. `db:generate`, `db:push` and `db:studio` compile first — drizzle-kit reads the compiled schema (`dist/db/schema/index.js`); `postdb:generate` then formats the new migration automatically |
 | `seed` | test/review accounts |
 | `purge` | physically delete accounts past the soft-delete window (daily cron) |
 | `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
@@ -110,8 +122,9 @@ RFC 8594 `Deprecation` / `Sunset` headers to every `/v1` response when set.
 - Run **purge** daily on cron; in the prod image use the compiled path: `node dist/jobs/purge.js`.
 - Email: point `SMTP_*` at a transactional provider (Postmark works). Set **SPF, DKIM, DMARC** —
     with passwordless auth, a code in spam means nobody can sign in.
-- CORS: `CORS_ORIGINS` = exact web origin(s); native schemes and the admin's `ADMIN_URL` are
-    always allowed.
+- CORS: `CORS_ORIGINS` = exact web origin(s); the native app origins (`capacitor://localhost`
+    iOS, `https://localhost` Android, `tauri://localhost` macOS/Linux, `http://tauri.localhost`
+    Windows) and the admin's `ADMIN_URL` are always allowed.
 - Client allowlist: `CLIENT_IDS` = your app's `client_id`(s), comma-separated; `admin` is always
     allowed. A sign-in from any other id gets `400 unknown_client` before a code is emailed or an
     account is created.

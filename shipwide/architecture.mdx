@@ -15,10 +15,12 @@ product on — not a finished app.
 - **The app** (`VITE_BACKEND_URL`) and **the admin** (`VITE_API_URL`) are separate origins —
     the admin reads everyone's data, so it's deployed and gated separately.
 - **The app resolves its API origin once**, through `getAvailableServer()`
-    (`src/helpers/systemUtils.ts`) — the single place every request gets its base URL. It reads
-    `VITE_BACKEND_URL`, upgrades a non-local origin to HTTPS, and caches the choice for the
-    session. Set `VITE_BACKEND_FALLBACK` too and it health-checks both and fails over to the
-    backup; leave it empty and a single backend is used directly with no probe.
+    (`src/helpers/systemUtils.ts`) — the single place every request gets its base URL. A
+    [self-hosted instance](/shipwide/self-host) the user connected to wins over everything;
+    otherwise it reads `VITE_BACKEND_URL`, upgrades a non-local origin to HTTPS (`enforceHttps`),
+    and caches the choice for the session. Set `VITE_BACKEND_FALLBACK` too and it health-checks
+    both and fails over to the backup; leave it empty and a single backend is used directly with
+    no probe. One backend needs only `VITE_BACKEND_URL` — the failover path stays dormant.
 - **The website** is standalone marketing; its only optional tie-in is the support form,
     which posts to the API's public **`POST /v1/support`** when you set `PUBLIC_SUPPORT_ENDPOINT`
     to that URL (otherwise it runs in demo mode). No account needed; the message is emailed to you.
@@ -33,6 +35,10 @@ App, API and admin all agree on:
 
 - One version prefix **`/v1/...`**; **camelCase** fields; **ISO-8601 UTC** timestamps;
     **UUIDv7** ids.
+- One casing exception: sign-in request bodies are **snake_case** (`client_id`, `session_name`,
+    `device_id`, `restore_token`, `id_token`, `identity_token`, …), in the app's and the admin's
+    auth calls alike, as are some admin request fields and filters (`user_id`, `is_test`, …).
+    The route's request schema is the source of truth; responses are always camelCase.
 - Errors are flat `{ "code": "snake_case_reason", "message": "for logs" }` — clients switch on
     `code`; `message` is never shown to end users.
 - Auth is **Bearer** (`Authorization: Bearer <access>`) — no cookies, no CSRF surface.
@@ -54,6 +60,10 @@ panel uses the same model, staff-scoped, with optional TOTP. Full detail in
     you the plumbing behind them; you build your product's screens on top.
 
 ## Where to go next
+
+Run everything with the [Quickstart](/shipwide/quickstart), wire up the environment in
+[Configuration](/shipwide/configuration), rebrand with [Customization](/shipwide/customization) —
+or go deeper into one part:
 
 <CardGroup cols={2}>
     <Card title="Backend" icon="server" href="/shipwide/backend">

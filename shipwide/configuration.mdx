@@ -15,6 +15,9 @@ Each part's **full** env table is in its own doc — this page is the map and th
     visitor). They're for public values: URLs, public keys, feature flags.
 - **Real secrets live only in the API's server environment** (`env.prod` on the server) — filled
     into the `REPLACE_ME_*` placeholders, never committed.
+- **A placeholder left unfilled in the app's `env.prod` is caught:** an optional integration whose
+    value still starts with `REPLACE_ME` counts as unset and stays off, and `npm run build` stops if
+    `VITE_BACKEND_URL` is still one (see [App](/shipwide/app)).
 
 ## Where each part's variables live
 
@@ -51,7 +54,8 @@ integration returns a clear error rather than crashing at boot.
 
 <Warning>
     **OneSignal:** the app only knows `VITE_ONESIGNAL_APP_ID` (public). The REST **API key is a
-    server secret** in `shipwide_api` — never move it into a `VITE_*`.
+    server secret** in `shipwide_api` — never move it into a `VITE_*`. See
+    [Push & VoIP](/shipwide/push).
 </Warning>
 
 - **`VITE_APP_NAME`** namespaces *all* local data on the app (encrypted storage, settings, cache,

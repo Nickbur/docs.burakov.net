@@ -140,6 +140,7 @@ Users opt in to this mode one by one. To hide it, remove its entry points:
 The rest of the plumbing does nothing while no instance is stored, so you can keep it or remove
 it. It consists of the `isSelfHost()` branches in `systemUtils.ts`, `authenticatedAPI.ts`, the
 router guard, `Splash.vue`, `views/core/App.vue`, `OneSignalInitializer.vue`,
-`RevenueCatInitializer.vue` and `subscriptionStore.ts`; `getAuthToken()` in `createListSync.ts`
-and `useFileUpload.ts`; the `hostedOnly` route meta in `router/routes.ts`; plus `backendIp` and
+`RevenueCatInitializer.vue` and `stores/core/subscriptionStore.ts`; `getAuthToken()` in
+`services/offline/createListSync.ts`, `composables/useFileUpload.ts` and
+`helpers/security/biometricLock.ts`; the `hostedOnly` route meta in `router/routes.ts`; plus `backendIp` and
 `selfHostToken` in `systemStore`.

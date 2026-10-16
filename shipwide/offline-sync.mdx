@@ -266,10 +266,13 @@ pending, but the tab keeps working locally.
 1. **jeep-sqlite under Vite:** `sqlite.ts` loads the custom-elements build
     (`jeep-sqlite/dist/components/jeep-sqlite` + `defineCustomElement()`), not
     `jeep-sqlite/loader`. The lazy loader never finishes hydrating, so `getDb()` hangs on web.
-2. **The wasm file must match `sql.js`:** `public/assets/sql-wasm.wasm` must come from the exact
-    `sql.js` version in `package.json` (`1.11.0`). When you upgrade `sql.js`, copy its
-    `dist/sql-wasm.wasm` over it. A mismatch breaks only web and desktop, so native testing won't
-    catch it.
+2. **The wasm file must match the `sql.js` glue that `jeep-sqlite` embeds:** jeep-sqlite 2.8.0
+    bundles the **sql.js 1.11.0** glue, so `public/assets/sql-wasm.wasm` must be the 1.11.0 wasm —
+    regardless of the `sql.js` version in `package.json`, which is not what runs.
+    Copying a newer `node_modules/sql.js/dist/sql-wasm.wasm` over it causes a WebAssembly
+    `LinkError`. Replace the wasm only when you upgrade `jeep-sqlite`, with the wasm of the sql.js
+    version that release embeds (check the versions in `package.json` and `node_modules`). A
+    mismatch breaks only web and desktop, so native testing won't catch it.
 3. **`persist()` after every write:** on web, a write stays in memory until it is saved to
     IndexedDB. The repo factory does this for you; do the same in any raw SQL you add.
 4. **One write at a time:** every write shares one connection, and each `db.run()` opens its
