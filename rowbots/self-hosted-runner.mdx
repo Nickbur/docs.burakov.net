@@ -16,8 +16,8 @@ This page covers the self-hosted runner. It is the choice when your code, keys a
 inside your own perimeter, when you use a model on your own network, or when you need iOS builds.
 
 The runner is published openly — source at
-[github.com/Nickbur/rowbots_runner](https://github.com/Nickbur/rowbots_runner), images on the GitHub Container
-Registry — so you can read exactly what runs on your machine.
+[github.com/Nickbur/rowbots_runner](https://github.com/Nickbur/rowbots_runner), images on `registry.burakov.net`,
+free to pull without an account — so you can read exactly what runs on your machine.
 
 ## How the runner talks to Rowbots
 
@@ -43,14 +43,15 @@ disconnected more than 30 days ago.
 ## Requirements
 
 - A **Linux** server, **x86-64 or ARM64**, with **Docker Engine** and the **Compose** plugin (or a Mac — see
-  [iOS builds](#ios-builds)).
+  [iOS builds](#ios-builds)). On **Ubuntu** or **Debian** the runner's install script sets everything up for you.
 - **gVisor** registered with Docker as the `runsc` runtime — it is what isolates the sandbox from your
-  host. See the [gVisor install guide](https://gvisor.dev/docs/user_guide/install/); after installing, run
-  `sudo runsc install` and restart Docker.
+  host. The install script handles it; on other distributions, see the
+  [gVisor install guide](https://gvisor.dev/docs/user_guide/install/), then run `sudo runsc install` and restart
+  Docker.
 - Resources for parallel sandboxes: each sandbox gets 2 CPUs and 4 GB of memory by default, so the default two
   parallel jobs want **at least 4 CPUs, 8 GB of memory and 80 GB of disk**.
-- Outbound HTTPS to Rowbots, your git host, your model providers, the GitHub Container Registry and the package
-  registries your projects use.
+- Outbound HTTPS to Rowbots, your git host, your model providers, `registry.burakov.net` and the package registries
+  your projects use.
 
 ## Set it up
 
@@ -65,6 +66,14 @@ disconnected more than 30 days ago.
         ```bash
         git clone https://github.com/Nickbur/rowbots_runner && cd rowbots_runner
         cp env/env.prod .env
+        ```
+    </Step>
+    <Step title="Prepare the server">
+        On Ubuntu or Debian, install Docker Engine, the Compose plugin and gVisor in one go — the script skips
+        whatever is already there and ends with a test container under gVisor:
+
+        ```bash
+        sudo bash scripts/install-host.sh
         ```
     </Step>
     <Step title="Configure it">
@@ -152,9 +161,9 @@ headers or environment variables:
 
 | Image | Tags | What it is |
 |---|---|---|
-| `ghcr.io/nickbur/rowbots-runner` | `1`, `1.2`, `1.2.3`, `latest` | the engine and the egress proxy |
-| `ghcr.io/nickbur/rowbots-sandbox` | `1`, `1.2.3` | the **standard** sandbox: JavaScript / TypeScript and Python toolchains, plus the check tools (secret and dependency scanners, static analysis, browser tests, mutation and property tests) |
-| `ghcr.io/nickbur/rowbots-sandbox` | `1-full`, `1.2.3-full` | the **full** sandbox: standard plus Go, Rust and load testing |
+| `registry.burakov.net/rowbots-runner` | `1`, `1.2`, `1.2.3`, `latest` | the engine and the egress proxy |
+| `registry.burakov.net/rowbots-sandbox` | `1`, `1.2.3` | the **standard** sandbox: JavaScript / TypeScript and Python toolchains, plus the check tools (secret and dependency scanners, static analysis, browser tests, mutation and property tests) |
+| `registry.burakov.net/rowbots-sandbox` | `1-full`, `1.2.3-full` | the **full** sandbox: standard plus Go, Rust and load testing |
 
 Every image is built for x86-64 and ARM64. The `1` tags follow the latest 1.x release; pin an exact version such as
 `1.2.3` if you prefer to update by hand. The runner pulls the sandbox images itself the first time it needs them.
@@ -210,7 +219,7 @@ enroll a new runner there and revoke the old one.
 | What you see | What to do |
 |---|---|
 | `EGRESS_ADMIN_TOKEN is still the template placeholder` / `must be at least 32 characters` | Set a random token: `openssl rand -hex 32`. |
-| `Docker runtime "runsc" is not registered with the daemon` | Install gVisor, run `sudo runsc install` and restart Docker. |
+| `Docker runtime "runsc" is not registered with the daemon` | Run `sudo bash scripts/install-host.sh` — or install gVisor, run `sudo runsc install` and restart Docker. |
 | `ROWBOTS_RUNNER_ID and ROWBOTS_RUNNER_SECRET are required` | Paste the values from enrollment into `.env`. |
 | `runner enrollment refused` | The runner was revoked or the secret is wrong — enroll a new runner. |
 | The runner is **unhealthy** in `docker compose ps` | It hasn't reached Rowbots for over 24 hours — check outbound HTTPS from the server. |
