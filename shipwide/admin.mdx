@@ -57,9 +57,15 @@ this origin: `ADMIN_URL` in the API env is added to CORS, so `ADMIN_URL` and the
 agree.
 
 **Scripts:** `switch_to_dev|prod` · `serve` (Vite :5176, `strictPort`) · `fix` (Prettier +
-`eslint --fix`) · `build` (the quality gate: Prettier check + ESLint + `vue-tsc` → `dist/`) ·
+`eslint --fix`) · `build` (the quality gate: Prettier check + ESLint + `vue-tsc` + tests → `dist/`) ·
 `setup-https` ([HTTPS in dev](/shipwide/https-dev)) · `license-check` (production-dependency
 licences) · `re-install-deps` (clean reinstall).
+
+**Tests:** `*.test.ts` next to the code — unit tests for the API client, token refresh, encrypted
+storage, i18n and stores, and component tests that mount every screen with the network mocked
+(Vitest + `@vue/test-utils` in happy-dom; shared helpers in `src/test/`). `build` measures coverage
+and fails below 80% overall, or 90% for `config`, `core`, `i18n`, `modules`, `router` and `stores`.
+One file on its own: `npx vitest run <file> --coverage.enabled=false`.
 
 ## Signing in
 

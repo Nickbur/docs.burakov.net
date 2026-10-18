@@ -19,8 +19,15 @@ npm run switch_to_dev   # env/env.dev → .env
 npm run serve           # http://localhost:4334
 # production:
 npm run switch_to_prod  # env/env.prod → .env (set your domain first)
-npm run build           # Prettier check + ESLint + astro-i18next generate + astro check + astro build → static output
+npm run build           # Prettier check + ESLint + astro-i18next generate + astro check + astro build → static output, then the tests
 ```
+
+**Tests** (Vitest, run by `build` right after `astro build`): **unit** tests for the TypeScript under
+`src/` (coverage gate: 90%), and **smoke** tests in `smoke/` that read the built `dist/` — every page
+exists in every language, each has its title, description, canonical and hreflang links, no internal
+link or asset points to a missing file, the sitemap and robots.txt match the built pages, and no
+`undefined` or raw translation key leaked into the HTML. One file on its own:
+`npx vitest run <file> --coverage.enabled=false` (smoke files need a built `dist/`).
 
 ## Where things live
 

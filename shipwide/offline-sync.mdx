@@ -293,8 +293,11 @@ pending, but the tab keeps working locally.
 7. **A tie keeps the local edit** (`>=` in the merge). This is intentional; don't tighten it to
     `>`.
 8. **Unit tests:** `npm run build` runs the `*.test.ts` files next to the code (Vitest, `TZ=UTC` pinned in `vitest.config.ts`).
-    Tests ship for the offline layer (registry, migration-version uniqueness, write queue, cache ownership, sync gate), for
-    token refresh, and for the Pro gate.
+    Every part of the offline layer is tested — registry, migration-version uniqueness, the repo and list-sync factories,
+    write queue, cache ownership, sync gate and teardown — and the repos run their real SQL on an in-memory SQLite
+    (`src/test/services-sqlite.ts`, sql.js). Copy the Notes tests when you add an entity: they show the pattern, and
+    `build`'s coverage gate (90% for `services` and the TypeScript in `src/features/`) expects the new entity to be tested
+    too.
 
 ## Gate it behind Pro
 

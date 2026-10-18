@@ -107,7 +107,8 @@ a port, edit the part's `vite.config.ts` / `astro.config.mjs` (for the app also 
     `chore`, `docs`, `refactor`, `test`, …).
 
 In every part, `npm run build` is the quality gate: it starts with `prettier --check .` and
-`eslint .`, then type-checks, runs the unit tests (app and API) and builds. `npm run fix` applies
+`eslint .`, then type-checks, runs the tests (app, admin panel, API and website — each with a coverage
+gate: 80% overall, 90% for the logic folders) and builds. `npm run fix` applies
 the automatic fixes (Prettier, then `eslint --fix`) — run it after writing code, review the diff,
 then build. ESLint
 is type-aware (typescript-eslint): a promise you deliberately don't wait for is written

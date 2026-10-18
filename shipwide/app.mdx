@@ -178,7 +178,7 @@ device the user is signed in on. See [Push & VoIP](/shipwide/push).
 npm install
 npm run serve          # Ionic dev server (web, port 8100)
 npm run serve:desktop  # Tauri desktop dev (auto-matches Vite's HTTP/HTTPS scheme)
-npm run build          # Prettier check + ESLint + vue-tsc + unit tests (TZ=UTC, pinned in vitest.config.ts) + vite build + cap sync (iOS / Android)
+npm run build          # Prettier check + ESLint + vue-tsc + tests with a coverage gate (TZ=UTC, pinned in vitest.config.ts) + vite build + cap sync (iOS / Android)
 ```
 
 `npm run switch_to_dev` copies `env/env.dev` → `.env`, which points `VITE_BACKEND_URL` at the local
@@ -245,3 +245,11 @@ Prettier + `eslint --fix`) · `build` (the full gate: Prettier + ESLint + vue-ts
 build + cap sync) · `license-check` (production-dependency licences) · `bump` (version, across
 `package.json` and every native project) — plus `switch_to_dev` / `switch_to_prod`, `setup-https`
 ([HTTPS in dev](/shipwide/https-dev)) and `re-install-deps` (clean reinstall).
+
+**Tests:** `*.test.ts` next to the code — unit tests for the API client, token refresh, encrypted
+storage, the offline layer (its real SQL runs on an in-memory SQLite), stores, composables and routing,
+and component tests that mount every screen with the network and native plugins mocked (Vitest +
+`@vue/test-utils` in happy-dom, `fake-indexeddb`; shared helpers in `src/test/`). `build` measures
+coverage and fails below 80% overall, or 90% for `composables`, `helpers`, `i18n`, `router`, `services`,
+`stores` and the TypeScript in `src/features/`. One file on its own: `npx vitest run <file> --coverage.enabled=false`. Keep the tests when
+you build on the kit: they are the quickest way to see that a change broke a shared mechanic.
