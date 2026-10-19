@@ -7,7 +7,7 @@ mode: "wide"
 ## The judge witnesses, it doesn't opine
 
 Most AI coding tools ask a second model whether the first one did a good job. Their mistakes tend to be
-the same mistakes. Rowbots doesn't do that.
+the same mistakes. Remigent doesn't do that.
 
 Its judge **binds every verdict to executed reality**: the code compiles, the tests pass, the scanners
 are clean, the API answers, the app actually renders the screen. An executor can't talk its way past a
@@ -26,11 +26,11 @@ that can't be executed — never as the verdict.
   code, so their blind spots don't line up.
 
 After you merge, the exam **graduates**: its tests become permanent regression checks in
-`.rowbots/checks/`, and the next change gets a new hidden exam.
+`.remigent/checks/`, and the next change gets a new hidden exam.
 
 ## "Green" isn't enough
 
-A passing test suite can still be wrong. Rowbots closes the gap from several sides:
+A passing test suite can still be wrong. Remigent closes the gap from several sides:
 
 - **Mutation testing** on the changed lines proves the checks actually catch bugs.
 - **Property and fuzz tests** go beyond hand-picked examples.
@@ -52,7 +52,7 @@ A passing test suite can still be wrong. Rowbots closes the gap from several sid
 **Full coverage** (every layer): JavaScript/TypeScript (Node, Vue, React, Ionic web, Astro), Python, Rust
 and Go. **Other stacks** (PHP, Java, …) get the recipe, the universal layer, and the web and API layers
 where they apply. **Native apps** get their build and unit tests, plus the web layer when there is one.
-iOS builds need a [self-hosted runner](/rowbots/self-hosted-runner) on a Mac.
+iOS builds need a [self-hosted runner](/remigent/self-hosted-runner) on a Mac.
 
 <Note>
     Verification is never skipped or weakened to save money. If the checks an item needs don't fit the
@@ -75,7 +75,7 @@ The goal is to make merging a quick, confident decision.
 
 ## After you merge
 
-Rowbots never deploys and never touches production — your CI/CD does. What it can do is watch the
+Remigent never deploys and never touches production — your CI/CD does. What it can do is watch the
 signals you've connected (errors, store reviews, support, analytics, uptime) for a window after the
 merge, 72 hours by default:
 

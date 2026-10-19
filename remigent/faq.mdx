@@ -6,15 +6,15 @@ mode: "wide"
 
 <AccordionGroup>
     <Accordion title="How do I start?">
-        Sign in at [app.rowbots.dev](https://app.rowbots.dev) — new workspaces get a 14-day Studio trial with no
-        card. See the [Quickstart](/rowbots/quickstart).
+        Sign in at [app.remigent.com](https://app.remigent.com) — new workspaces get a 14-day Studio trial with no
+        card. See the [Quickstart](/remigent/quickstart).
     </Accordion>
-    <Accordion title="Does Rowbots merge or deploy on its own?">
+    <Accordion title="Does Remigent merge or deploy on its own?">
         No. Every change stops at a pull request in your own git host, and merging is always your
-        decision. Deployment is up to your own CI/CD — Rowbots never touches production.
+        decision. Deployment is up to your own CI/CD — Remigent never touches production.
     </Accordion>
     <Accordion title="How is this different from an AI coding assistant?">
-        An assistant waits for you to drive it, one prompt at a time, in one repository. Rowbots runs a
+        An assistant waits for you to drive it, one prompt at a time, in one repository. Remigent runs a
         whole fleet on its own: it plans before coding, has an independent judge prove each change against
         executed checks, ranks work across all your products, and keeps them maintained when nothing is
         queued. You answer the occasional escalation and merge.
@@ -22,38 +22,38 @@ mode: "wide"
     <Accordion title="Which models does it use?">
         Yours. Connect keys for OpenRouter, Anthropic, OpenAI, Replicate, or Claude through Amazon Bedrock,
         Google Vertex AI or Microsoft Foundry — or any OpenAI-compatible endpoint, including open-weight
-        models you host. See [Your own models](/rowbots/your-own-models).
+        models you host. See [Your own models](/remigent/your-own-models).
     </Accordion>
     <Accordion title="What does it cost?">
         A flat monthly fee by the number of active projects — from Free to Agency — never per token or per
         pull request. Model and compute usage is billed to you by your own providers, and a hard monthly
-        cap keeps it in check. See [Pricing](/rowbots/pricing).
+        cap keeps it in check. See [Pricing](/remigent/pricing).
     </Accordion>
     <Accordion title="Can my code stay on my own machine?">
-        Yes — run a [self-hosted runner](/rowbots/self-hosted-runner). Your code, code index, hidden exams,
+        Yes — run a [self-hosted runner](/remigent/self-hosted-runner). Your code, code index, hidden exams,
         model keys and git credentials then never leave your machine; only job status and summaries reach
-        Rowbots.
+        Remigent.
     </Accordion>
     <Accordion title="Which languages and stacks are supported?">
         JavaScript/TypeScript (Node, Vue, React, Ionic, Astro), Python, Rust and Go get every check layer.
         Other stacks — PHP, Java and more — get your build and tests, the universal checks, and the web and
         API checks where they apply. iOS builds need a self-hosted runner on a Mac. See
-        [Verification](/rowbots/verification).
+        [Verification](/remigent/verification).
     </Accordion>
     <Accordion title="Which git hosts work?">
         GitHub, GitLab, Gitea and any self-hosted git server. Commits and pull requests can appear as
-        `rowbots[bot]` or under your own name.
+        `remigent[bot]` or under your own name.
     </Accordion>
     <Accordion title="What if it gets something wrong?">
         The judge catches most problems before you ever see them, and every pull request lists what was
-        not verified. If a defect still slips through, Rowbots can open a revert pull request once your
+        not verified. If a defect still slips through, Remigent can open a revert pull request once your
         signals show a regression, and the defect becomes a permanent check across your fleet.
     </Accordion>
     <Accordion title="Will it keep spending when there's nothing useful to do?">
         No. Maintenance work runs only while its value is worth its cost and the budget allows — below that
-        line Rowbots genuinely stops.
+        line Remigent genuinely stops.
     </Accordion>
     <Accordion title="Is my code used to train AI models?">
-        Never. See [Security & privacy](/rowbots/security-and-privacy).
+        Never. See [Security & privacy](/remigent/security-and-privacy).
     </Accordion>
 </AccordionGroup>

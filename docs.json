@@ -528,7 +528,7 @@
                 ]
             },
             {
-                "product": "Rowbots AI",
+                "product": "Remigent",
                 "icon": "robot",
                 "description": "Autonomous software team for your products",
                 "tabs": [
@@ -537,11 +537,11 @@
                         "groups": [
                             {
                                 "group": "Getting started",
-                                "pages": ["rowbots", "rowbots/quickstart", "rowbots/dashboard"]
+                                "pages": ["remigent", "remigent/quickstart", "remigent/dashboard"]
                             },
                             {
-                                "group": "Working with Rowbots",
-                                "pages": ["rowbots/how-it-works", "rowbots/feeding-work", "rowbots/review-and-merge", "rowbots/verification"]
+                                "group": "Working with Remigent",
+                                "pages": ["remigent/how-it-works", "remigent/feeding-work", "remigent/review-and-merge", "remigent/verification"]
                             }
                         ]
                     },
@@ -550,15 +550,15 @@
                         "groups": [
                             {
                                 "group": "Setting up",
-                                "pages": ["rowbots/setup", "rowbots/projects-and-fleet", "rowbots/recipe", "rowbots/team-and-permissions"]
+                                "pages": ["remigent/setup", "remigent/projects-and-fleet", "remigent/recipe", "remigent/team-and-permissions"]
                             },
                             {
                                 "group": "Models & compute",
-                                "pages": ["rowbots/your-own-models", "rowbots/compute", "rowbots/self-hosted-runner"]
+                                "pages": ["remigent/your-own-models", "remigent/compute", "remigent/self-hosted-runner"]
                             },
                             {
                                 "group": "Governance",
-                                "pages": ["rowbots/channels", "rowbots/budget", "rowbots/security-and-privacy"]
+                                "pages": ["remigent/channels", "remigent/budget", "remigent/security-and-privacy"]
                             }
                         ]
                     },
@@ -567,7 +567,7 @@
                         "groups": [
                             {
                                 "group": "Help",
-                                "pages": ["rowbots/pricing", "rowbots/faq", "rowbots/troubleshooting"]
+                                "pages": ["remigent/pricing", "remigent/faq", "remigent/troubleshooting"]
                             }
                         ]
                     }

@@ -1,10 +1,10 @@
 ---
 title: "Review, merge & escalations"
-description: "How Rowbots AI asks for your attention — the ranked merge queue, batch approval, linked pull requests, escalations, and notifications."
+description: "How Remigent asks for your attention — the ranked merge queue, batch approval, linked pull requests, escalations, and notifications."
 mode: "wide"
 ---
 
-You step in at exactly two points: **merging** and **answering escalations**. Rowbots spends your attention like a
+You step in at exactly two points: **merging** and **answering escalations**. Remigent spends your attention like a
 budget, so both arrive ranked by what they're worth.
 
 ## The merge queue
@@ -15,46 +15,46 @@ value × cost**:
 | Tier | What's in it | How you handle it |
 | --- | --- | --- |
 | **Urgent** | A fix for something already hurting — above all a revert after a regression | It reaches you at once, on your highest-priority channel |
-| **Batch** | Small, safe, well-verified changes — a dependency bump, a fixed typo, a covered bug fix | Glance over the list and **approve the batch**; Rowbots merges them through your git host |
+| **Batch** | Small, safe, well-verified changes — a dependency bump, a fixed typo, a covered bug fix | Glance over the list and **approve the batch**; Remigent merges them through your git host |
 | **Focused** | Changes with a wider blast radius or lower confidence | Open the pull request in your git host and review it like any other |
 
 It's the same merge gate either way — only the attention it takes differs. Batch merging is available to **Owners and
 Admins**, and always respects your branch protection and required reviews.
 
 Every pull request carries the judge's evidence and an honest list of what wasn't verified — see
-[Verification](/rowbots/verification).
+[Verification](/remigent/verification).
 
 ### Linked pull requests
 
 When a change spans several repositories, you get a **linked set** with a merge order — for example the API before
-the app. Accept the set as one action, and Rowbots merges each pull request in order.
+the app. Accept the set as one action, and Remigent merges each pull request in order.
 
 ## Attention budget
 
-A daily **attention budget** — 30 minutes by default — caps how much Rowbots asks of you. It surfaces the
+A daily **attention budget** — 30 minutes by default — caps how much Remigent asks of you. It surfaces the
 highest-leverage items within it, and the rest waits without blocking any other work. Change the budget in
 **Settings**.
 
 ## Escalations
 
-Rowbots escalates only what's yours to decide: a question about **what the product should be** that your constitution
+Remigent escalates only what's yours to decide: a question about **what the product should be** that your constitution
 doesn't answer yet, or a step that **can't be undone**.
 
-- Each escalation comes with the options and Rowbots' recommendation.
-- It **never blocks**: Rowbots parks that part and keeps working on everything else.
+- Each escalation comes with the options and Remigent's recommendation.
+- It **never blocks**: Remigent parks that part and keeps working on everything else.
 - Your answer is **written into the constitution**, so the same question isn't asked again.
 - If two people answer, the first answer from an Owner or Admin counts; the Owner can override it, and both are
     recorded.
 
 ### Overriding a warning
 
-When you insist on something Rowbots considers a bad bet, it records its forecast and asks you to **acknowledge the
+When you insist on something Remigent considers a bad bet, it records its forecast and asks you to **acknowledge the
 warning explicitly** before going ahead. Something objectively broken — harmful, incoherent or against a confirmed
-invariant — is refused outright. See [Rowbots pushes back](/rowbots/feeding-work#rowbots-pushes-back).
+invariant — is refused outright. See [Remigent pushes back](/remigent/feeding-work#remigent-pushes-back).
 
 ## Notifications
 
-Choose where Rowbots reaches you on the **Notifications** page (the bell); the Owner sets the workspace defaults in
+Choose where Remigent reaches you on the **Notifications** page (the bell); the Owner sets the workspace defaults in
 **Settings**:
 
 | Channel | Notes |

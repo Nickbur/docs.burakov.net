@@ -1,16 +1,16 @@
 ---
 title: "Verification recipe"
-description: "The recipe format — how Rowbots AI builds, tests and runs each repository in its sandbox, which services it starts, and which hosts it may reach."
+description: "The recipe format — how Remigent builds, tests and runs each repository in its sandbox, which services it starts, and which hosts it may reach."
 mode: "wide"
 ---
 
-A **recipe** tells Rowbots how to work with one repository: the environment, setup, services, build, test and run
+A **recipe** tells Remigent how to work with one repository: the environment, setup, services, build, test and run
 commands, and where the app answers once it's running. The executor and the judge build their sandboxes **only** from
 the confirmed recipe.
 
-Rowbots proposes a recipe during the [onboarding interview](/rowbots/setup) from what it
+Remigent proposes a recipe during the [onboarding interview](/remigent/setup) from what it
 finds in the repository; an **Owner or Admin** confirms it. The confirmed recipe is shown on the project's page
-(**Projects** → the project → **Recipes**), and a copy arrives in the repository as `.rowbots/recipe.yaml` by pull
+(**Projects** → the project → **Recipes**), and a copy arrives in the repository as `.remigent/recipe.yaml` by pull
 request. Changes go through the same interview (**Onboarding**) and are confirmed the same way — the copy in the
 repository follows.
 
@@ -57,7 +57,7 @@ api:
 | Field | What it is | Default |
 | --- | --- | --- |
 | `stack` | `node`, `python`, `rust`, `go` — full check coverage — or `other` for everything else | `other` |
-| `image` | `standard` or `full` (Rowbots' sandbox images), or your own image reference, optionally pinned by digest | `standard` |
+| `image` | `standard` or `full` (Remigent's sandbox images), or your own image reference, optionally pinned by digest | `standard` |
 | `workdir` | The sub-directory commands run in — for monorepos and shared repositories | `.` |
 | `setup` | Commands that prepare the sandbox, in order (up to 20) | none |
 | `services` | Up to 6 services started next to the app: `postgres`, `redis`, `mysql`, `mongodb` — each with an optional `version` and `env` | none |
@@ -70,10 +70,10 @@ api:
 | `web` | Turns on the web-UI checks: the app's `url`, plus `viewports` and `themes` | off |
 | `api` | Turns on the API checks: the `baseUrl`, and an optional `openapi` document path | off |
 | `timeouts` | `setupSeconds` (30–3600) and `commandSeconds` (30–7200) | 900 / 1200 |
-| `platform` | `linux`, or `macos` for iOS and macOS builds — such a repository's work runs only on a [self-hosted runner on a Mac](/rowbots/self-hosted-runner#ios-builds) | `linux` |
+| `platform` | `linux`, or `macos` for iOS and macOS builds — such a repository's work runs only on a [self-hosted runner on a Mac](/remigent/self-hosted-runner#ios-builds) | `linux` |
 
 With `web` on, pages are checked at **1280×800** and **390×844**, in **light** and **dark**, unless you list your own
-(up to 4 viewports). See [Verification](/rowbots/verification) for what each layer runs.
+(up to 4 viewports). See [Verification](/remigent/verification) for what each layer runs.
 
 ## Network access
 

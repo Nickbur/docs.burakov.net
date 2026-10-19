@@ -1,10 +1,10 @@
 ---
 title: "Connect channels"
-description: "Connect the channels Rowbots AI takes work and signals from — email, Telegram, issues, Sentry, store reviews, support, analytics and uptime — and how outside input is trusted."
+description: "Connect the channels Remigent takes work and signals from — email, Telegram, issues, Sentry, store reviews, support, analytics and uptime — and how outside input is trusted."
 mode: "wide"
 ---
 
-Channels feed the same [inbox](/rowbots/feeding-work) as the dashboard. An **Owner or Admin** connects them in
+Channels feed the same [inbox](/remigent/feeding-work) as the dashboard. An **Owner or Admin** connects them in
 **Connections → Channels**; each one is mapped to the project it belongs to (a Sentry project, a store app, a
 repository).
 
@@ -13,9 +13,9 @@ repository).
 | Category | Channel | How it connects | Trust |
 | --- | --- | --- | --- |
 | **Your team** | Dashboard inbox — text, screenshots, files | Built in | trusted |
-| | **Email-in** | A Rowbots address per workspace or per project — send or forward to it | trusted from members |
+| | **Email-in** | A Remigent address per workspace or per project — send or forward to it | trusted from members |
 | | **Telegram bot** | Link the bot to your account; it also delivers notifications | trusted |
-| | **GitHub / GitLab issues** labelled `rowbots` | Through your repository connection | trusted from members |
+| | **GitHub / GitLab issues** labelled `remigent` | Through your repository connection | trusted from members |
 | **Errors & crashes** | **Sentry** — cloud or self-hosted | An auth token and the projects to watch | outside input |
 | **Store reviews** | **Google Play**, **App Store Connect** | API credentials and the app to watch | outside input |
 | **Support** | Any help desk | Forward to the email-in address, or send a generic webhook | outside input |
@@ -28,9 +28,9 @@ Channel credentials are stored in your workspace's encrypted vault.
 
 ## Trust
 
-Rowbots treats input by where it comes from:
+Remigent treats input by where it comes from:
 
-- **Your team** — trusted, within each person's [role](/rowbots/team-and-permissions).
+- **Your team** — trusted, within each person's [role](/remigent/team-and-permissions).
 - **Outside input** — reviews, support messages, crash reports, issues from strangers. It's read only by a triage step
     with **no tools, no code and no secrets**, which turns it into a structured item; raw outside text never reaches
     the agents that write code. Outside input can start only **maintenance work** — a bug, a security issue, a
@@ -38,10 +38,10 @@ Rowbots treats input by where it comes from:
 - **Data** — metrics and uptime signals, used to measure the effect of merged changes.
 
 Duplicates are merged, and the value gate and your budget cap keep a flood of reviews from turning into a flood of
-spending. Only the excerpt Rowbots needs is stored, for up to **180 days**.
+spending. Only the excerpt Remigent needs is stored, for up to **180 days**.
 
 ## After a merge
 
-Errors, reviews, support, metrics and uptime are also what Rowbots watches **after you merge**: if a change makes
+Errors, reviews, support, metrics and uptime are also what Remigent watches **after you merge**: if a change makes
 them worse within the observation window (72 hours by default), it opens an urgent revert pull request. With no
-channels connected, pull requests say plainly that nothing was observed. See [Verification](/rowbots/verification).
+channels connected, pull requests say plainly that nothing was observed. See [Verification](/remigent/verification).

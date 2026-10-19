@@ -1,6 +1,6 @@
 ---
 title: "Set up a workspace"
-description: "Set up Rowbots AI as a workspace owner — connect git, model keys and compute, add projects, take the onboarding interview, and set the budget."
+description: "Set up Remigent as a workspace owner — connect git, model keys and compute, add projects, take the onboarding interview, and set the budget."
 mode: "wide"
 ---
 
@@ -10,7 +10,7 @@ resume later — the dashboard shows how far you've got.
 
 ## 1. Sign in
 
-Open [app.rowbots.dev](https://app.rowbots.dev) and sign in with your email and a one-time code. Your workspace is
+Open [app.remigent.com](https://app.remigent.com) and sign in with your email and a one-time code. Your workspace is
 created with you as its **Owner** — the account that holds the plan and pays for it.
 
 ## 2. Connect your git host
@@ -19,12 +19,12 @@ In **Connections → Repositories**:
 
 | Host | How it connects |
 | --- | --- |
-| **GitHub**, **GitLab.com** | Install the Rowbots app on your account or organization and pick the repositories. It gets narrow, revocable permissions — enough to push branches and open pull requests. |
+| **GitHub**, **GitLab.com** | Install the Remigent app on your account or organization and pick the repositories. It gets narrow, revocable permissions — enough to push branches and open pull requests. |
 | **Self-hosted GitLab, Gitea, any other server** | A service-account token for pull requests, plus a deploy key for git over SSH. |
 
-Rowbots never asks for a broad personal access token. With a [self-hosted runner](/rowbots/self-hosted-runner), the
+Remigent never asks for a broad personal access token. With a [self-hosted runner](/remigent/self-hosted-runner), the
 token and deploy key for any host other than the GitHub app stay in the runner's own configuration instead. Your
-**14-day Studio trial** starts when you connect your first git account — see [Pricing](/rowbots/pricing).
+**14-day Studio trial** starts when you connect your first git account — see [Pricing](/remigent/pricing).
 
 ## 3. Choose where code runs
 
@@ -33,36 +33,36 @@ Your code always runs on **your** compute. The **Owner** picks the mode in **Set
 - **Managed** — in **Connections → Compute**, add your **E2B**, **Daytona** or **Modal** API key;
 - **Self-hosted** — in **Connections → Compute**, enroll a **self-hosted runner**.
 
-See [Compute & sandboxes](/rowbots/compute).
+See [Compute & sandboxes](/remigent/compute).
 
 ## 4. Connect model providers
 
 Bring at least one key — OpenRouter, Anthropic, OpenAI, Replicate, Claude through Bedrock, Vertex AI or Foundry — or an
 OpenAI-compatible endpoint you host. Where it goes depends on the mode:
 
-- **Managed** — add it in **Connections → Models**; it's kept encrypted in Rowbots' vault;
-- **Self-hosted** — put it in the runner's configuration (`ROWBOTS_PROVIDERS`); it never reaches Rowbots. See
-    [Self-hosted runner](/rowbots/self-hosted-runner#model-providers).
+- **Managed** — add it in **Connections → Models**; it's kept encrypted in Remigent's vault;
+- **Self-hosted** — put it in the runner's configuration (`REMIGENT_PROVIDERS`); it never reaches Remigent. See
+    [Self-hosted runner](/remigent/self-hosted-runner#model-providers).
 
 Connect two different model families if you can, so the judge's exam is written by a different family than the code.
-See [Your own models](/rowbots/your-own-models).
+See [Your own models](/remigent/your-own-models).
 
 ## 5. Add projects
 
 A **project** is one product, made of one or more repositories. In **Projects**, choose **Add project** and pick its
 repositories.
 When one repository holds several products, give each project the paths it owns; paths no project claims are treated
-as your **shared platform**. See [Projects & your fleet](/rowbots/projects-and-fleet).
+as your **shared platform**. See [Projects & your fleet](/remigent/projects-and-fleet).
 
 ## 6. Take the onboarding interview
 
-Rowbots studies each repository first — its code, dependencies, tests and docs — then interviews you, one question at
+Remigent studies each repository first — its code, dependencies, tests and docs — then interviews you, one question at
 a time, each with a recommended answer you can accept or change:
 
 - your **product vision**, invariants, taste and priorities — this becomes the **constitution**;
 - how you commit and name branches;
 - each repository's **verification recipe** — how to build, test and run it (see
-    [Verification recipe](/rowbots/recipe));
+    [Verification recipe](/remigent/recipe));
 - which **expert profiles** may work on what (for example "anything touching auth also gets a security review").
 
 For a new product, the interview helps you shape the vision first. Nothing enters the constitution until you confirm
@@ -75,18 +75,18 @@ it.
 | **Monthly spending cap** | **Budget** | — (required) |
 | **Compute cap** *(managed sandbox providers)* | **Budget** | off |
 | **Daily attention budget** | **Settings** | 30 min a day |
-| **Commit authorship** | **Settings** | `rowbots[bot]` |
+| **Commit authorship** | **Settings** | `remigent[bot]` |
 | **Language of plans and pull requests** — for the constitution, pull requests and commits | **Settings** | English |
 | **Observation after merge** | **Settings** | 72 hours |
 | **Notifications** — your own channels | the **Notifications** page (the bell); workspace defaults in **Settings** | in-app and email |
 
 ## 8. Autonomy switches on
 
-Once the constitution is confirmed and the budget is set, Rowbots starts working. Its first pull request in each
-repository adds a `.rowbots/` directory — the constitution's read-only copy and the recipe — for you to review and
+Once the constitution is confirmed and the budget is set, Remigent starts working. Its first pull request in each
+repository adds a `.remigent/` directory — the constitution's read-only copy and the recipe — for you to review and
 merge like any other change.
 
 ## Next
 
-- Connect error tracking, store reviews and support — see [Connect channels](/rowbots/channels).
-- Invite your team — see [Team & permissions](/rowbots/team-and-permissions).
+- Connect error tracking, store reviews and support — see [Connect channels](/remigent/channels).
+- Invite your team — see [Team & permissions](/remigent/team-and-permissions).

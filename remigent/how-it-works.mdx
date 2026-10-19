@@ -4,7 +4,7 @@ description: "From an idea to a merged pull request — planning, building, judg
 mode: "wide"
 ---
 
-Rowbots works like a responsible senior engineer with a QA team behind them. It doesn't reach for code
+Remigent works like a responsible senior engineer with a QA team behind them. It doesn't reach for code
 first: it plans the whole change, builds it, proves it against reality and only then asks for your
 signature. You stand **at the door, not in the loop**.
 
@@ -12,27 +12,27 @@ signature. You stand **at the door, not in the loop**.
 
 <Steps>
     <Step title="Intake & triage">
-        Everything you hand it lands in one inbox. Rowbots deduplicates it, interprets it and ranks it
-        against the priorities in your [constitution](/rowbots/projects-and-fleet#the-constitution).
+        Everything you hand it lands in one inbox. Remigent deduplicates it, interprets it and ranks it
+        against the priorities in your [constitution](/remigent/projects-and-fleet#the-constitution).
     </Step>
     <Step title="Scheduling">
-        An item starts only when it is worth its cost, fits the [monthly budget](/rowbots/budget) and
+        An item starts only when it is worth its cost, fits the [monthly budget](/remigent/budget) and
         doesn't collide with other work in flight. Items that touch different parts of the code run in
         parallel; overlapping ones are ordered.
     </Step>
     <Step title="Planning">
-        Rowbots estimates, analyses risks, scouts the libraries and APIs it is unsure about, and writes a
+        Remigent estimates, analyses risks, scouts the libraries and APIs it is unsure about, and writes a
         complete plan with a cost forecast before any code changes. Larger work is split into a set of
         small, dependent steps — each one becomes its own pull request.
     </Step>
     <Step title="Building">
         The executor writes the code and its own tests inside an isolated
-        [sandbox](/rowbots/security-and-privacy#sandboxing), using your build and test commands.
+        [sandbox](/remigent/security-and-privacy#sandboxing), using your build and test commands.
     </Step>
     <Step title="Judging">
         An independent judge checks the result on a fresh copy of the exact commit, with its own hidden
         acceptance tests and the full check set. A failure goes back to the executor to fix, and the judge
-        verifies the fix again. See [Verification](/rowbots/verification).
+        verifies the fix again. See [Verification](/remigent/verification).
     </Step>
     <Step title="Pull request">
         The verified change is opened as a pull request in your own git host, with the evidence, the
@@ -40,10 +40,10 @@ signature. You stand **at the door, not in the loop**.
     </Step>
     <Step title="Your merge">
         You merge — one by one, or a batch of small, safe changes at once. Your own CI/CD deploys it;
-        Rowbots never touches production.
+        Remigent never touches production.
     </Step>
     <Step title="Watching the result">
-        After a merge, Rowbots can watch the signals you've connected (errors, reviews, analytics) for a
+        After a merge, Remigent can watch the signals you've connected (errors, reviews, analytics) for a
         while. If the change made things worse, it opens an urgent revert pull request.
     </Step>
 </Steps>
@@ -53,29 +53,29 @@ signature. You stand **at the door, not in the loop**.
 You touch exactly two points:
 
 1. **Answering an escalation.** When a decision is about *what* the product should be — a value or a
-   priority your constitution doesn't cover yet — Rowbots asks you once. It never blocks while waiting:
+   priority your constitution doesn't cover yet — Remigent asks you once. It never blocks while waiting:
    it parks that part and keeps working on everything else. Your answer is written into the constitution,
    so the same question is never asked twice.
 2. **Merging.** Merge is the final acceptance gate and always stays with you.
 
-Everything else — how to implement, which library to use, how to route around an obstacle — Rowbots
+Everything else — how to implement, which library to use, how to route around an obstacle — Remigent
 decides on its own, as long as the change can be undone. When something can't be undone, autonomy pauses:
-Rowbots prefers to make it reversible (feature flags, migrations that expand before they contract) or asks
+Remigent prefers to make it reversible (feature flags, migrations that expand before they contract) or asks
 you first.
 
 ## Trust modes
 
-For each task you choose how much Rowbots confirms before acting:
+For each task you choose how much Remigent confirms before acting:
 
 | Mode | What happens |
 |---|---|
-| **Confirm** — "confirm my understanding" | Rowbots shows you every plan and waits for your OK before building. |
-| **Usual** — "do it like we usually do" | Rowbots follows the decisions already made across your fleet and asks only about goals, taste, money and irreversible steps. |
-| **Trust** — "I trust you, proceed" | Rowbots decides more on its own; irreversible steps still need you. |
+| **Confirm** — "confirm my understanding" | Remigent shows you every plan and waits for your OK before building. |
+| **Usual** — "do it like we usually do" | Remigent follows the decisions already made across your fleet and asks only about goals, taste, money and irreversible steps. |
+| **Trust** — "I trust you, proceed" | Remigent decides more on its own; irreversible steps still need you. |
 
 ## Your attention is budgeted too
 
-On a fleet, your attention is the real bottleneck. Rowbots ranks everything that needs you by risk and
+On a fleet, your attention is the real bottleneck. Remigent ranks everything that needs you by risk and
 confidence: trivial, safe changes arrive as a quick batch to approve, high-stakes ones get a focused,
 individual review. A daily attention budget (30 minutes by default) caps how much it asks of you; the
 rest waits without blocking anything. As your constitution matures, the number of things that need you

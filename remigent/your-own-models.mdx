@@ -4,7 +4,7 @@ description: "Bring your own keys for any major model provider, or run open-weig
 mode: "wide"
 ---
 
-Rowbots is **provider-agnostic by design**. It doesn't resell tokens: you connect your own model keys,
+Remigent is **provider-agnostic by design**. It doesn't resell tokens: you connect your own model keys,
 and every call is billed to you by that provider at their prices. Nothing locks you to a single lab.
 
 ## Supported providers
@@ -22,13 +22,13 @@ and every call is billed to you by that provider at their prices. Nothing locks 
 
 <Note>
     An endpoint on your own network (for example `localhost`) is reachable only from a
-    [self-hosted runner](/rowbots/self-hosted-runner). With hosted compute, a custom endpoint must be
+    [self-hosted runner](/remigent/self-hosted-runner). With hosted compute, a custom endpoint must be
     reachable from the internet, with its URL and key.
 </Note>
 
 ## Which model does what
 
-Rowbots routes every call by **capability, cost and remaining budget**: routine, low-risk work goes to
+Remigent routes every call by **capability, cost and remaining budget**: routine, low-risk work goes to
 cheap or local models, while high-stakes reasoning gets the strongest model you've connected.
 
 | Role | Default tier |
@@ -45,11 +45,11 @@ code, the two don't share the same blind spots. You can adjust the defaults per 
 
 - **Hosted compute:** your keys are stored encrypted with a key unique to your workspace, decrypted only
   in memory for the job that needs them, and never logged.
-- **Self-hosted runner:** your keys live only in the runner's configuration on your machine — Rowbots
+- **Self-hosted runner:** your keys live only in the runner's configuration on your machine — Remigent
   never receives them.
 - **Model keys never enter the sandbox** where code runs, so code under test can't read them.
 
 ## Your code is never used for training
 
-Rowbots never uses your code or data to train models. Fleet memory stays inside your workspace; sharing
+Remigent never uses your code or data to train models. Fleet memory stays inside your workspace; sharing
 anonymous, non-proprietary patterns across customers is strictly opt-in.

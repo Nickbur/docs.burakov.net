@@ -4,7 +4,7 @@ description: "How code runs in isolation, where your code and keys live, how out
 mode: "wide"
 ---
 
-Rowbots writes and runs code in your repositories, so its security model starts from one rule: **code
+Remigent writes and runs code in your repositories, so its security model starts from one rule: **code
 under test is never trusted**, and neither is text from outside your team.
 
 ## Sandboxing
@@ -27,10 +27,10 @@ under test is never trusted**, and neither is text from outside your team.
 | Mode | Code, code index, hidden exams, traces | Model keys and git credentials |
 |---|---|---|
 | **Self-hosted runner** | only on your machine | only in the runner's configuration |
-| **Managed sandbox** | in Rowbots storage, encrypted with a key unique to your workspace; code passes through the engine in memory only | in an encrypted vault, decrypted only in memory for the job, never logged |
+| **Managed sandbox** | in Remigent storage, encrypted with a key unique to your workspace; code passes through the engine in memory only | in an encrypted vault, decrypted only in memory for the job, never logged |
 
 With a self-hosted runner, only job status, verdict summaries, pull request links, cost and usage, decision logs and
-escalations reach Rowbots' control plane. In managed mode the code-bearing artifacts above are stored as the table says
+escalations reach Remigent's control plane. In managed mode the code-bearing artifacts above are stored as the table says
 — encrypted, and deleted on the [retention schedule](#your-data).
 
 ## Outside input is quarantined
@@ -43,7 +43,7 @@ public become proposals for you.
 
 ## Tools from other services
 
-Rowbots agents can use external tools through MCP servers you allow per project. Their results are
+Remigent agents can use external tools through MCP servers you allow per project. Their results are
 treated as data, not instructions. **Autonomous work may use read-only tools only**, unless your
 constitution explicitly marks a tool as writing to a reversible development resource, such as a test
 database. Local MCP servers run only on your compute, in a sandbox separate from your code.
@@ -71,25 +71,25 @@ database. Local MCP servers run only on your compute, in a sandbox separate from
 
 ## Sub-processors
 
-The providers that help run Rowbots, each under contract and only for the purpose stated:
+The providers that help run Remigent, each under contract and only for the purpose stated:
 
 | Provider | Purpose | Data involved |
 |---|---|---|
-| **Contabo** | servers for the control plane, its database and file storage | everything Rowbots stores |
-| **Cloudflare** | DNS, network delivery and protection, hosting of the rowbots.dev website | traffic passing through |
+| **Contabo** | servers for the control plane, its database and file storage | everything Remigent stores |
+| **Cloudflare** | DNS, network delivery and protection, hosting of the remigent.com website | traffic passing through |
 | **Postmark** | sign-in codes, invitations and notification email; work you email in | email addresses and message content |
 | **Paddle** | checkout and billing, as Merchant of Record | billing details, collected by Paddle directly |
 | **Sentry** | error reports from the dashboard | technical details of the error, your account identifier |
 | **OneSignal** | browser push notifications, if you turn them on | a browser push token and the notification text |
 | **Telegram**, **Slack** | notifications and, for Telegram, new work you send the bot — only if you connect them | the messages sent through them |
-| **PostHog**, **Microsoft Clarity** | visit analytics on the rowbots.dev website, only after you accept cookies | how the website is used — never workspace data |
+| **PostHog**, **Microsoft Clarity** | visit analytics on the remigent.com website, only after you accept cookies | how the website is used — never workspace data |
 
 The model, sandbox and git providers you connect with your own keys are **not** on this list: they work for you,
 under your own agreements with them.
 
 ## Legal
 
-- [Privacy Policy](https://burakov.net/projects/rowbots/privacy)
-- [Terms of Service](https://burakov.net/projects/rowbots/terms)
-- [Delete account & data](https://burakov.net/projects/rowbots/delete-account)
-- [Support](https://burakov.net/projects/rowbots/support)
+- [Privacy Policy](https://burakov.net/projects/remigent/privacy)
+- [Terms of Service](https://burakov.net/projects/remigent/terms)
+- [Delete account & data](https://burakov.net/projects/remigent/delete-account)
+- [Support](https://burakov.net/projects/remigent/support)
