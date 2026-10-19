@@ -61,7 +61,7 @@ code never creates one. Every fixed-code sign-in is logged at `warn`.
 | Area | Routes |
 |------|--------|
 | Auth | `POST /v1/auth/code` · `/code/verify` · `/restore` · `/token/refresh` · `/sign-out` · `/google` · `/apple/mobile` · `/apple/web` · `/apple/web/callback` · `/apple/web/exchange` |
-| Account | `GET/PATCH /v1/account/me` · `GET /username/check` · `POST /username` · `POST /email` · `/email/confirm` · `DELETE /v1/account` |
+| Account | `GET/PATCH /v1/account/me` · `POST /avatar` · `GET /username/check` · `POST /username` · `POST /email` · `/email/confirm` · `GET/POST /export` · `DELETE /v1/account` |
 | Sessions | `GET /v1/sessions` · `/current` · `DELETE /v1/sessions` · `/:id` · `PUT /:id` |
 | Upload | `POST /v1/upload` · `/upload/chunk/start` · `/chunk/:uploadId/:chunkIndex` · `GET /chunk/:uploadId/status` · `POST /chunk/:uploadId/complete` · `DELETE /chunk/:uploadId/abort` · `DELETE /file/:id` · `GET /files/:filename` |
 | Push | `POST /v1/push/test` (verify delivery to the signed-in user's own devices) |
@@ -73,7 +73,12 @@ code never creates one. Every fixed-code sign-in is logged at `warn`.
 
 Interactive reference at `/docs` (Swagger UI). Other mechanics: **username** (auto from email,
 live availability, 30-day change cooldown; old names stay reserved in `username_history`),
-**email change** by code, **account deletion** that feels instant (sessions killed now) with
+**email change** by code, **avatar upload** (`POST /v1/account/avatar`, multipart `file`: JPEG, PNG
+or WebP up to 2 MB, 30 per hour; the previous picture is deleted, and `PATCH /me` accepts only the
+account's own upload or `null` as `avatar`), **data export** (`GET /v1/account/export` — the whole
+account as one JSON document for GDPR access / portability: profile, sign-in methods, username
+history, sessions, subscriptions, support tickets, uploads and the Notes example's data; 10 per
+hour per account), **account deletion** that feels instant (sessions killed now) with
 physical purge after `PURGE_AFTER_DAYS` — and a way back: signing in during that window returns
 `deletion_pending` with a `restoreToken`, which `POST /v1/auth/restore` exchanges to restore the
 account and sign in.
@@ -105,7 +110,7 @@ API version is winding down. Unset by default.
 | `switch_to_dev` / `switch_to_prod` | copy `env/env.dev\|prod` → `.env` |
 | `serve` | apply pending migrations (`db:migrate`), then tsx watch |
 | `fix` | run by hand: Prettier `--write`, then `eslint --fix` |
-| `build` | the quality gate: Prettier check (4-space style) + ESLint (type-aware; `no-console` is an error — log through the logger) + `tsc` → `dist/` + Vitest with a coverage gate (80% overall, 90% for `src/shared/`, auth and the `*.service.ts` / `*.logic.ts` files; no database or Redis needed — the tests run an in-process PGlite Postgres and a fake Redis, and drive the routes through `app.inject`; one file on its own: `npx vitest run <file> --coverage.enabled=false`). The pre-commit hook formats and lint-fixes staged files — see [Code quality](/shipwide/quickstart#code-quality-all-four-parts) |
+| `build` | the quality gate: Prettier check (4-space style) + ESLint (type-aware; `no-console` is an error — log through the logger) + `tsc` → `dist/` + Vitest with a coverage gate (80% overall, 90% for `src/shared/`, auth and the `*.service.ts` / `*.logic.ts` files, 80% for any single file; no database or Redis needed — the tests run an in-process PGlite Postgres and a fake Redis, and drive the routes through `app.inject`; one file on its own: `npx vitest run <file> --coverage.enabled=false`). The pre-commit hook formats and lint-fixes staged files — see [Code quality](/shipwide/quickstart#code-quality-all-four-parts) |
 | `start` | run compiled |
 | `db:generate` / `db:migrate` / `db:push` / `db:studio` | migration from schema / apply / push schema / Drizzle Studio. `db:generate`, `db:push` and `db:studio` compile first — drizzle-kit reads the compiled schema (`dist/db/schema/index.js`); `postdb:generate` then formats the new migration automatically |
 | `seed` | test/review accounts |

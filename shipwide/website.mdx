@@ -23,7 +23,7 @@ npm run build           # Prettier check + ESLint + astro-i18next generate + ast
 ```
 
 **Tests** (Vitest, run by `build` right after `astro build`): **unit** tests for the TypeScript under
-`src/` (coverage gate: 90%), and **smoke** tests in `smoke/` that read the built `dist/` — every page
+`src/` (coverage gate: 90%, and 80% for any single file), and **smoke** tests in `smoke/` that read the built `dist/` — every page
 exists in every language, each has its title, description, canonical and hreflang links, no internal
 link or asset points to a missing file, the sitemap and robots.txt match the built pages, and no
 `undefined` or raw translation key leaked into the HTML. One file on its own:
@@ -34,7 +34,8 @@ link or asset points to a missing file, the sitemap and robots.txt match the bui
 | Path | What it is |
 |------|------------|
 | `src/data/site.ts` | Brand name, email, social links, navigation. **Edit this first.** |
-| `src/data/product.ts` | The product: download channels, pricing plans, features, screenshots. |
+| `src/data/product.ts` | The product: download channels, pricing plans, features, screenshots. A download platform with no entries (e.g. no macOS installer yet) is hidden. |
+| `src/data/locales.ts` | The site's languages — the one list everything reads (see [Languages](#languages)). |
 | `src/screenshots/*.png` | Home hero gallery — name them `01-…`, `02-…` for order. Delete the demo files. |
 | `src/data/legal.ts` | Structure of the Privacy / Terms documents. |
 | `public/locales/en/*.json` | All human-readable copy, one file per namespace. |
@@ -142,23 +143,17 @@ every `astro:page-load`.
 
 ## Languages
 
-Ships **English + Russian**; the switcher is in the header. Adding a third language (e.g. `de`) is
-five steps:
+Ships **English + Russian**; the switcher is in the header. Every part of the site — the i18n
+config, the sitemap, the header switcher, breadcrumbs, structured data, the layout, the content
+schema — reads one list, `LOCALES` in `src/data/locales.ts`. Adding a third language (e.g. `de`)
+is three steps:
 
 <Steps>
     <Step title="Register the code">
-        Add it to `locales` in `astro-i18next.config.ts` (`["en", "ru", "de"]`) and to the sitemap
-        `i18n` block's `locales` in `astro.config.mjs`.
-    </Step>
-    <Step title="Wire the components">
-        Add it to `locales` in `src/components/Header.astro` and a label under `langs` in every
-        `public/locales/*/nav.json`; to `LOCALES` in `src/layouts/Base.astro` and
-        `src/components/Breadcrumbs.astro`; and to `inLanguage` in
-        `src/components/StructuredData.astro`. `Base.astro` also maps each language to its Open
-        Graph locale (`ogLocale`) and preloaded font subset (`preloadFont`) — extend both.
-    </Step>
-    <Step title="Allow it in the content schema">
-        Add it to both `lang: z.enum([...])` lists (blog, changelog) in `src/content.config.ts`.
+        Add it to `LOCALES` in `src/data/locales.ts` (`['en', 'ru', 'de']`). Give it a switcher
+        label under `langs` in every `public/locales/*/nav.json`, and extend the two per-language
+        choices in `src/layouts/Base.astro`: its Open Graph locale (`ogLocale`) and preloaded font
+        subset (`preloadFont`).
     </Step>
     <Step title="Translate">
         Copy `public/locales/en/` → `public/locales/<code>/` and translate. For blog/changelog, add
@@ -173,7 +168,8 @@ five steps:
     </Step>
 </Steps>
 
-English-only: drop `"ru"` from those lists and delete `public/locales/ru/` + the `*-ru.md` files.
+English-only: drop `'ru'` from `LOCALES` in `src/data/locales.ts` and delete `public/locales/ru/` + the
+`*-ru.md` files.
 
 <Warning>
     `src/pages/ru/` is **generated** by `astro-i18next generate` at build and git-ignored — edit the

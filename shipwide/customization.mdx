@@ -86,7 +86,7 @@ Full detail: [Website](/shipwide/website).
 
 ## Languages
 
-- **Website**: 5-step add (see [Website](/shipwide/website) → Languages). Ships en + ru.
+- **Website**: 3-step add — one list, `src/data/locales.ts` (see [Website](/shipwide/website) → Languages). Ships en + ru.
 - **App**: copy `src/i18n/locales/en/` to `src/i18n/locales/<code>/` and translate the JSON files,
     then add the language to `LANGUAGE_DEFINITIONS` in `composables/useLanguageSelector.ts` (with
     its label under `languages` in each `app.json`). Bundles load on demand; Arabic (`ar`) and Hebrew (`he`)

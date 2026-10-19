@@ -64,7 +64,8 @@ licences) · `re-install-deps` (clean reinstall).
 **Tests:** `*.test.ts` next to the code — unit tests for the API client, token refresh, encrypted
 storage, i18n and stores, and component tests that mount every screen with the network mocked
 (Vitest + `@vue/test-utils` in happy-dom; shared helpers in `src/test/`). `build` measures coverage
-and fails below 80% overall, or 90% for `config`, `core`, `i18n`, `modules`, `router` and `stores`.
+and fails below 80% overall, 90% for `config`, `core`, `i18n`, `modules`, `router` and `stores`, or 80%
+for any single file.
 One file on its own: `npx vitest run <file> --coverage.enabled=false`.
 
 ## Signing in

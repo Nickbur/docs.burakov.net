@@ -120,6 +120,11 @@ Otherwise it shows an upsell alert (**See plans** → `/subscription`) and retur
 check behind it, `withinFreeLimit()` (`helpers/proGate.ts`), is unit-tested. There's an example in
 [Offline-first data](/shipwide/offline-sync#gate-it-behind-pro).
 
+When the **server** refuses an action with `402` (its `requireEntitlement` check), call
+`presentUpsell({ title?, message? })` from the same composable: it shows the same alert no matter
+what the client believes — a stale entitlement or a not-yet-loaded store never turns a refused
+save into a silent no-op.
+
 <Note>
     The gate **fails open**: until the subscription store has loaded, every user passes, so a
     paying user is never blocked on a cold start. That includes the whole time billing is

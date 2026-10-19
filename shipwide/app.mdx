@@ -10,9 +10,9 @@ codebase across web, mobile and desktop.
 ## What you're starting from
 
 Every exported composable, component, api function and type is ready to use — pull it in as
-you need it. The account, sessions and settings screens (`views/pages/account/*`,
-`_settings/AccountSettings.vue`) are placeholders on purpose: you build your product's
-screens on top, and the kit supplies the plumbing behind them.
+you need it. The account screens are built and working (profile, sessions, account settings with
+data export and account deletion — see [Account screens](#account-screens)); your product's own
+screens go on top, and the kit supplies the plumbing behind them.
 
 ## Layout
 
@@ -23,7 +23,7 @@ src/
 ├── views/
 │   ├── pages/_base/              — Login, Logout, Splash
 │   ├── pages/onboarding/         — onboarding incl. username selection
-│   ├── pages/account/, _settings/— placeholder screens for you to build out
+│   ├── pages/account/, _settings/— account: profile, sessions, account + app settings
 │   └── components/               — ready-made components
 ├── services/
 │   ├── networkRequests/api/      — api client: core/ (authenticatedAPI, publicAPI,
@@ -80,6 +80,13 @@ both); on the web the `theme-color` meta follows too.
     Capacitor pads the web view itself and the bars fall back to the OS window colour.
 </Warning>
 
+**Keyboard on Android.** With edge-to-edge (enforced from Android 15) the system no longer shrinks
+the window for the on-screen keyboard. `helpers/keyboardInset.ts` (started in `main.ts`) mirrors the
+keyboard height into `--keyboard-inset` and scrolls the focused field into view. The `:root ion-app`
+rule in `styles/core/app.scss` takes that as its bottom offset, so pages, footers and overlays stay
+above the keyboard. iOS and the web resize on their own, so the variable stays `0` there. Keep both
+pieces when you restyle the shell.
+
 ## Sign-in flow
 
 Passwordless only — sign-in and sign-up are the same act. `views/pages/_base/Login.vue` is the
@@ -104,6 +111,31 @@ pair (with rotation) and retries. The backend side is in [Backend](/shipwide/bac
 the user's tickets with their status, a **new ticket** form (subject, topic, message) and each
 thread with replies. Link it from the side menu or your settings wherever your users should find
 it. How tickets flow to the admin inbox and back: [Support & tickets](/shipwide/support).
+
+## Account screens
+
+Three signed-in screens, reached from the side menu's **Account** entry:
+
+- **Profile** — `views/pages/account/Account.vue` (`/account`): the avatar and display name. It edits
+    the display name, the username (live availability: taken / reserved / invalid) and the avatar.
+    A picked image is centre-cropped to a square JPEG on the device and sent to
+    `POST /v1/account/avatar`; it can also be removed. It links to sessions, account settings and app
+    settings.
+- **Sessions** — `views/pages/account/SessionManagement.vue` (`/account/sessions`): every signed-in
+    device, with "this device" marked and when each was last active. It can rename a device, sign one
+    out, or sign out all the others. A new sign-in names its session from `app.name` and the device —
+    "My App · iPhone15,2 · iOS 18.1", "My App Web · macOS" (`sessionLabel` in `helpers/clientMeta.ts`).
+- **Account settings** — `views/pages/_settings/AccountSettings.vue` (`/account/settings`):
+    - email change by code
+    - username and member-since
+    - **Export my data**: `GET /v1/account/export`, saved as a JSON file — a download on the web,
+        the share sheet on mobile
+    - **Delete account** behind a confirmation, which signs the device out. Signing in again within
+        the server's `PURGE_AFTER_DAYS` window offers to restore the account.
+
+An in-app delete-account path and a data export are what the App Store (guideline 5.1.1(v)) and
+Google Play's account-deletion policy expect from any app with sign-up, so keep both reachable
+when you reskin these screens. Their copy lives in `src/i18n/locales/*/account.json`.
 
 ## Account time zone + language — kept in sync
 
@@ -250,6 +282,6 @@ build + cap sync) · `license-check` (production-dependency licences) · `bump` 
 storage, the offline layer (its real SQL runs on an in-memory SQLite), stores, composables and routing,
 and component tests that mount every screen with the network and native plugins mocked (Vitest +
 `@vue/test-utils` in happy-dom, `fake-indexeddb`; shared helpers in `src/test/`). `build` measures
-coverage and fails below 80% overall, or 90% for `composables`, `helpers`, `i18n`, `router`, `services`,
-`stores` and the TypeScript in `src/features/`. One file on its own: `npx vitest run <file> --coverage.enabled=false`. Keep the tests when
+coverage and fails below 80% overall, 90% for `composables`, `helpers`, `i18n`, `router`, `services`,
+`stores` and the TypeScript in `src/features/`, or 80% for any single file. One file on its own: `npx vitest run <file> --coverage.enabled=false`. Keep the tests when
 you build on the kit: they are the quickest way to see that a change broke a shared mechanic.
