@@ -33,8 +33,34 @@ Chats you archive move to an **Archived** group at the bottom of the chat list.
 - **Mentions:** type `@` to pick a member (up to 50 in a message). They're highlighted and notified even if they only want notifications for mentions.
 - **Drafts** are saved encrypted and follow you to your other devices.
 - **Polls** (**Create poll**): a question with 2–10 options — single or multiple choice, optionally with anonymous votes, and an optional deadline at least five minutes ahead. The author or a moderator can close a poll early.
-- **Voice messages** of up to five minutes.
+- **Voice messages** — see [Voice messages](#voice-messages).
 - **Files, photos and videos** (**Photo or video**, **Take a photo**, **Attach file**): encrypted on your device before they leave, with a thumbnail and upload progress — up to 100 MB each unless your organization set another limit. Videos are compressed on your device before they're sent: choose **Standard** or **HD**, or **Send as file** to keep the original. Photos and videos are sent without their location and camera details — your device removes them before encryption; only **Send as file** keeps the original file as it is, details included. Uploads run in the background while you keep chatting, continue while the app is in the background, and resume where they stopped after a dropped connection or a restart — nothing restarts from scratch. Images open full screen with zoom, videos play inline.
+
+### Voice messages
+
+**Recording**
+
+- **Tap** the microphone to start, or **hold** it: release to send, slide left to cancel, slide up to lock and keep recording hands-free.
+- **Pause** and **listen before sending** — play it back, jump around, or delete it.
+- A live waveform shows your voice as you speak. Recording continues with the screen locked.
+- A call pauses the recording instead of throwing it away — resume or send it afterwards. If you leave the chat or the app closes, the unsent recording is kept as a draft.
+- Record as long as you need, up to the attachment size limit — several hours. You're warned near the limit; at the limit recording stops and opens the preview, so nothing is sent without you.
+- Others in the chat see that you're recording a voice message.
+
+**Listening**
+
+- The waveform appears at once; tap or drag it to jump.
+- Change the speed — 1×, 1.5×, 2× or 0.5× — and Bastion remembers your choice.
+- One voice message plays at a time. Leave the chat and it keeps playing in a mini player; when it ends, the next one starts on its own.
+- It keeps playing in the background, with controls on the lock screen. Hold the phone to your ear to hear it through the earpiece.
+- A half-heard message picks up where you stopped. Voice messages play on every device, whichever device recorded them.
+
+**Listened status and text**
+
+- The sender sees when a voice message was **listened to**; in a group, the message info shows who listened.
+- With the [AI assistant](/bastion/ai-assistant) module, every voice message also shows its **text** — tap **Show text**, copy it or find it in search. Speech is recognized on your organization's own server, and the audio isn't stored for it.
+
+Voice messages are end-to-end encrypted like any other message and work in chats and threads; high-security chats are text-only.
 
 ### Albums
 
@@ -131,7 +157,7 @@ For each chat, choose to be notified about **every message**, **only mentions**,
 As a message travels you see its status — **sent**, then **delivered** when it reaches a recipient's device, then **seen** once read — and a typing indicator shows when someone's replying. Direct chats show whether the other person is online or when they were last seen; groups show how many members are online.
 
 <Note>
-    An organization can switch off typing indicators, read and delivery status and online status for maximum privacy — see [Accounts & privacy](/bastion/accounts-and-privacy).
+    An organization can switch off typing and recording indicators, read, delivery and listened status and online status for maximum privacy — see [Accounts & privacy](/bastion/accounts-and-privacy).
 </Note>
 
 ## Search and saved messages
