@@ -1,6 +1,6 @@
 ---
 title: "Organization settings"
-description: "Configure your Bastion organization in the admin panel — branding, modules, guests from other organizations, joining by e-mail domain, retention, link previews, metadata-minimal mode and the AI assistant."
+description: "Configure your Bastion organization in the admin panel — branding, modules, guests from other organizations, joining by e-mail domain, calls, retention, link previews, metadata-minimal mode and the AI assistant."
 mode: "wide"
 ---
 
@@ -30,9 +30,21 @@ When two organizations' policies differ, the stricter one wins. Copy your **orga
 
 Add up to 50 **e-mail domains**: anyone signed in with a verified address at those domains sees your organization under **You can join** in the app. Don't add public mail domains like gmail.com — anyone could join.
 
+## Calls
+
+When the Calls module is on:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Guests by link** | Off | Lets members create call links for people without a Bastion account. Guests always wait in a lobby until a host lets them in, and their calls stay end-to-end encrypted. Every guest who joins is recorded in the audit log. |
+| **Call recording** | Off | Lets participants record calls on their own device; everyone sees that a recording is running, and it's saved to the chat as an encrypted file. Never available in high-security chats. |
+| **Call backgrounds** | — | Pictures you upload here are offered to every member as virtual backgrounds. |
+
+See [Calls](/bastion/calls).
+
 ## Retention
 
-**Retention** deletes chat messages automatically after a number of days (from 1 to 3,650; **0** keeps everything). It removes messages with their edit history, attachments, and the AI assistant's index of them; the apps remove them from devices too. **Topics aren't affected** — posts and comments stay until they're deleted.
+**Retention** deletes chat messages automatically after a number of days (from 1 to 3,650; **0** keeps everything). Call history follows the same setting. It removes messages with their edit history, attachments, and the AI assistant's index of them; the apps remove them from devices too. **Topics aren't affected** — posts and comments stay until they're deleted.
 
 On a self-hosted node, the deletion runs on a schedule set by `RETENTION_SWEEP_INTERVAL_SECONDS` — see [Run & maintain your node](/bastion/operations#configuration-reference).
 
@@ -52,6 +64,8 @@ When the AI assistant module is on:
 | --- | --- | --- |
 | **Enable AI in new shared chats by default** | On | New groups and channels include the assistant. |
 | **Allow chat admins to turn AI off per chat** | On | Lets each chat's admins decide for their chat. Off locks the per-chat switch. |
+
+The same settings decide whether the assistant can join calls in those chats for live captions and notes — see [Calls](/bastion/calls#live-captions-and-notes).
 
 The first time, choose **Provision AI worker** to set up the assistant on your server (a self-hosted node also needs its AI models configured — see [Run & maintain your node](/bastion/operations#ai-assistant-models)). Direct and high-security chats never include the assistant. See [AI assistant](/bastion/ai-assistant) for what members see.
 

@@ -62,6 +62,17 @@ No backup and no signed-in device left? On the **Encryption keys** screen, choos
 
 For the most sensitive conversations, [high-security chats](/bastion/chat#high-security-chats) add **forward secrecy and post-compromise security**: keys move forward with every message and membership change, so a key stolen later can't open earlier messages and a removed person or device can't read what comes next. Each of your devices gets its own short-lived certificate (valid for seven days), and members' devices show as verified in the chat's info page. A new device of yours shows *Waiting for admission…* until another member's app admits it. If you lose a device, remove it under **Your devices in high-security chats** on the **Encryption keys** screen — it's dropped and its certificates are revoked at once.
 
+## Calls
+
+- **Always encrypted:** a device that can't encrypt a call isn't connected — there's no fallback to unencrypted media.
+- **A new key whenever someone joins or leaves:** a newcomer can't decrypt what was said before they arrived, and someone who left can't hear what follows. The keys go only to the verified keys of the people in the call, so the server can't add a device of its own.
+- **Guests by link** stay end-to-end encrypted: the secret that unlocks the call is in the part of the link browsers never send to a server.
+- **Recording** happens on a participant's device and is saved to the chat encrypted — the server only sees encrypted media and can't record.
+- **Noise suppression and background blur** run on your device, before encryption — no outside service hears or sees your call.
+- **No phone-line dial-in:** the telephone network can't carry an end-to-end encrypted call.
+
+See [Calls](/bastion/calls#whats-encrypted).
+
 ## Privacy by design in chat
 
 A few chat features are built so nothing reaches a third party without your own action:
