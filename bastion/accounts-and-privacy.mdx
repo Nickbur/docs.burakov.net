@@ -6,7 +6,7 @@ mode: "wide"
 
 ## One account, every device
 
-Bastion uses **passwordless sign-in**: your email and a one-time code (or your **Google** account, or **Sign in with Apple** on iPhone). The same account carries your identity across web, desktop, iOS and Android, and it's the same account used across the other apps at burakov.net. Manage it under [Account & settings](/bastion/account-and-settings).
+Bastion uses **passwordless sign-in**: your email and a one-time code (or your **Google** account, or **Sign in with Apple** on iPhone) — or your company account, if your organization uses [single sign-on](/bastion/sso). The same account carries your identity across web, desktop, iOS and Android, and it's the same account used across the other apps at burakov.net. Manage it under [Account & settings](/bastion/account-and-settings).
 
 Notifications follow your device's language; emails are sent in English or Russian.
 
@@ -14,7 +14,7 @@ Notifications follow your device's language; emails are sent in English or Russi
 
 Your **content** — message text, file contents and call media — is end-to-end encrypted and lives on your organization's own server (its node), in the place it chose. The server stores it encrypted.
 
-Exceptions, all labelled in the app: **public topics** (stored as they are so your organization can search them), **bot messages**, and chats and topics the **[AI assistant](/bastion/ai-assistant)** has been added to, whose content the assistant reads on that server.
+Exceptions, all labelled in the app: **public topics** (stored as they are so your organization can search them), **webhook messages** (seen by the server as they arrive, then stored encrypted), and chats and topics the **[AI assistant](/bastion/ai-assistant)** has been added to, whose content the assistant reads on that server.
 
 ## What the control plane sees
 
@@ -26,6 +26,8 @@ Identity, push and licensing are brokered by Bastion's shared control plane so a
 - **Public encryption keys** — the directory that lets others encrypt to you, its history, and the contacts you've verified — and, if you choose to keep one there, your passphrase-sealed key backup, which it can't open.
 - **High-security device certificates** for your devices.
 - **Delivery metadata** needed to route pushes and calls, and invitations to chats in other organizations (who invited whom — never the chat's name).
+- **Single sign-on and provisioning**, when your organization uses them: its identity-provider settings, verified domains, and the people and groups the provider provisions. See [Single sign-on](/bastion/sso).
+- **Meeting invitations to guests**, when your organization sends them by e-mail: the guests' addresses (deleted after the meeting), the time, the join link and — only if the organizer includes it — the title. Never the agenda.
 
 It does **not** hold your message content or call media. We describe this honestly as **data residency**, not "no server in the middle": your content stays on your organization's server, while identity is centrally brokered. Bastion's own platform administration can see that an organization exists, its plan and its server's health — never its messages.
 
@@ -34,6 +36,7 @@ It does **not** hold your message content or call media. We describe this honest
 End-to-end encryption protects **what** you say — not the fact that a conversation is happening:
 
 - Your organization's **server** can see the "envelope": who is talking to whom, group membership, timestamps and who is online. That's inherent to delivering messages — and on a self-hosted node, it's *your* server.
+- For scheduling, the server also knows **when** things are due — not what they are: the start time of a [meeting](/bastion/chat#meetings) and who answered *going*, when a [scheduled message](/bastion/chat#send-later-and-reminders) is sent (it waits encrypted until then) and when a reminder fires. Your **status**, **do not disturb**, **working hours** and **out of office** are stored on it too, so it can hold notifications and show them to the people you work with.
 - **Message sizes are padded** into fixed buckets before encryption, so an observer of encrypted traffic learns much less from length.
 - **Link previews are built on the sender's device** and travel inside the encrypted message, so neither the server nor the people reading fetch the link — and Bastion has **no phone-contact sync**. Those are two common ways other apps quietly leak the URLs you share and your social graph.
 - **Notifications are generic by default:** a push tells your device a message arrived, carrying only an opaque reference — not who sent it or which chat — and the app fills in the details after it opens. Call pushes ring without revealing the caller to the notification service. A self-hosted organization can choose named notifications on its server (`MESSAGE_PUSH_HIDE_METADATA`).

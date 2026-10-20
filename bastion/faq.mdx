@@ -14,6 +14,12 @@ mode: "wide"
     <Accordion title="Can I talk to people in other organizations?">
         Yes, if both organizations allow it. From a chat's info page, invite someone from another organization by their exact username or email; they get a notification and a single-use invitation valid for 7 days. Guests only ever see the chats they're invited to, and each organization's admin decides whether its members may join, or host, cross-organization chats. See [Chat](/bastion/chat#managing-a-chat).
     </Accordion>
+    <Accordion title="Can we bring our history from Slack, Teams, Telegram or WhatsApp?">
+        Yes — from Slack, Microsoft Teams, Telegram, WhatsApp, Mattermost and Rocket.Chat, in every plan. The import runs on your own device, encrypts everything for its new chat before it's uploaded, and keeps original authors and dates. Direct messages can only be imported by someone who took part in them. See [Move to Bastion](/bastion/import).
+    </Accordion>
+    <Accordion title="Does Bastion support single sign-on?">
+        Yes — OIDC and SAML 2.0 with providers such as Microsoft Entra ID, Okta, Google Workspace and Keycloak, plus SCIM to add and remove members automatically. It's part of the Enterprise controls module. Single sign-on proves who you are; it never unlocks your messages. See [Single sign-on & provisioning](/bastion/sso).
+    </Accordion>
     <Accordion title="Which languages does Bastion speak?">
         The apps, the admin panel and the website are available in English, Russian, German, French, Spanish, Italian and Dutch. Emails and the checkout are in English or Russian.
     </Accordion>
@@ -21,7 +27,7 @@ mode: "wide"
         Yes. Messages, files and calls are sealed on the sender's device and opened only on the recipients'; the server — even one you run yourself — stores them encrypted. You can verify a contact with their [safety number](/bastion/security). A few things are deliberately not end-to-end encrypted and are labelled as such: public topics (meant to be searchable by your organization), messages posted by bots, and chats and topics your organization's [AI assistant](/bastion/ai-assistant) has been added to. For the most sensitive conversations, [high-security chats](/bastion/chat#high-security-chats) add forward secrecy and never include the assistant.
     </Accordion>
     <Accordion title="What can the server operator see?">
-        Not your encrypted content. The control plane brokers identity, push and licensing, so it sees sign-in and delivery metadata and which plan an organization is on — never message text or call media. Your organization's own server sees the delivery "envelope", and — only in chats and topics where your organization's AI assistant has been added — the assistant reads the content there. See [Privacy & your data](/bastion/accounts-and-privacy).
+        Not your encrypted content. The control plane brokers identity, push and licensing, so it sees sign-in and delivery metadata, which plan an organization is on and — if your organization e-mails meeting invitations to guests — those invitations; never message text or call media. Your organization's own server sees the delivery "envelope", and — only in chats and topics where your organization's AI assistant has been added — the assistant reads the content there. See [Privacy & your data](/bastion/accounts-and-privacy).
     </Accordion>
     <Accordion title="Can people see who I talk to and when?">
         Encryption hides *what* you say, not that a conversation happens: your node can see the "envelope" — who's talking to whom and when — which is inherent to delivering messages (and on a self-hosted node, it's your own server). Bastion narrows the rest: message sizes are padded, notifications are generic by default, there's no link-preview or contact-sync leak, and an admin can enable **metadata-minimal mode** to switch off typing, receipts and online status too. See [Accounts & privacy](/bastion/accounts-and-privacy).
@@ -48,7 +54,7 @@ mode: "wide"
         A failed renewal keeps everything working for 7 days while the payment is retried. A cancelled subscription runs to the end of its paid period. After that the server turns read-only, and 14 days later it stops admitting sign-ins — but nothing is deleted, and renewing from your organization page restores full use. See [Pricing](/bastion/pricing#when-a-payment-fails-or-a-subscription-ends).
     </Accordion>
     <Accordion title="What's in the base product?">
-        The base module is chat and calls, including high-security chats. Optional modules — [Topics](/bastion/topics) and the [AI assistant](/bastion/ai-assistant) — can be added at checkout or later; Topics works as soon as the license updates, and the AI assistant also needs an AI model set up on your server.
+        The base module is chat and calls, including high-security chats. Optional modules — [Topics](/bastion/topics), the [AI assistant](/bastion/ai-assistant) and Enterprise controls ([single sign-on](/bastion/sso) and [device management](/bastion/device-management)) — can be added at checkout or later; Topics works as soon as the license updates, and the AI assistant also needs an AI model set up on your server.
     </Accordion>
     <Accordion title="Is the source code available?">
         Yes. Bastion is source-available under the Burakov Source License, so your security team can review exactly what runs on your server. Running it for real work needs an active subscription.

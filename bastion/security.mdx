@@ -7,7 +7,7 @@ mode: "wide"
 Bastion is **end-to-end encrypted by default**. There's no toggle to forget: every chat message, file and call is sealed on the sender's device and opened only on the recipients'. The server — even one you run yourself — handles ciphertext.
 
 <Note>
-    Three things are deliberately not end-to-end encrypted, and the apps say so: **public topics** (meant to be searchable by your organization — private topics are encrypted), **messages posted by bots** (a webhook integration has no key; its messages are marked as not encrypted), and the content of chats and topics the **[AI assistant](/bastion/ai-assistant)** has been added to, which the assistant reads on your organization's server. Direct and high-security chats never include the assistant.
+    Three things are deliberately not end-to-end encrypted, and the apps say so: **public topics** (meant to be searchable by your organization — private topics are encrypted), **messages from webhooks** (the sending tool has no key, so the server sees each one as it arrives — then stores it encrypted; marked with a bot badge), and the content of chats and topics the **[AI assistant](/bastion/ai-assistant)** has been added to, which the assistant reads on your organization's server. Direct and high-security chats never include the assistant.
 </Note>
 
 ## The building blocks
@@ -91,7 +91,7 @@ In **Settings**, turn on **Lock the app with biometrics** to cover Bastion with 
 
 - **Can't see:** your message text, file contents, or call media — all end-to-end encrypted.
 - **Can't act as you anywhere else:** with the Bastion apps or the web app at app.bastion-chat.com, an organization's server never receives your sign-in. It only gets a short-lived pass that works on that organization's server alone — so even a compromised server can't use your account elsewhere, and signing out cuts it off within minutes. (A web app an organization serves from its own domain is that organization's code, so it routes your sign-in through that organization's server.)
-- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata (the "envelope", not the content). Message sizes are padded so even encrypted length reveals little. Identity, the public-key directory and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy) for the full picture of what metadata is visible and how **metadata-minimal mode** narrows it further.
+- **Can see:** the minimum needed to route traffic — who is in an organization, and delivery metadata (the "envelope", not the content) — plus, for scheduling, when meetings, scheduled messages and reminders are due, and people's status. Message sizes are padded so even encrypted length reveals little. Identity, the public-key directory and licensing are brokered centrally; see [Accounts & privacy](/bastion/accounts-and-privacy) for the full picture of what metadata is visible and how **metadata-minimal mode** narrows it further.
 
 <Note>
     The strongest guarantee comes from the installed apps — desktop, iOS and Android. A web app's code is delivered by a web server each time it loads, so a compromised server could, in principle, hand your browser altered code; the installed apps don't depend on that. For the most sensitive work, use the desktop or phone app.

@@ -32,7 +32,8 @@ Chats you archive move to an **Archived** group at the bottom of the chat list.
 - **Formatting:** messages support Markdown — bold, lists, links, quotes and code blocks with syntax highlighting. Links open in your browser, and images from the web are never loaded automatically, so a link can't be used to track you.
 - **Mentions:** type `@` to pick a member (up to 50 in a message). They're highlighted and notified even if they only want notifications for mentions.
 - **Drafts** are saved encrypted and follow you to your other devices.
-- **Polls** (**Create poll**): a question with 2–10 options — single or multiple choice, optionally with anonymous votes, and an optional deadline at least five minutes ahead. The author or a moderator can close a poll early.
+- **Polls** (**Create poll**): a question with 2–10 options — single or multiple choice, optionally with anonymous votes, and an optional deadline at least five minutes ahead. The author or a moderator can close a poll early. Choose **Find a time** to offer time slots instead — see [Find a time](#find-a-time).
+- **Send later:** long-press **Send** to schedule a message — see [Send later and reminders](#send-later-and-reminders).
 - **Voice messages** — see [Voice messages](#voice-messages).
 - **Files, photos and videos** (**Photo or video**, **Take a photo**, **Attach file**): encrypted on your device before they leave, with a thumbnail and upload progress — up to 100 MB each unless your organization set another limit. Videos are compressed on your device before they're sent: choose **Standard** or **HD**, or **Send as file** to keep the original. Photos and videos are sent without their location and camera details — your device removes them before encryption; only **Send as file** keeps the original file as it is, details included. Uploads run in the background while you keep chatting, continue while the app is in the background, and resume where they stopped after a dropped connection or a restart — nothing restarts from scratch. Images open full screen with zoom, videos play inline.
 
@@ -135,6 +136,9 @@ Long-press, right-click or use the **⋯** on a message for its actions:
     <Card title="Report" icon="flag">
         Send someone else's message to your organization's moderators, with a reason and, if you choose, its text.
     </Card>
+    <Card title="Remind me" icon="bell">
+        Get a reminder about the message later — in 20 minutes, tomorrow morning, next week or at a time you pick.
+    </Card>
 </CardGroup>
 
 ## Threads
@@ -148,13 +152,45 @@ You **follow** a thread when you wrote the message it started from, or once you 
 
 Threads you don't follow stay quiet: you still see their reply count, but they never add to your unread badge or notify you.
 
+## Meetings
+
+Schedule a call right in the chat it's about — no separate meeting tool needed.
+
+**Schedule.** Choose **Schedule a call** from the attachment menu, long-press the call button, or use **Calls → Schedule**. Give it a title, date and time, duration and, if you like, a repeat (daily, weekdays, weekly, every two weeks or monthly, until a date or for a number of times), an agenda and whether it starts with video. The meeting appears in the chat as a card; its title and agenda are end-to-end encrypted like any message.
+
+**Who's coming.** Everyone answers **Going**, **Maybe** or **Not going** on the card, and sees the others' answers.
+
+**Reminders and joining.** Before the start you get a reminder — 10 minutes ahead unless you changed it in [Settings](/bastion/account-and-settings#status-and-availability) — and another when it begins. Nobody's phone rings: from five minutes before, the card and a banner in the chat offer **Join**. Whoever joins first starts the call; the host can ring anyone missing from the call's participant list. Upcoming meetings from all your chats are listed on the **Calls** tab.
+
+**Changes.** The organizer or a chat admin can move or cancel one meeting or the whole series; the chat shows the update. Times always appear in your own time zone.
+
+**Add to calendar.** **Add to calendar** gives you a calendar file for Google Calendar, Outlook or Apple Calendar, made on your device. Add it again after a change and your calendar entry updates.
+
+**Guests.** If your organization allows [guests by link](/bastion/calls#guests-by-link), the organizer can invite people outside it by e-mail. Bastion's mail service sends the invitation with as little as possible: who invites you, when, and the link to join — the title only if the organizer chooses to include it, never the agenda. Changes and cancellations reach the guests automatically, and their addresses are deleted after the meeting. If your organization turned these e-mails off, share the invitation yourself — from the share menu on your phone, or with **Copy invitation** and **Download .ics** on a computer.
+
+**Afterwards.** The card shows how long the call took and who joined, and a [recording](/bastion/calls#recording) or the assistant's [notes](/bastion/calls#live-captions-and-notes) land in the card's thread.
+
+### Find a time
+
+Not sure when everyone's free? Create a poll with **Find a time**: offer up to ten time slots, and everyone ticks the ones that work, each in their own time zone. The best slot is highlighted, and the author or a chat admin turns it into a meeting with **Schedule this time**.
+
+## Send later and reminders
+
+**Send later.** Long-press **Send** and pick tomorrow at 9:00, Monday at 9:00 or any time. The message — attachments included — is encrypted right away and waits encrypted on your organization's server until it's due; then it's delivered like any other message. Each chat's **Scheduled** list lets you change the time, edit the message, send it now or delete it. If you leave the chat before then, it's not sent and you're told.
+
+**Reminders.** **Remind me** on any message brings it back at the time you choose. Your reminders are also listed on the **Reminders** screen in the side menu, where you can jump to the message, mark it done or snooze it; they follow you to all your devices.
+
+<Note>
+    The server never sees what you scheduled or what a reminder is about — only when it's due. In an organization with metadata-minimal mode, reminders stay on your device instead.
+</Note>
+
 ## Notifications
 
-For each chat, choose to be notified about **every message**, **only mentions**, or **never** — and whether notifications make a sound. The choice applies on all your devices and is respected by the server, so muted chats really stay silent. Swipe a chat in the list to mute it or mark it as a **favourite** (favourites stay at the top).
+For each chat, choose to be notified about **every message**, **only mentions**, or **never** — and whether notifications make a sound. The choice applies on all your devices and is respected by the server, so muted chats really stay silent. Swipe a chat in the list to mute it or mark it as a **favourite** (favourites stay at the top). To pause notifications everywhere for a while, or outside your working hours, use **Do not disturb** — see [Account & settings](/bastion/account-and-settings#status-and-availability).
 
 ## Delivery, read status and presence
 
-As a message travels you see its status — **sent**, then **delivered** when it reaches a recipient's device, then **seen** once read — and a typing indicator shows when someone's replying. Direct chats show whether the other person is online or when they were last seen; groups show how many members are online.
+As a message travels you see its status — **sent**, then **delivered** when it reaches a recipient's device, then **seen** once read — and a typing indicator shows when someone's replying. Direct chats show whether the other person is online or when they were last seen; groups show how many members are online. People's **status**, **out of office** and **working hours** show on their profile and above the message box of a direct chat — for example *Anna is away until 3 Nov*.
 
 <Note>
     An organization can switch off typing and recording indicators, read, delivery and listened status and online status for maximum privacy — see [Accounts & privacy](/bastion/accounts-and-privacy).
@@ -191,20 +227,14 @@ Both people in a direct chat can pin; a direct chat has no roles and can't be re
 
 ## Bots
 
-Your organization's owner, admins and moderators can add a **bot** to a chat. A bot gets a secret webhook address on your organization's server; anything that sends it a request posts a message into the chat:
+Bots bring notifications and automation into your chats — see [Bots & integrations](/bastion/bots):
 
-```bash
-curl -X POST "https://<your-node>/v1/bots/hook/<token>" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Deploy finished ✅"}'
-```
-
-- `text` can be up to 4,000 characters; a bot can post up to 120 messages a minute.
-- A bot has no encryption key, so its messages are stored as plain text and marked **🤖 bot · not encrypted**.
+- **Webhooks** post alerts and updates from tools such as GitHub, GitLab, Grafana or Sentry. They accept Slack's webhook format, so tools made for Slack work as they are. Their messages are stored encrypted and carry a **bot** badge.
+- **Bot accounts** read a chat and answer — commands, buttons, helpdesk replies — with their own encryption key, and show as **can read this chat** in the member list.
 - Bots can't post in high-security chats, in archived chats, or while the organization is read-only.
 
 ## High-security chats
 
 High-security chats add **forward secrecy and post-compromise security** on top of end-to-end encryption: keys move forward with every change, so a key stolen later can't open earlier messages, and a removed member or device is locked out of what comes next. Every device has its own short-lived certificate (valid for seven days), and Chat info shows each member's devices as verified, not trusted or waiting to be admitted.
 
-To keep that guarantee, high-security chats are text-only (replies and mentions included), don't support threads, edits, invite links, bots or the AI assistant, and only owners and admins add members. Calls work — see [Calls](/bastion/calls). A new device of an existing member is admitted automatically by another member's app.
+To keep that guarantee, high-security chats are text-only (replies and mentions included), don't support threads, edits, invite links, bots, the AI assistant, scheduled meetings, find-a-time polls or send later, and only owners and admins add members. Reminders work. Calls work — see [Calls](/bastion/calls). A new device of an existing member is admitted automatically by another member's app.

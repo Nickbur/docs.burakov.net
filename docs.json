@@ -273,7 +273,7 @@
                         "groups": [
                             {
                                 "group": "Getting started",
-                                "pages": ["bastion", "bastion/quickstart"]
+                                "pages": ["bastion", "bastion/quickstart", "bastion/import"]
                             },
                             {
                                 "group": "Using Bastion",
@@ -299,6 +299,14 @@
                             {
                                 "group": "Admin panel",
                                 "pages": ["bastion/administration", "bastion/organization-settings"]
+                            },
+                            {
+                                "group": "Enterprise controls",
+                                "pages": ["bastion/sso", "bastion/device-management"]
+                            },
+                            {
+                                "group": "Integrations",
+                                "pages": ["bastion/bots"]
                             }
                         ]
                     },
