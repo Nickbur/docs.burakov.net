@@ -62,6 +62,15 @@ No backup and no signed-in device left? On the **Encryption keys** screen, choos
 
 For the most sensitive conversations, [high-security chats](/bastion/chat#high-security-chats) add **forward secrecy and post-compromise security**: keys move forward with every message and membership change, so a key stolen later can't open earlier messages and a removed person or device can't read what comes next. Each of your devices gets its own short-lived certificate (valid for seven days), and members' devices show as verified in the chat's info page. A new device of yours shows *Waiting for admission…* until another member's app admits it. If you lose a device, remove it under **Your devices in high-security chats** on the **Encryption keys** screen — it's dropped and its certificates are revoked at once.
 
+## Privacy by design in chat
+
+A few chat features are built so nothing reaches a third party without your own action:
+
+- **View once:** the item is deleted from your organization's server once every recipient has opened it or it expires, it never enters offline caches or search, and the [AI assistant](/bastion/ai-assistant) never indexes it. See [View once](/bastion/chat#view-once) for its limits.
+- **Link previews** are built on the sender's device and travel inside the encrypted message. Readers load nothing from the web, and the server never sees the link's address.
+- **Shared locations** show no map tiles and trigger no address lookup. The position goes to a maps app only when you tap **Open in maps**.
+- **Edited photos** are saved as a new image, so the location and camera details embedded in the original are dropped.
+
 ## Lock the app
 
 In **Settings**, turn on **Lock the app with biometrics** to cover Bastion with a lock screen when it starts and after a chosen time away (1, 5, 15 or 60 minutes). On phones it uses your fingerprint or face with the device passcode as fallback; on the web and desktop, your device's built-in authenticator. Phones can also **block screenshots** and hide the app's content in the app switcher.

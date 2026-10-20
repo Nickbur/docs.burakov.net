@@ -36,6 +36,40 @@ Chats you archive move to an **Archived** group at the bottom of the chat list.
 - **Voice messages** of up to five minutes.
 - **Files, photos and videos** (**Photo or video**, **Take a photo**, **Attach file**): encrypted on your device before they leave, with a thumbnail and upload progress — up to 100 MB each unless your organization set another limit. Large files upload in resilient chunks, so a dropped connection retries the affected piece instead of restarting the whole transfer. Images open full screen with zoom, videos play inline.
 
+### Albums
+
+Pick several photos and videos at once and send them as **one message** with a single caption. The message shows as a grid; open it and swipe between the items. Each item is encrypted on your device like any other attachment, uploads in parallel, and retries on its own if the connection drops. Deleting the message removes every item in it.
+
+### Photo editor
+
+After you pick or take a photo — or from the attachment preview — you can edit it before it leaves your device:
+
+- **Crop, rotate and straighten.**
+- **Blur and pixelate**, with a brush or a rectangle — hide personal data on a screenshot before you share it.
+- **Draw:** pen, highlighter, arrows and shapes, plus text, with undo.
+
+Editing happens entirely on your device and works offline. The edited photo is saved as a new image, so the location and camera details embedded in the original are dropped.
+
+### Link previews
+
+When your message contains a link, Bastion shows a card with the page's title, description, site and a small image. **Your device** fetches the page and builds the card, and you can remove it before sending. The card travels inside the encrypted message, so the people reading it load nothing from the web and your organization's server never sees the address. Your organization's admin can switch previews off — see [Organization settings](/bastion/organization-settings#link-previews).
+
+### View once
+
+Mark a photo, video or text message **View once** before sending. Each recipient can open it a single time; after that it is gone on all of that recipient's devices. Choose how long an unopened item stays available — if nobody opens it in time, it expires. You see who has opened it (unless your organization uses [metadata-minimal mode](/bastion/accounts-and-privacy#metadata-minimal-mode)).
+
+Once every recipient has opened it, or it expires, the encrypted item is deleted from your organization's server. The viewer is a dedicated screen: view-once items can't be forwarded, saved, copied, downloaded, shared or quoted, they are not kept in the offline cache or in search, and the [AI assistant](/bastion/ai-assistant) never indexes them. On iPhone and Android the viewer also blocks screenshots and screen recording while it is open.
+
+<Note>
+    View once limits copies; it can't prevent them. Screenshot blocking works only in the iPhone and Android apps, and nothing stops someone from photographing the screen. Use it for passwords, contracts and personal data you'd rather not leave lying around — not as a guarantee against a recipient who means to keep a copy.
+</Note>
+
+### Share location
+
+Send your current position as a message: coordinates, accuracy and an optional label. It's a one-time snapshot — Bastion doesn't share live location. The message is end-to-end encrypted like any other, and your device asks for location permission the first time.
+
+The bubble has an **Open in maps** button: Apple Maps, Google Maps or OpenStreetMap (on Android, the system chooser). Bastion shows **no embedded map and looks up no address**, because either would send the position to a third party. It only reaches a maps app when you tap.
+
 Messages appear the moment you send them and wait in an outbox while you're offline. If the server permanently refuses one (for example, a file that's too large), it shows why and lets you discard it.
 
 ## Working with a message

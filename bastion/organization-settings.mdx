@@ -1,6 +1,6 @@
 ---
 title: "Organization settings"
-description: "Configure your Bastion organization in the admin panel — branding, modules, guests from other organizations, joining by e-mail domain, retention, metadata-minimal mode and the AI assistant."
+description: "Configure your Bastion organization in the admin panel — branding, modules, guests from other organizations, joining by e-mail domain, retention, link previews, metadata-minimal mode and the AI assistant."
 mode: "wide"
 ---
 
@@ -36,9 +36,13 @@ Add up to 50 **e-mail domains**: anyone signed in with a verified address at tho
 
 On a self-hosted node, the deletion runs on a schedule set by `RETENTION_SWEEP_INTERVAL_SECONDS` — see [Run & maintain your node](/bastion/operations#configuration-reference).
 
+## Link previews
+
+Turn **Link previews** on or off for the whole organization. When on, members' devices build a preview card for links they send (title, description, site, small image) and it travels inside the encrypted message — your server never sees the address. When off, links are sent as plain links. See [Chat](/bastion/chat#link-previews).
+
 ## Metadata-minimal mode
 
-Switches off typing indicators, read and delivery status and online status, and forces notifications to their most generic form — enforced on the server for everyone in the organization. See [Privacy & your data](/bastion/accounts-and-privacy#metadata-minimal-mode).
+Switches off typing indicators, read and delivery status and online status, turns link previews off, and forces notifications to their most generic form — enforced on the server for everyone in the organization. See [Privacy & your data](/bastion/accounts-and-privacy#metadata-minimal-mode).
 
 ## AI assistant
 

@@ -35,14 +35,14 @@ End-to-end encryption protects **what** you say — not the fact that a conversa
 
 - Your organization's **server** can see the "envelope": who is talking to whom, group membership, timestamps and who is online. That's inherent to delivering messages — and on a self-hosted node, it's *your* server.
 - **Message sizes are padded** into fixed buckets before encryption, so an observer of encrypted traffic learns much less from length.
-- Bastion has **no link previews** and **no phone-contact sync** — two common ways other apps quietly leak the URLs you share and your social graph.
+- **Link previews are built on the sender's device** and travel inside the encrypted message, so neither the server nor the people reading fetch the link — and Bastion has **no phone-contact sync**. Those are two common ways other apps quietly leak the URLs you share and your social graph.
 - **Notifications are generic by default:** a push tells your device a message arrived, carrying only an opaque reference — not who sent it or which chat — and the app fills in the details after it opens. Call pushes ring without revealing the caller to the notification service. A self-hosted organization can choose named notifications on its server (`MESSAGE_PUSH_HIDE_METADATA`).
 
 The principle: **data that isn't collected can't be handed over or lost.**
 
 ## Metadata-minimal mode
 
-For organizations with a stricter threat model, an admin can turn on **metadata-minimal mode** (see [Organization settings](/bastion/organization-settings#metadata-minimal-mode)). The server then stops emitting peer-visible metadata: **no typing indicators**, **no delivery or read receipts**, **no online status or last seen**, and notifications are forced to their most generic form. It's enforced on the server, not just hidden in the app.
+For organizations with a stricter threat model, an admin can turn on **metadata-minimal mode** (see [Organization settings](/bastion/organization-settings#metadata-minimal-mode)). The server then stops emitting peer-visible metadata: **no typing indicators**, **no delivery or read receipts**, **no online status or last seen**, **no link previews**, no "opened" status on [view-once](/bastion/chat#view-once) items, and notifications are forced to their most generic form. It's enforced on the server, not just hidden in the app.
 
 ## Your data rights
 

@@ -26,6 +26,12 @@ mode: "wide"
     <Accordion title="Can people see who I talk to and when?">
         Encryption hides *what* you say, not that a conversation happens: your node can see the "envelope" — who's talking to whom and when — which is inherent to delivering messages (and on a self-hosted node, it's your own server). Bastion narrows the rest: message sizes are padded, notifications are generic by default, there's no link-preview or contact-sync leak, and an admin can enable **metadata-minimal mode** to switch off typing, receipts and online status too. See [Accounts & privacy](/bastion/accounts-and-privacy).
     </Accordion>
+    <Accordion title="Can I send a message that disappears after it's read?">
+        Yes — mark a photo, video or text **View once**. Each recipient opens it a single time, then it's gone on all their devices and deleted from your organization's server; unopened items expire. You see who opened it, and the AI assistant never indexes it. It limits copies but can't stop a photo of the screen, and screenshot blocking works only in the iPhone and Android apps. See [View once](/bastion/chat#view-once).
+    </Accordion>
+    <Accordion title="Does sharing a location or a link preview tell anyone where I am or what I read?">
+        No. A link preview is built on your own device and travels encrypted, so readers load nothing and the server never sees the address. A shared location is a one-time, encrypted message with no embedded map and no address lookup; it only goes to a maps app when someone taps **Open in maps**. See [Chat](/bastion/chat#share-location).
+    </Accordion>
     <Accordion title="Do I have to self-host?">
         No. You can run your own node, or use the managed option — the same stack, operated for you, one organization per instance, deployed automatically — usually within minutes, always within one business day. See [Pricing](/bastion/pricing).
     </Accordion>
