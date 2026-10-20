@@ -69,7 +69,7 @@ A few chat features are built so nothing reaches a third party without your own 
 - **View once:** the item is deleted from your organization's server once every recipient has opened it or it expires, it never enters offline caches or search, and the [AI assistant](/bastion/ai-assistant) never indexes it. See [View once](/bastion/chat#view-once) for its limits.
 - **Link previews** are built on the sender's device and travel inside the encrypted message. Readers load nothing from the web, and the server never sees the link's address.
 - **Shared locations** show no map tiles and trigger no address lookup. The position goes to a maps app only when you tap **Open in maps**.
-- **Edited photos** are saved as a new image, so the location and camera details embedded in the original are dropped.
+- **Edited photos** are saved as a new, flattened image: whatever is under a solid box is gone, not kept in a hidden layer, and the location and camera details embedded in the original are dropped. Only the edited image is sent.
 
 ## Lock the app
 
