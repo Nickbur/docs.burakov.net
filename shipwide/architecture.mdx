@@ -47,8 +47,9 @@ App, API and admin all agree on:
 
 Passwordless: a six-digit email code where **sign-in and sign-up are the same act**. Google /
 Apple sign-in sit alongside. Access tokens are short (15 min) and rotate on refresh (30-day
-refresh), each bound to a `sessions` row so a revoked session dies immediately. The admin
-panel uses the same model, staff-scoped, with optional TOTP. Full detail in
+refresh), each bound to a `sessions` row so a revoked session dies immediately. A refresh token
+is single-use — spent twice, it revokes its session — so the app and the admin panel coordinate
+refreshes across browser tabs. The admin panel uses the same model, staff-scoped, with optional TOTP. Full detail in
 [Backend](/shipwide/backend).
 
 ## What you're starting from

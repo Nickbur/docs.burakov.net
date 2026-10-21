@@ -105,7 +105,7 @@ src/
 ├── i18n/            # vue-i18n setup + en/ru locale files
 ├── core/            # the reusable half — assumes nothing about the product
 │   ├── api/         # axios client, error classification, wire types
-│   ├── auth/        # token pair, expiry maths
+│   ├── auth/        # token pair, refresh coordinator
 │   ├── storage/     # AES-GCM over IndexedDB
 │   ├── ui/          # formatting
 │   └── composables/ # confirm dialog
@@ -124,8 +124,11 @@ src/
 
 ### Pieces that are easy to get wrong
 
-- **One axios instance, not a factory.** Refresh is single-flight — every caller awaits the same
-    promise, so two concurrent 401s don't each spend a rotating token.
+- **One axios instance, not a factory.** Refresh goes through `core/auth/refreshCoordinator.ts`:
+    one rotation at a time per tab and across tabs (a Web Lock), a pair another tab already rotated
+    is adopted instead of spending a stale token, and only a refusal (400/401/403) signs the operator
+    out — once, with one "session expired" notice, however many requests were waiting. The API
+    revokes the whole session when one refresh token is presented twice.
 - **Refresh happens before expiry**, not only on a 401 — admin sessions are short and the panel
     sits open between bursts.
 - **Tokens in an encrypted IndexedDB store** (non-exportable `CryptoKey` + canary), loaded into

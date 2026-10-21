@@ -46,7 +46,8 @@ src/
 The app shell is three coordinated pieces — **reskin** them, don't recreate them:
 
 - **Side menu** (`views/core/SideMenu.vue`) — the drawer: your nav items plus Settings and
-    **Log out**. Documentation, Privacy and Terms live on the About page. On desktop (≥1105px) it
+    **Log out** (`views/pages/_base/Logout.vue` ends the session on the server first, then wipes the
+    device). Documentation, Privacy and Terms live on the About page. On desktop (≥1105px) it
     docks permanently via `ion-split-pane`.
 - **Bottom tab bar** (`views/core/BottomTabBar.vue`) — a **per-page `<ion-footer>`**: add
     `<BottomTabBar />` inside each main/section page. It is intentionally NOT a global fixed
@@ -159,6 +160,27 @@ API accepts IANA names (plus the fixed `UTC ±HH:MM` offset older builds sent).
 
 It keeps tokens out of plaintext at rest. It is **not** an XSS defence — real device-binding is
 the API's `sessions.device_id`.
+
+## Token refresh across tabs
+
+The API treats a refresh token as single-use: presented a second time, it revokes the whole session.
+The web build can have several tabs on one stored session, so refreshing goes through
+`helpers/security/refreshCoordinator.ts` (wired to the account store in `tokenManagement.ts`):
+
+- **One refresh at a time** — per tab and across tabs (a Web Lock). A tab that finds the stored pair
+    already rotated by another tab adopts it instead of spending its own stale token; a
+    `BroadcastChannel` tells the other tabs straight away.
+- **Ahead of expiry, and once after a 401** — the access token is refreshed when it has under five
+    minutes left (at most half its lifetime, for short-lived tokens); a 401 brings the pair up to
+    date and replays the request once. The chunked file upload, which sends its chunks past the API
+    client, does the same for every chunk.
+- **Bounded** — a refresh call gives up after 15 s, and a tab waits at most 45 s for another tab's
+    refresh, so one stuck tab never blocks the others.
+- **Only a refusal ends the session** (400/401/403 → `/login`), and only once, however many requests
+    were waiting on it. Offline, 5xx or 429 keep it.
+- A refused tab never clears a newer session another tab signed in with.
+
+Native builds have one WebView, so the cross-tab part simply has nothing to coordinate there.
 
 ## Privacy & security: app lock, screenshots, crash reports
 

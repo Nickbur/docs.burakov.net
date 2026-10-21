@@ -44,8 +44,14 @@ reset, no separate email verification.
 - Google / Apple sign-in available alongside.
 - Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
     `sessions` row; live-session check cached in Redis with a DB fallback.
-- **Refresh-token reuse detection:** a refresh token that was already rotated, presented again
-    after a short grace window for concurrent refreshes, revokes the whole session.
+- **Refresh-token reuse detection:** a refresh token is single-use. Rotation locks the session
+    row, so presenting a token that was already rotated — a replay, or the second of two concurrent
+    refreshes — revokes the whole session (`401 refresh_token_reused`). The app and the admin panel
+    queue their refreshes across tabs, so a legitimate client never presents one twice.
+- **Revocation is immediate and complete:** sign-out, device revoke and "sign out everywhere" delete
+    the session rows and evict exactly the access tokens they held — including one a concurrent
+    refresh just issued. A session past its refresh lifetime is no longer listed and is removed by
+    `purge`.
 
 <Note>
     Authentication is passwordless by design — there is intentionally no password, no reset,
@@ -114,7 +120,7 @@ API version is winding down. Unset by default.
 | `start` | run compiled |
 | `db:generate` / `db:migrate` / `db:push` / `db:studio` | migration from schema / apply / push schema / Drizzle Studio. `db:generate`, `db:push` and `db:studio` compile first — drizzle-kit reads the compiled schema (`dist/db/schema/index.js`); `postdb:generate` then formats the new migration automatically |
 | `seed` | test/review accounts |
-| `purge` | physically delete accounts past the soft-delete window (daily cron) |
+| `purge` | physically delete accounts past the soft-delete window, tickets past retention and expired sessions (daily cron) |
 | `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
 | `encrypt:backfill [-- --dry-run]` | encrypt TOTP secrets stored before `DATA_ENCRYPTION_KEY` was set, or re-encrypt them after a key rotation (prod: `node dist/scripts/encryptAtRest.js`) |
 | `re-install-deps` | clean reinstall |
