@@ -128,7 +128,11 @@ src/
     one rotation at a time per tab and across tabs (a Web Lock), a pair another tab already rotated
     is adopted instead of spending a stale token, and only a refusal (400/401/403) signs the operator
     out — once, with one "session expired" notice, however many requests were waiting. The API
-    revokes the whole session when one refresh token is presented twice.
+    revokes the whole session when one refresh token is presented twice (outside its 2-minute grace
+    window for lost responses).
+- **Sessions are DPoP-bound** (`core/auth/dpop.ts`): every request, sign-in included, carries a
+    proof signed by a non-exportable key in the browser; sign-out forgets the key. Token expiry is
+    judged by the server's clock (`core/auth/serverClock.ts`, from the `Date` header).
 - **Refresh happens before expiry**, not only on a 401 — admin sessions are short and the panel
     sits open between bursts.
 - **Tokens in an encrypted IndexedDB store** (non-exportable `CryptoKey` + canary), loaded into

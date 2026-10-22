@@ -109,7 +109,9 @@ On the client (paths under `shipwide_app/src/`):
     SDKs are dynamically imported, so an unconfigured build loads neither.
 - `useSubscriptionStore()` — `isPro`, `inBillingRetry` (premium, but a payment failed), `has(id)`.
 - `RevenueCatInitializer.vue` (mounted in `App.vue`) — configures on boot, mirrors auth
-    (`logIn`/`logOut`), seeds the store from the SDK, then reconciles with `GET /me`.
+    (`logIn`/`logOut`), seeds the store from the SDK, then reconciles with `GET /me`. The latest auth
+    change wins: a sign-out cancels the sign-in's sync still in flight, so a previous account's
+    entitlements never land after it.
 - Reference UI — `views/pages/subscription/Subscription.vue` (paywall + manage in one, opened from
     Settings) and `PremiumExample.vue` at `/subscription/premium-example` (client + server gating).
 

@@ -103,8 +103,8 @@ single entry point:
 
 Errors arrive as `{ code, message }` — switch on the code with `extractApiErrorCode()`, never show
 `message`. Every request follows the shared [wire contract](/shipwide/architecture#shared-wire-contract)
-(`/v1`, camelCase, ISO-8601, UUIDv7) and carries a **Bearer** token; a `401` refreshes the token
-pair (with rotation) and retries. The backend side is in [Backend](/shipwide/backend).
+(`/v1`, camelCase, ISO-8601, UUIDv7) and carries the access token — DPoP-bound (see *DPoP* below);
+a `401` refreshes the token pair (with rotation) and retries. The backend side is in [Backend](/shipwide/backend).
 
 ## Support screen
 
@@ -158,12 +158,17 @@ API accepts IANA names (plus the fixed `UTC ±HH:MM` offset older builds sent).
     sign-out, since only the session lives here).
 - Works in the web build and in the Capacitor / Tauri WebViews.
 
-It keeps tokens out of plaintext at rest. It is **not** an XSS defence — real device-binding is
-the API's `sessions.device_id`.
+It keeps tokens out of plaintext at rest. It is **not** an XSS defence, and it does not bind
+anything to the device — a copy of the storage files plus the key's IndexedDB would open it. Device
+binding for the session is DPoP (below). An app that keeps long-lived
+secrets here can hand the store a key from the platform keystore (Keychain / Android Keystore) via
+`setStorageKeyProvider` — a small native plugin of your own; the provider must reject, never return
+nothing, while the keystore is locked, or the store would reset.
 
 ## Token refresh across tabs
 
-The API treats a refresh token as single-use: presented a second time, it revokes the whole session.
+The API treats a refresh token as single-use: presented a second time (past a 2-minute grace window
+meant only for lost responses), it revokes the whole session.
 The web build can have several tabs on one stored session, so refreshing goes through
 `helpers/security/refreshCoordinator.ts` (wired to the account store in `tokenManagement.ts`):
 
@@ -171,8 +176,10 @@ The web build can have several tabs on one stored session, so refreshing goes th
     already rotated by another tab adopts it instead of spending its own stale token; a
     `BroadcastChannel` tells the other tabs straight away.
 - **Ahead of expiry, and once after a 401** — the access token is refreshed when it has under five
-    minutes left (at most half its lifetime, for short-lived tokens); a 401 brings the pair up to
-    date and replays the request once. The chunked file upload, which sends its chunks past the API
+    minutes left **by the server's clock** (`helpers/security/serverClock.ts` learns the offset from
+    every response's `Date` header, so a device clock that is minutes off changes nothing; at most
+    half the token's lifetime, for short-lived tokens); a 401 brings the pair up to date and replays
+    the request once. The chunked file upload, which sends its chunks past the API
     client, does the same for every chunk.
 - **Bounded** — a refresh call gives up after 15 s, and a tab waits at most 45 s for another tab's
     refresh, so one stuck tab never blocks the others.
@@ -181,6 +188,33 @@ The web build can have several tabs on one stored session, so refreshing goes th
 - A refused tab never clears a newer session another tab signed in with.
 
 Native builds have one WebView, so the cross-tab part simply has nothing to coordinate there.
+
+Refusals that should never happen in normal use (a reused refresh token, an unknown one, a DPoP key
+mismatch) are reported to Sentry by code — a spike means stolen tokens or a client bug.
+
+## DPoP — tokens bound to the device
+
+`helpers/security/dpop.ts` keeps one ECDSA P-256 key per app, created on first use with WebCrypto as
+**non-exportable** and stored in its own IndexedDB database. Every request the app authorizes —
+the API client, the sign-in calls, every upload chunk — gets a fresh proof (method, URL, random id,
+server time and the access token's hash), so a session signed in on this device works only from it.
+Sign-out (and a forced sign-out) forgets the key, so the next sign-in starts with a new one. A device
+that can't keep a key (no IndexedDB) simply stays on Bearer. Use `dpop.authorize(method, url, token)`
+for any request you send past the API client.
+
+## Cancelling stale requests
+
+`helpers/requestScope.ts` is the one way to drop work nobody waits for any more:
+
+- `useRequestScope()` in a component — `signal` aborts when the page leaves the stack; `latest()`
+    starts a "latest wins" chain: each `next()` cancels the previous request (open ticket B while A
+    still loads, a new username check while the old one runs). After awaiting, check
+    `signal.aborted` before using the result — a cancelled request resolves with nothing.
+- `timeoutSignal(ms)` / `anySignal([...])` instead of `AbortSignal.timeout` / `AbortSignal.any`,
+    which iOS 15 lacks.
+- `isCancelled(error)` — a cancellation is never an error to show or report.
+- Never pass these signals to a token refresh, a sync or a write queue: those are shared, and cut
+    short mid-flight their outcome is unknown.
 
 ## Privacy & security: app lock, screenshots, crash reports
 

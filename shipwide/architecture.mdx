@@ -41,15 +41,17 @@ App, API and admin all agree on:
     The route's request schema is the source of truth; responses are always camelCase.
 - Errors are flat `{ "code": "snake_case_reason", "message": "for logs" }` — clients switch on
     `code`; `message` is never shown to end users.
-- Auth is **Bearer** (`Authorization: Bearer <access>`) — no cookies, no CSRF surface.
+- Auth is a token in `Authorization` — `Bearer <access>`, or `DPoP <access>` plus a per-request
+    `DPoP` proof once the session is bound to the device's key — no cookies, no CSRF surface.
 
 ## Auth model — one model everywhere
 
 Passwordless: a six-digit email code where **sign-in and sign-up are the same act**. Google /
 Apple sign-in sit alongside. Access tokens are short (15 min) and rotate on refresh (30-day
 refresh), each bound to a `sessions` row so a revoked session dies immediately. A refresh token
-is single-use — spent twice, it revokes its session — so the app and the admin panel coordinate
-refreshes across browser tabs. The admin panel uses the same model, staff-scoped, with optional TOTP. Full detail in
+is single-use — spent twice (outside a 2-minute grace window for lost responses), it revokes its
+session — so the app and the admin panel coordinate refreshes across browser tabs. Sessions are
+DPoP-bound to a non-exportable key on the device, so a stolen token alone is useless. The admin panel uses the same model, staff-scoped, with optional TOTP. Full detail in
 [Backend](/shipwide/backend).
 
 ## What you're starting from

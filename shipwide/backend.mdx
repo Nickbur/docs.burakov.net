@@ -7,7 +7,7 @@ mode: "wide"
 The backend half of the kit — Fastify + Drizzle + PostgreSQL + Redis. Single-app: one
 deployment serves one product. Every route follows the shared
 [wire contract](/shipwide/architecture#shared-wire-contract) — versioning, field format, errors and
-Bearer auth.
+token auth (Bearer, or DPoP-bound).
 
 ## Module architecture
 
@@ -43,11 +43,26 @@ reset, no separate email verification.
     from the email) · **`deletion_pending`** (soft-deleted → `restoreToken`).
 - Google / Apple sign-in available alongside.
 - Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
-    `sessions` row; live-session check cached in Redis with a DB fallback.
+    `sessions` row; live-session check cached in Redis with a DB fallback. An expired access token
+    answers `401 token_expired`, any other bad one `401 invalid_token`.
+- **Signing-key rotation without a mass sign-out:** every token carries a `kid`. To rotate
+    `JWT_SECRET`, move the old value into `JWT_PREVIOUS_SECRETS` (comma-separated) — tokens it signed
+    keep verifying until they expire; remove it after the refresh lifetime.
 - **Refresh-token reuse detection:** a refresh token is single-use. Rotation locks the session
-    row, so presenting a token that was already rotated — a replay, or the second of two concurrent
-    refreshes — revokes the whole session (`401 refresh_token_reused`). The app and the admin panel
-    queue their refreshes across tabs, so a legitimate client never presents one twice.
+    row, so presenting a token that was already rotated — a replay — revokes the whole session
+    (`401 refresh_token_reused`). One exception, a **2-minute grace window**: the token the last
+    rotation spent may be presented again for a replacement pair, so a rotation whose response was
+    lost (dropped connection, killed app) never signs the user out — and two concurrent refreshes both
+    succeed. The window is pinned to that rotation; a re-issue never extends it. The app and the admin
+    panel queue their refreshes across tabs, so a legitimate client never relies on it in normal use.
+- **DPoP — sessions bound to the device ([RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)):**
+    the app and the admin panel hold a non-exportable P-256 key and sign a short proof for every
+    request. A sign-in or refresh with a proof binds the session to that key; from then on its tokens
+    work only as `Authorization: DPoP <access>` plus a fresh `DPoP` proof, so a token copied off the
+    device is useless. A bad proof on a sign-in or refresh is a `422` (never a sign-out); a valid proof
+    of another key is `401 dpop_key_mismatch` and revokes nothing. Clients without a key stay on Bearer;
+    `DPOP_REQUIRED` (comma-separated `client_id`s, empty by default) makes binding mandatory once every
+    live build of an app sends proofs.
 - **Revocation is immediate and complete:** sign-out, device revoke and "sign out everywhere" delete
     the session rows and evict exactly the access tokens they held — including one a concurrent
     refresh just issued. A session past its refresh lifetime is no longer listed and is removed by
