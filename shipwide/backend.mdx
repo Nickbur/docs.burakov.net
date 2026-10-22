@@ -52,15 +52,18 @@ reset, no separate email verification.
     row, so presenting a token that was already rotated — a replay — revokes the whole session
     (`401 refresh_token_reused`). One exception, a **2-minute grace window**: the token the last
     rotation spent may be presented again for a replacement pair, so a rotation whose response was
-    lost (dropped connection, killed app) never signs the user out — and two concurrent refreshes both
-    succeed. The window is pinned to that rotation; a re-issue never extends it. The app and the admin
-    panel queue their refreshes across tabs, so a legitimate client never relies on it in normal use.
+    lost (dropped connection, killed app) never signs the user out. Two concurrent refreshes both get
+    an answer, but only the later pair stays valid: the re-issue retires the first one. The window is
+    pinned to that rotation; a re-issue never extends it. The app and the admin panel queue their
+    refreshes across tabs, so a legitimate client never relies on it in normal use.
 - **DPoP — sessions bound to the device ([RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)):**
     the app and the admin panel hold a non-exportable P-256 key and sign a short proof for every
     request. A sign-in or refresh with a proof binds the session to that key; from then on its tokens
     work only as `Authorization: DPoP <access>` plus a fresh `DPoP` proof, so a token copied off the
     device is useless. A bad proof on a sign-in or refresh is a `422` (never a sign-out); a valid proof
-    of another key is `401 dpop_key_mismatch` and revokes nothing. Clients without a key stay on Bearer;
+    of another key is `401 dpop_key_mismatch` and revokes nothing — except for the token in the grace
+    window: grace is for the holder whose answer got lost, so another key there means a second holder,
+    and the session is revoked as reuse. Clients without a key stay on Bearer;
     `DPOP_REQUIRED` (comma-separated `client_id`s, empty by default) makes binding mandatory once every
     live build of an app sends proofs.
 - **Revocation is immediate and complete:** sign-out, device revoke and "sign out everywhere" delete

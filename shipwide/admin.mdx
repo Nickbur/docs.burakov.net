@@ -127,11 +127,14 @@ src/
 - **One axios instance, not a factory.** Refresh goes through `core/auth/refreshCoordinator.ts`:
     one rotation at a time per tab and across tabs (a Web Lock), a pair another tab already rotated
     is adopted instead of spending a stale token, and only a refusal (400/401/403) signs the operator
-    out — once, with one "session expired" notice, however many requests were waiting. The API
+    out — once, with one "session expired" notice, however many requests were waiting. A refusal
+    signs out that tab only (`auth.dropRefusedSession()`, memory only): the stored session may be a
+    newer one another tab signed in with, so only an explicit sign-out wipes storage. The API
     revokes the whole session when one refresh token is presented twice (outside its 2-minute grace
     window for lost responses).
 - **Sessions are DPoP-bound** (`core/auth/dpop.ts`): every request, sign-in included, carries a
-    proof signed by a non-exportable key in the browser; sign-out forgets the key. Token expiry is
+    proof signed by a non-exportable key in the browser, shared by its tabs; sign-out forgets the key
+    its session was bound to, never one another tab has signed in with since. Token expiry is
     judged by the server's clock (`core/auth/serverClock.ts`, from the `Date` header).
 - **Refresh happens before expiry**, not only on a 401 — admin sessions are short and the panel
     sits open between bursts.

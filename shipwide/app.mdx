@@ -185,7 +185,10 @@ The web build can have several tabs on one stored session, so refreshing goes th
     refresh, so one stuck tab never blocks the others.
 - **Only a refusal ends the session** (400/401/403 → `/login`), and only once, however many requests
     were waiting on it. Offline, 5xx or 429 keep it.
-- A refused tab never clears a newer session another tab signed in with.
+- A refused tab never clears a newer session another tab signed in with — saving the stores included:
+    critical state (the session, the offline-cache owner, the lock, screenshot and crash-report flags) is written from a
+    tab's memory only when that tab just changed it, so a tab left behind can't overwrite what another tab
+    wrote (`stores/plugins/persistPlugin.ts`).
 
 Native builds have one WebView, so the cross-tab part simply has nothing to coordinate there.
 
@@ -198,9 +201,12 @@ mismatch) are reported to Sentry by code — a spike means stolen tokens or a cl
 **non-exportable** and stored in its own IndexedDB database. Every request the app authorizes —
 the API client, the sign-in calls, every upload chunk — gets a fresh proof (method, URL, random id,
 server time and the access token's hash), so a session signed in on this device works only from it.
-Sign-out (and a forced sign-out) forgets the key, so the next sign-in starts with a new one. A device
-that can't keep a key (no IndexedDB) simply stays on Bearer. Use `dpop.authorize(method, url, token)`
-for any request you send past the API client.
+Sign-out (and a forced sign-out) forgets the key the session was bound to, so the next sign-in starts
+with a new one. The key is shared by every tab of the web build, so a tab left open never undoes
+another tab's sign-in: it forgets only its own session's key, signs a sign-in or refresh with the key
+stored now, and picks up the new key for a session another tab signed in with. A device that can't
+keep a key (no IndexedDB) simply stays on Bearer. Use `dpop.authorize(method, url, token)` for any
+request you send past the API client.
 
 ## Cancelling stale requests
 
