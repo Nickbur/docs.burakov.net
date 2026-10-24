@@ -1,0 +1,55 @@
+---
+title: "Move to Hushgard"
+description: "Bring your history from Slack, Microsoft Teams, Telegram, WhatsApp, Mattermost or Rocket.Chat into Hushgard — encrypted on your own device, into new chats, with original authors and dates."
+mode: "wide"
+---
+
+Switching shouldn't mean leaving your history behind. Hushgard's **import** brings conversations from Slack, Microsoft Teams, Telegram, WhatsApp, Mattermost and Rocket.Chat into new Hushgard chats — with their original authors, dates, threads and files.
+
+Import is included in every plan.
+
+## How it stays private
+
+The import runs **on your own device**, in the desktop app or the web app. Hushgard reads the export there, encrypts every message and file for the chat it's going into, and only then uploads it — exactly like sending a message. Your organization's server never sees the imported content, and Hushgard's own services never touch it.
+
+## Who can import what
+
+- An admin opens an **import window** in the admin panel; it's time-limited.
+- **Channels and groups** are imported into **new** Hushgard channels and groups — never mixed into a chat that's already in use, so the history stays in order.
+- **Direct messages** are imported only **by someone who took part in them**, into a direct chat with the other person. An admin can't import other people's private conversations — even when the export contains them, Hushgard only offers the conversations you were part of.
+
+## Get your export
+
+| From | What you need |
+| --- | --- |
+| **Slack** | A workspace export (a ZIP file) from **Workspace settings → Import/Export data**. Every plan can export public channels; private channels and direct messages need a Business+ or Enterprise plan and Slack's approval. On Slack's Free plan, file links in an export cover only the last 90 days. |
+| **Microsoft Teams** | No file — you **sign in to Microsoft** inside the import wizard, and Hushgard reads the chats and channels you can see. Your sign-in stays on your device. Importing channel messages may need your Microsoft 365 admin's consent. |
+| **Telegram** | **Export chat history** in Telegram Desktop, in the machine-readable **JSON** format, with the media you want to keep. |
+| **WhatsApp** | **Export chat** from the chat's menu on your phone, with or without media — one chat at a time. |
+| **Mattermost** | A bulk export with attachments made by your Mattermost server admin — or, without one, your own personal access token, so Hushgard can read what you can see. |
+| **Rocket.Chat** | Your server's address and your own personal access token — Hushgard reads the channels, groups and direct messages you can see. |
+
+## Import
+
+<Steps>
+    <Step title="Choose the source">
+        Open **Import** from the menu in the desktop or web app, pick where you're coming from and give Hushgard the export — or sign in, for Teams, Mattermost and Rocket.Chat.
+    </Step>
+    <Step title="Match the people">
+        People are matched to members of your organization by e-mail address where the export has one; you can match the rest by hand. Anyone you don't match keeps their name on their messages, without a Hushgard account — or you can invite them.
+    </Step>
+    <Step title="Pick the chats">
+        Choose which channels, groups and conversations to bring over. Each one becomes a new Hushgard channel or group.
+    </Step>
+    <Step title="Run it">
+        Messages arrive in their original order. You can pause and resume, and a report at the end lists anything that couldn't be imported.
+    </Step>
+</Steps>
+
+## What imported messages look like
+
+Each imported message shows its **original author and date** with an **Imported** badge. Hushgard can't post as someone else — nobody holds another person's key — so the original author is shown as a label, and the server records the person who ran the import as the sender. Threads and replies keep their place; files are encrypted and uploaded like any other attachment; mentions point to the matched members; reactions are kept with the names of who reacted.
+
+<Warning>
+    **Retention applies to the original date.** If your organization deletes messages after a set number of days, imported messages older than that are deleted soon after the import. The wizard shows how much that would be before you start, and an admin can raise the [retention period](/hushgard/organization-settings#retention) first.
+</Warning>

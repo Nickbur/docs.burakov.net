@@ -264,7 +264,7 @@
                 ]
             },
             {
-                "product": "Bastion",
+                "product": "Hushgard",
                 "icon": "shield-halved",
                 "description": "Self-hosted encrypted chat and calls",
                 "tabs": [
@@ -273,15 +273,15 @@
                         "groups": [
                             {
                                 "group": "Getting started",
-                                "pages": ["bastion", "bastion/quickstart", "bastion/import"]
+                                "pages": ["hushgard", "hushgard/quickstart", "hushgard/import"]
                             },
                             {
-                                "group": "Using Bastion",
-                                "pages": ["bastion/chat", "bastion/calls", "bastion/topics", "bastion/ai-assistant"]
+                                "group": "Using Hushgard",
+                                "pages": ["hushgard/chat", "hushgard/calls", "hushgard/topics", "hushgard/ai-assistant"]
                             },
                             {
                                 "group": "You & your account",
-                                "pages": ["bastion/security", "bastion/account-and-settings"]
+                                "pages": ["hushgard/security", "hushgard/account-and-settings"]
                             }
                         ]
                     },
@@ -290,23 +290,23 @@
                         "groups": [
                             {
                                 "group": "Buying",
-                                "pages": ["bastion/pricing"]
+                                "pages": ["hushgard/pricing"]
                             },
                             {
                                 "group": "Self-hosting",
-                                "pages": ["bastion/self-hosting", "bastion/operations"]
+                                "pages": ["hushgard/self-hosting", "hushgard/operations"]
                             },
                             {
                                 "group": "Admin panel",
-                                "pages": ["bastion/administration", "bastion/organization-settings"]
+                                "pages": ["hushgard/administration", "hushgard/organization-settings"]
                             },
                             {
                                 "group": "Enterprise controls",
-                                "pages": ["bastion/sso", "bastion/device-management"]
+                                "pages": ["hushgard/sso", "hushgard/device-management"]
                             },
                             {
                                 "group": "Integrations",
-                                "pages": ["bastion/bots"]
+                                "pages": ["hushgard/bots"]
                             }
                         ]
                     },
@@ -315,7 +315,7 @@
                         "groups": [
                             {
                                 "group": "Help",
-                                "pages": ["bastion/accounts-and-privacy", "bastion/faq", "bastion/troubleshooting"]
+                                "pages": ["hushgard/accounts-and-privacy", "hushgard/faq", "hushgard/troubleshooting"]
                             }
                         ]
                     }

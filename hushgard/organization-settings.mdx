@@ -1,0 +1,79 @@
+---
+title: "Organization settings"
+description: "Configure your Hushgard organization in the admin panel — branding, modules, guests from other organizations, joining by e-mail domain, calls, retention, link previews, metadata-minimal mode and the AI assistant."
+mode: "wide"
+---
+
+Organization-wide settings live on two pages of the [admin panel](/hushgard/administration): **Organization** and **Settings**. Every saved change reaches members' apps right away.
+
+## Branding
+
+- **Display name** — up to 80 characters.
+- **Accent colour** — shown on your organization's card in the app.
+- **Logo** — PNG, JPEG or WebP, up to 256 KB.
+
+## Modules
+
+Switch **Calls**, **Topics**, **High-security chats**, the **AI assistant** and **Enterprise controls** on or off for your organization. Chat is always on. A module that isn't in your plan is listed as *not in your license* — add it on [Your organizations](/hushgard/pricing#your-organizations).
+
+## Working with other organizations
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Guests from other organizations** | Off | Lets your members invite people from other organizations into their chats. Optionally only from organizations on your **allowlist** (up to 500 organization IDs). |
+| **Your members as guests elsewhere** | On | Lets your members join chats hosted by other organizations. |
+| **Network directory** | Off | Lets people in other organizations find your members by name (they can always find them by exact username or email). |
+
+When two organizations' policies differ, the stricter one wins. Copy your **organization ID** here to share with partners for their allowlist.
+
+## Join without an invitation
+
+Add up to 50 **e-mail domains**: anyone signed in with a verified address at those domains sees your organization under **You can join** in the app. Don't add public mail domains like gmail.com — anyone could join.
+
+## Calls
+
+When the Calls module is on:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Guests by link** | Off | Lets members create call links for people without a Hushgard account. Guests always wait in a lobby until a host lets them in, and their calls stay end-to-end encrypted. Every guest who joins is recorded in the audit log. |
+| **Call recording** | Off | Lets participants record calls on their own device; everyone sees that a recording is running, and it's saved to the chat as an encrypted file. Never available in high-security chats. |
+| **Call backgrounds** | — | Pictures you upload here are offered to every member as virtual backgrounds. |
+| **Meeting invitations by e-mail** | On | Hushgard's mail service sends guests their invitations, updates and cancellations, with as little as possible: who invites them, when, the join link and the title only if the organizer includes it. Off: members share invitations themselves. See [Meetings](/hushgard/chat#meetings). |
+
+See [Calls](/hushgard/calls).
+
+## Single sign-on and device policies
+
+With the **Enterprise controls** module, the panel also has **Single sign-on** — your identity provider, verified domains, *Require SSO* and SCIM provisioning ([Single sign-on & provisioning](/hushgard/sso)) — and **Device policies** — app lock, screenshots, keeping data in the app, offline limits, wiping, minimum app version and web access ([Device management](/hushgard/device-management)).
+
+## Retention
+
+**Retention** deletes chat messages automatically after a number of days (from 1 to 3,650; **0** keeps everything). Call history follows the same setting. It removes messages with their edit history, attachments, and the AI assistant's index of them; the apps remove them from devices too. **Topics aren't affected** — posts and comments stay until they're deleted.
+
+On a self-hosted node, the deletion runs on a schedule set by `RETENTION_SWEEP_INTERVAL_SECONDS` — see [Run & maintain your node](/hushgard/operations#configuration-reference).
+
+## Link previews
+
+Turn **Link previews** on or off for the whole organization. When on, members' devices build a preview card for links they send (title, description, site, small image) and it travels inside the encrypted message — your server never sees the address. When off, links are sent as plain links. See [Chat](/hushgard/chat#link-previews).
+
+## Metadata-minimal mode
+
+Switches off typing and recording indicators, read, delivery and listened status and online status, turns link previews off, and forces notifications to their most generic form — enforced on the server for everyone in the organization. See [Privacy & your data](/hushgard/accounts-and-privacy#metadata-minimal-mode).
+
+## AI assistant
+
+When the AI assistant module is on:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Enable AI in new shared chats by default** | On | New groups and channels include the assistant. |
+| **Allow chat admins to turn AI off per chat** | On | Lets each chat's admins decide for their chat. Off locks the per-chat switch. |
+
+The same settings decide whether the assistant can join calls in those chats for live captions and notes — see [Calls](/hushgard/calls#live-captions-and-notes).
+
+The first time, choose **Provision AI worker** to set up the assistant on your server (a self-hosted node also needs its AI models configured — see [Run & maintain your node](/hushgard/operations#ai-assistant-models)). Direct and high-security chats never include the assistant. See [AI assistant](/hushgard/ai-assistant) for what members see.
+
+<Note>
+    While the organization is read-only after a lapsed subscription, changes on these pages can't be saved — except the guest settings for working with other organizations.
+</Note>

@@ -1,10 +1,10 @@
 ---
 title: "Admin panel: members & moderation"
-description: "Run your Bastion organization from the admin panel — the dashboard, members and roles, invitations, moderation and reports, conversations, the audit log, bot accounts and import."
+description: "Run your Hushgard organization from the admin panel — the dashboard, members and roles, invitations, moderation and reports, conversations, the audit log, bot accounts and import."
 mode: "wide"
 ---
 
-The **admin panel** is where the organization's **owner** and **admins** manage people and policy. It's served by your organization's node: open the admin panel on your node (for Managed, its link is on **[Your organizations](https://bastion-chat.com/account/)**) and sign in with the same passwordless email code as the app. Only the owner and admins can open it. Organization-wide settings — branding, modules, guests, retention and the AI assistant — are covered in [Organization settings](/bastion/organization-settings).
+The **admin panel** is where the organization's **owner** and **admins** manage people and policy. It's served by your organization's node: open the admin panel on your node (for Managed, its link is on **[Your organizations](https://hushgard.com/account/)**) and sign in with the same passwordless email code as the app. Only the owner and admins can open it. Organization-wide settings — branding, modules, guests, retention and the AI assistant — are covered in [Organization settings](/hushgard/organization-settings).
 
 The **dashboard** shows active members, conversations, the number of messages (stored encrypted), and the node's **license**: its state, how long it's valid, how long its offline grace lasts, and which modules are licensed and enabled.
 
@@ -21,13 +21,13 @@ Nobody can change their own role.
 
 ### Invite and manage members
 
-- **Invite** by email, as a member, moderator or admin. The person gets an email, signs in to Bastion with that address and accepts on the **Organizations** screen — nobody joins without accepting. Until then the invitation is listed under **Pending invitations**, where you can **withdraw** it.
+- **Invite** by email, as a member, moderator or admin. The person gets an email, signs in to Hushgard with that address and accepts on the **Organizations** screen — nobody joins without accepting. Until then the invitation is listed under **Pending invitations**, where you can **withdraw** it.
 - The **Members** list has search and shows 50 people per page, each as **active**, **removed** or **left**. A new member appears here as soon as they accept the invitation.
-- **Changing a role** is confirmed with Bastion's control plane first; if it can't be reached, nothing changes — try again.
+- **Changing a role** is confirmed with Hushgard's control plane first; if it can't be reached, nothing changes — try again.
 - **Removing** a member cuts their access immediately, including any session that's open right now; **restore** them later to bring them back. Members who **left** on their own need a new invitation.
 
 <Tip>
-    Want everyone at your company to find the organization without an invitation? Add your **e-mail domains** in [Organization settings](/bastion/organization-settings#join-without-an-invitation).
+    Want everyone at your company to find the organization without an invitation? Add your **e-mail domains** in [Organization settings](/hushgard/organization-settings#join-without-an-invitation).
 </Tip>
 
 ## Moderation
@@ -42,7 +42,7 @@ Your organization's owner, admins and moderators can also moderate every chat an
 
 The **Conversations** page lists every conversation of the organization — groups, channels, direct chats (shown as *(direct)*) and high-security chats — with member and message counts. You see who's in them, never what they say.
 
-- **New channel** — creates a channel with **you** as its owner and only member. Open it once in the Bastion app to create its encryption key (the server never holds it), then add members from the app.
+- **New channel** — creates a channel with **you** as its owner and only member. Open it once in the Hushgard app to create its encryption key (the server never holds it), then add members from the app.
 - **Archive** a chat (read-only for everyone) or **unarchive** it.
 - **Delete** a chat with its history and files — type its name to confirm.
 
@@ -54,13 +54,13 @@ Administrative and security-relevant events are recorded in the **audit log**, f
 
 ## More in the panel
 
-- **Single sign-on** and **Device policies** — with the Enterprise controls module. See [Single sign-on & provisioning](/bastion/sso) and [Device management](/bastion/device-management), where each member's devices can also be signed out and wiped.
-- **Bot accounts** — create bots that read and answer in chats. See [Bots & integrations](/bastion/bots).
-- **Import window** — let members and admins bring history from other tools for a limited time. See [Move to Bastion](/bastion/import).
+- **Single sign-on** and **Device policies** — with the Enterprise controls module. See [Single sign-on & provisioning](/hushgard/sso) and [Device management](/hushgard/device-management), where each member's devices can also be signed out and wiped.
+- **Bot accounts** — create bots that read and answer in chats. See [Bots & integrations](/hushgard/bots).
+- **Import window** — let members and admins bring history from other tools for a limited time. See [Move to Hushgard](/hushgard/import).
 
 ## If the subscription lapses
 
-When the organization turns read-only, you can still **remove and restore members**, **withdraw invitations** and change who may work with other organizations. Settings and organization changes are blocked until the subscription is renewed — see [Plans & buying](/bastion/pricing#when-a-payment-fails-or-a-subscription-ends).
+When the organization turns read-only, you can still **remove and restore members**, **withdraw invitations** and change who may work with other organizations. Settings and organization changes are blocked until the subscription is renewed — see [Plans & buying](/hushgard/pricing#when-a-payment-fails-or-a-subscription-ends).
 
 <Note>
     The admin panel is **content-blind** where it counts: because messages and calls are end-to-end encrypted, administration is about people, roles and policy — not reading conversations.

@@ -1,10 +1,10 @@
 ---
 title: "Install a self-hosted node"
-description: "Run your organization's Bastion node on your own server — requirements, DNS and ports, credentials, generating the configuration, bringing it up and checking it's healthy."
+description: "Run your organization's Hushgard node on your own server — requirements, DNS and ports, credentials, generating the configuration, bringing it up and checking it's healthy."
 mode: "wide"
 ---
 
-Self-hosting puts your organization's chat and calls on a server **you** control. One organization runs on one node. Running it day to day — configuration, licensing, updates and backups — is covered in [Run & maintain your node](/bastion/operations).
+Self-hosting puts your organization's chat and calls on a server **you** control. One organization runs on one node. Running it day to day — configuration, licensing, updates and backups — is covered in [Run & maintain your node](/hushgard/operations).
 
 ## What you need
 
@@ -19,13 +19,13 @@ Self-hosting puts your organization's chat and calls on a server **you** control
 
 - An **email address** for the HTTPS certificates (`ACME_EMAIL`).
 - **Open ports:** `80` and `443` (TCP, and `443` UDP), and for calls `7881` TCP, `7882` UDP, `3478` UDP and `5349` TCP (TURN over TLS).
-- **Reachable from the internet over HTTPS.** Before routing members to your node, Bastion's control plane checks `https://DOMAIN` from the internet: it must resolve to a public address, answer within five seconds and not redirect.
-- **Outbound HTTPS** from the server to Bastion's control plane (sign-in, licensing, push).
+- **Reachable from the internet over HTTPS.** Before routing members to your node, Hushgard's control plane checks `https://DOMAIN` from the internet: it must resolve to a public address, answer within five seconds and not redirect.
+- **Outbound HTTPS** from the server to Hushgard's control plane (sign-in, licensing, push).
 
 ## What's in the stack
 
 <CardGroup cols={2}>
-    <Card title="Bastion node" icon="server">
+    <Card title="Hushgard node" icon="server">
         The API and real-time layer for chat, calls, topics, uploads and the AI assistant.
     </Card>
     <Card title="Database & cache" icon="database">
@@ -44,22 +44,22 @@ Self-hosting puts your organization's chat and calls on a server **you** control
         Caddy issues and renews HTTPS certificates automatically for all three names.
     </Card>
     <Card title="Admin panel" icon="sliders">
-        The organization's [admin panel](/bastion/administration) — members, moderation and settings — served by your node.
+        The organization's [admin panel](/hushgard/administration) — members, moderation and settings — served by your node.
     </Card>
 </CardGroup>
 
 ## 1. Get the node bundle and your credentials
 
-After buying the Self-hosted plan on [bastion-chat.com](https://bastion-chat.com/pricing):
+After buying the Self-hosted plan on [hushgard.com](https://hushgard.com/pricing):
 
-1. Open **[Your organizations](https://bastion-chat.com/account/)** and sign in with the email you bought with.
+1. Open **[Your organizations](https://hushgard.com/account/)** and sign in with the email you bought with.
 2. Download the **node bundle** and unpack it on your server.
 3. Choose **Get credentials**. The organization ID and secret appear with a ready `.env` snippet — the secret is shown **once**, and we never email it.
 4. Lost the secret, or someone saw it who shouldn't have? **Rotate secret** issues a new one. The old one stops working immediately — the node turns read-only and members can't connect until the new secret is in `.env` and the node has restarted.
 
 ## 2. Generate the configuration
 
-The node bundle holds the node's Docker Compose setup: `docker-compose.yml`, the `infra/` folder (proxy and media-server configuration), the settings template `env/env.prod`, `scripts/setup.sh` and the [backup and restore scripts](/bastion/operations#backups). The node itself is the image `registry.burakov.net/bastion-node`, which the stack pulls. In the bundle's folder, run the setup script with your names:
+The node bundle holds the node's Docker Compose setup: `docker-compose.yml`, the `infra/` folder (proxy and media-server configuration), the settings template `env/env.prod`, `scripts/setup.sh` and the [backup and restore scripts](/hushgard/operations#backups). The node itself is the image `registry.burakov.net/hushgard-node`, which the stack pulls. In the bundle's folder, run the setup script with your names:
 
 ```bash
 DOMAIN=chat.example.com LIVEKIT_DOMAIN=rtc.example.com \
@@ -72,8 +72,8 @@ It writes `.env` with strong, unique secrets and your domains (readable only by 
 Then add the two credential lines to `.env`:
 
 ```bash
-BASTION_ORG_ID=…
-BASTION_ORG_SECRET=…
+HUSHGARD_ORG_ID=…
+HUSHGARD_ORG_SECRET=…
 ```
 
 ## 3. Bring it up
@@ -87,17 +87,17 @@ The node applies its database migrations on start. The stack refuses to start if
 ## 4. Check it's healthy
 
 - `https://DOMAIN/v1/health/ready` answers `200` when the database, Redis and modules are ready (`503` while something is degraded).
-- The node then proves its public address to the control plane and fetches its license. If the address can't be verified, the node logs the reason and retries — see [Address verification](/bastion/operations#address-verification).
-- Sign in to the Bastion app with the email you bought with — you're the organization's **owner** — then open the admin panel on your node and [invite your team](/bastion/administration).
+- The node then proves its public address to the control plane and fetches its license. If the address can't be verified, the node logs the reason and retries — see [Address verification](/hushgard/operations#address-verification).
+- Sign in to the Hushgard app with the email you bought with — you're the organization's **owner** — then open the admin panel on your node and [invite your team](/hushgard/administration).
 
 ## How members connect
 
-There's **one Bastion app for every organization** — on the web, desktop, iOS and Android. You don't ship a custom build or hand out a server address:
+There's **one Hushgard app for every organization** — on the web, desktop, iOS and Android. You don't ship a custom build or hand out a server address:
 
 1. Your node registers its public address with the control plane when it starts, and again on every license check. The control plane first verifies that the server at that address really is your node (it answers a one-time challenge with your organization's secret), so nobody can point your members at a server of their own.
 2. A member signs in with their email and sees your invitation; they join with one tap. Nobody becomes a member of an organization without accepting.
 3. The app checks your node is reachable, then connects to it directly. Messages, files and calls flow between the member's device and **your** node only.
 
 <Note>
-    Don't want to run any of this? **Managed** is the same stack, operated for you. See [Plans & buying](/bastion/pricing).
+    Don't want to run any of this? **Managed** is the same stack, operated for you. See [Plans & buying](/hushgard/pricing).
 </Note>

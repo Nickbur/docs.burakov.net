@@ -1,10 +1,10 @@
 ---
 title: "Chat"
-description: "Encrypted messaging in Bastion — direct chats, groups, channels and high-security chats, with threads, mentions, polls, files, notifications and moderation."
+description: "Encrypted messaging in Hushgard — direct chats, groups, channels and high-security chats, with threads, mentions, polls, files, notifications and moderation."
 mode: "wide"
 ---
 
-Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your device and only opened on the recipients'. The server relays ciphertext — the one exception is a chat your organization's [AI assistant](/bastion/ai-assistant) has been added to, which the assistant can read on your organization's own server. See [Security](/bastion/security) for how that works.
+Every chat in Hushgard is **end-to-end encrypted**: messages are sealed on your device and only opened on the recipients'. The server relays ciphertext — the one exception is a chat your organization's [AI assistant](/hushgard/ai-assistant) has been added to, which the assistant can read on your organization's own server. See [Security](/hushgard/security) for how that works.
 
 ## Kinds of chat
 
@@ -23,7 +23,7 @@ Every chat in Bastion is **end-to-end encrypted**: messages are sealed on your d
     </Card>
 </CardGroup>
 
-Open **New chat**, pick the kind, choose people from your organization's directory and start typing. A new chat can start with up to 500 people. Someone who has never opened Bastion yet has no encryption key, so they can't be added until they do — you'll see *Not added — they haven't opened Bastion yet*.
+Open **New chat**, pick the kind, choose people from your organization's directory and start typing. A new chat can start with up to 500 people. Someone who has never opened Hushgard yet has no encryption key, so they can't be added until they do — you'll see *Not added — they haven't opened Hushgard yet*.
 
 Chats you archive move to an **Archived** group at the bottom of the chat list.
 
@@ -51,7 +51,7 @@ Chats you archive move to an **Archived** group at the bottom of the chat list.
 **Listening**
 
 - The waveform appears at once; tap or drag it to jump.
-- Change the speed — 1×, 1.5×, 2× or 0.5× — and Bastion remembers your choice.
+- Change the speed — 1×, 1.5×, 2× or 0.5× — and Hushgard remembers your choice.
 - One voice message plays at a time. Leave the chat and it keeps playing in a mini player; when it ends, the next one starts on its own.
 - It keeps playing in the background, with controls on the lock screen. Hold the phone to your ear to hear it through the earpiece.
 - A half-heard message picks up where you stopped. Voice messages play on every device, whichever device recorded them.
@@ -59,7 +59,7 @@ Chats you archive move to an **Archived** group at the bottom of the chat list.
 **Listened status and text**
 
 - The sender sees when a voice message was **listened to**; in a group, the message info shows who listened.
-- With the [AI assistant](/bastion/ai-assistant) module, every voice message also shows its **text** — tap **Show text**, copy it or find it in search. Speech is recognized on your organization's own server, and the audio isn't stored for it.
+- With the [AI assistant](/hushgard/ai-assistant) module, every voice message also shows its **text** — tap **Show text**, copy it or find it in search. Speech is recognized on your organization's own server, and the audio isn't stored for it.
 
 Voice messages are end-to-end encrypted like any other message and work in chats and threads; high-security chats are text-only.
 
@@ -87,13 +87,13 @@ Editing happens entirely on your device and works offline. An edited photo is sa
 
 ### Link previews
 
-When your message contains a link, Bastion shows a card with the page's title, description, site and a small image. **Your device** fetches the page and builds the card, and you can remove it before sending. The card travels inside the encrypted message, so the people reading it load nothing from the web and your organization's server never sees the address. Your organization's admin can switch previews off — see [Organization settings](/bastion/organization-settings#link-previews).
+When your message contains a link, Hushgard shows a card with the page's title, description, site and a small image. **Your device** fetches the page and builds the card, and you can remove it before sending. The card travels inside the encrypted message, so the people reading it load nothing from the web and your organization's server never sees the address. Your organization's admin can switch previews off — see [Organization settings](/hushgard/organization-settings#link-previews).
 
 ### View once
 
-Mark a photo, video or text message **View once** before sending. Each recipient can open it a single time; after that it is gone on all of that recipient's devices. Choose how long an unopened item stays available — if nobody opens it in time, it expires. You see who has opened it (unless your organization uses [metadata-minimal mode](/bastion/accounts-and-privacy#metadata-minimal-mode)).
+Mark a photo, video or text message **View once** before sending. Each recipient can open it a single time; after that it is gone on all of that recipient's devices. Choose how long an unopened item stays available — if nobody opens it in time, it expires. You see who has opened it (unless your organization uses [metadata-minimal mode](/hushgard/accounts-and-privacy#metadata-minimal-mode)).
 
-Once every recipient has opened it, or it expires, the encrypted item is deleted from your organization's server. The viewer is a dedicated screen: view-once items can't be forwarded, saved, copied, downloaded, shared or quoted, they are not kept in the offline cache or in search, and the [AI assistant](/bastion/ai-assistant) never indexes them. On iPhone and Android the viewer also blocks screenshots and screen recording while it is open.
+Once every recipient has opened it, or it expires, the encrypted item is deleted from your organization's server. The viewer is a dedicated screen: view-once items can't be forwarded, saved, copied, downloaded, shared or quoted, they are not kept in the offline cache or in search, and the [AI assistant](/hushgard/ai-assistant) never indexes them. On iPhone and Android the viewer also blocks screenshots and screen recording while it is open.
 
 <Note>
     View once limits copies; it can't prevent them. Screenshot blocking works only in the iPhone and Android apps, and nothing stops someone from photographing the screen. Use it for passwords, contracts and personal data you'd rather not leave lying around — not as a guarantee against a recipient who means to keep a copy.
@@ -101,9 +101,9 @@ Once every recipient has opened it, or it expires, the encrypted item is deleted
 
 ### Share location
 
-Send your current position as a message: coordinates, accuracy and an optional label. It's a one-time snapshot — Bastion doesn't share live location. The message is end-to-end encrypted like any other, and your device asks for location permission the first time.
+Send your current position as a message: coordinates, accuracy and an optional label. It's a one-time snapshot — Hushgard doesn't share live location. The message is end-to-end encrypted like any other, and your device asks for location permission the first time.
 
-The bubble has an **Open in maps** button: Apple Maps, Google Maps or OpenStreetMap (on Android, the system chooser). Bastion shows **no embedded map and looks up no address**, because either would send the position to a third party. It only reaches a maps app when you tap.
+The bubble has an **Open in maps** button: Apple Maps, Google Maps or OpenStreetMap (on Android, the system chooser). Hushgard shows **no embedded map and looks up no address**, because either would send the position to a third party. It only reaches a maps app when you tap.
 
 Messages appear the moment you send them and wait in an outbox while you're offline. If the server permanently refuses one (for example, a file that's too large), it shows why and lets you discard it.
 
@@ -160,15 +160,15 @@ Schedule a call right in the chat it's about — no separate meeting tool needed
 
 **Who's coming.** Everyone answers **Going**, **Maybe** or **Not going** on the card, and sees the others' answers.
 
-**Reminders and joining.** Before the start you get a reminder — 10 minutes ahead unless you changed it in [Settings](/bastion/account-and-settings#status-and-availability) — and another when it begins. Nobody's phone rings: from five minutes before, the card and a banner in the chat offer **Join**. Whoever joins first starts the call; the host can ring anyone missing from the call's participant list. Upcoming meetings from all your chats are listed on the **Calls** tab.
+**Reminders and joining.** Before the start you get a reminder — 10 minutes ahead unless you changed it in [Settings](/hushgard/account-and-settings#status-and-availability) — and another when it begins. Nobody's phone rings: from five minutes before, the card and a banner in the chat offer **Join**. Whoever joins first starts the call; the host can ring anyone missing from the call's participant list. Upcoming meetings from all your chats are listed on the **Calls** tab.
 
 **Changes.** The organizer or a chat admin can move or cancel one meeting or the whole series; the chat shows the update. Times always appear in your own time zone.
 
 **Add to calendar.** **Add to calendar** gives you a calendar file for Google Calendar, Outlook or Apple Calendar, made on your device. Add it again after a change and your calendar entry updates.
 
-**Guests.** If your organization allows [guests by link](/bastion/calls#guests-by-link), the organizer can invite people outside it by e-mail. Bastion's mail service sends the invitation with as little as possible: who invites you, when, and the link to join — the title only if the organizer chooses to include it, never the agenda. Changes and cancellations reach the guests automatically, and their addresses are deleted after the meeting. If your organization turned these e-mails off, share the invitation yourself — from the share menu on your phone, or with **Copy invitation** and **Download .ics** on a computer.
+**Guests.** If your organization allows [guests by link](/hushgard/calls#guests-by-link), the organizer can invite people outside it by e-mail. Hushgard's mail service sends the invitation with as little as possible: who invites you, when, and the link to join — the title only if the organizer chooses to include it, never the agenda. Changes and cancellations reach the guests automatically, and their addresses are deleted after the meeting. If your organization turned these e-mails off, share the invitation yourself — from the share menu on your phone, or with **Copy invitation** and **Download .ics** on a computer.
 
-**Afterwards.** The card shows how long the call took and who joined, and a [recording](/bastion/calls#recording) or the assistant's [notes](/bastion/calls#live-captions-and-notes) land in the card's thread.
+**Afterwards.** The card shows how long the call took and who joined, and a [recording](/hushgard/calls#recording) or the assistant's [notes](/hushgard/calls#live-captions-and-notes) land in the card's thread.
 
 ### Find a time
 
@@ -186,32 +186,32 @@ Not sure when everyone's free? Create a poll with **Find a time**: offer up to t
 
 ## Notifications
 
-For each chat, choose to be notified about **every message**, **only mentions**, or **never** — and whether notifications make a sound. The choice applies on all your devices and is respected by the server, so muted chats really stay silent. Swipe a chat in the list to mute it or mark it as a **favourite** (favourites stay at the top). To pause notifications everywhere for a while, or outside your working hours, use **Do not disturb** — see [Account & settings](/bastion/account-and-settings#status-and-availability).
+For each chat, choose to be notified about **every message**, **only mentions**, or **never** — and whether notifications make a sound. The choice applies on all your devices and is respected by the server, so muted chats really stay silent. Swipe a chat in the list to mute it or mark it as a **favourite** (favourites stay at the top). To pause notifications everywhere for a while, or outside your working hours, use **Do not disturb** — see [Account & settings](/hushgard/account-and-settings#status-and-availability).
 
 ## Delivery, read status and presence
 
 As a message travels you see its status — **sent**, then **delivered** when it reaches a recipient's device, then **seen** once read — and a typing indicator shows when someone's replying. Direct chats show whether the other person is online or when they were last seen; groups show how many members are online. People's **status**, **out of office** and **working hours** show on their profile and above the message box of a direct chat — for example *Anna is away until 3 Nov*.
 
 <Note>
-    An organization can switch off typing and recording indicators, read, delivery and listened status and online status for maximum privacy — see [Accounts & privacy](/bastion/accounts-and-privacy).
+    An organization can switch off typing and recording indicators, read, delivery and listened status and online status for maximum privacy — see [Accounts & privacy](/hushgard/accounts-and-privacy).
 </Note>
 
 ## Search and saved messages
 
-Because the server only holds ciphertext, search runs **on your device**: Bastion decrypts your chats locally and keeps building a search index of their full history in the background. Search across everything from the chats list, or inside one chat from its header, and jump straight to a hit — a match in a thread reply opens its thread. **Saved messages** in the side menu collects everything you've saved.
+Because the server only holds ciphertext, search runs **on your device**: Hushgard decrypts your chats locally and keeps building a search index of their full history in the background. Search across everything from the chats list, or inside one chat from its header, and jump straight to a hit — a match in a thread reply opens its thread. **Saved messages** in the side menu collects everything you've saved.
 
 ## Managing a chat
 
 Open a chat's **info** page from its header to:
 
-- see members with their roles and online status, and compare **safety numbers** to confirm no one has been impersonated — see [Security](/bastion/security);
+- see members with their roles and online status, and compare **safety numbers** to confirm no one has been impersonated — see [Security](/hushgard/security);
 - rename the chat and edit its description;
 - **add members** from your organization — the chat's key is sealed to them so they can read the shared history;
-- create **invite links** — **Expires** in 1 day, 7 days (default), 30 days or never; **Uses** unlimited (default), 1, 10 or 100 — and copy, share or revoke them any time. On iPhone and Android, an invite link opens straight in the Bastion app when it's installed. Someone who joins by link can read the history once a member's app has granted them the key (*Waiting for a member to grant you access…* until then);
+- create **invite links** — **Expires** in 1 day, 7 days (default), 30 days or never; **Uses** unlimited (default), 1, 10 or 100 — and copy, share or revoke them any time. On iPhone and Android, an invite link opens straight in the Hushgard app when it's installed. Someone who joins by link can read the history once a member's app has granted them the key (*Waiting for a member to grant you access…* until then);
 - **invite someone from another organization** — find them by their exact username or e-mail (or by name, if their organization is listed network-wide); they get a notification and a single-use invitation that expires after 7 days, and their organization's guest policy still applies;
 - choose your notification level, browse the chat's photos, videos and files, and see its recent calls;
 - add **bots** — webhook integrations that post into the chat (see [Bots](#bots));
-- turn the [AI assistant](/bastion/ai-assistant) on or off for a group or channel, if you're its admin and your organization allows it;
+- turn the [AI assistant](/hushgard/ai-assistant) on or off for a group or channel, if you're its admin and your organization allows it;
 - **archive** the chat (it becomes read-only for everyone), **leave** it, or **delete** it with its history and files.
 
 ### Roles
@@ -223,11 +223,11 @@ Open a chat's **info** page from its header to:
 | Admin | + rename, add members, invite links, channel posting policy, AI assistant, archive, make members moderators, remove members |
 | Owner | + any role change, transfer ownership, remove admins, delete the chat |
 
-Both people in a direct chat can pin; a direct chat has no roles and can't be renamed, archived or extended. If the owner leaves, ownership passes to the longest-standing admin; the last person to leave deletes the chat. Your organization's moderators, admins and owner can moderate every chat they're in — see [Administration](/bastion/administration#moderation).
+Both people in a direct chat can pin; a direct chat has no roles and can't be renamed, archived or extended. If the owner leaves, ownership passes to the longest-standing admin; the last person to leave deletes the chat. Your organization's moderators, admins and owner can moderate every chat they're in — see [Administration](/hushgard/administration#moderation).
 
 ## Bots
 
-Bots bring notifications and automation into your chats — see [Bots & integrations](/bastion/bots):
+Bots bring notifications and automation into your chats — see [Bots & integrations](/hushgard/bots):
 
 - **Webhooks** post alerts and updates from tools such as GitHub, GitLab, Grafana or Sentry. They accept Slack's webhook format, so tools made for Slack work as they are. Their messages are stored encrypted and carry a **bot** badge.
 - **Bot accounts** read a chat and answer — commands, buttons, helpdesk replies — with their own encryption key, and show as **can read this chat** in the member list.
@@ -237,4 +237,4 @@ Bots bring notifications and automation into your chats — see [Bots & integrat
 
 High-security chats add **forward secrecy and post-compromise security** on top of end-to-end encryption: keys move forward with every change, so a key stolen later can't open earlier messages, and a removed member or device is locked out of what comes next. Every device has its own short-lived certificate (valid for seven days), and Chat info shows each member's devices as verified, not trusted or waiting to be admitted.
 
-To keep that guarantee, high-security chats are text-only (replies and mentions included), don't support threads, edits, invite links, bots, the AI assistant, scheduled meetings, find-a-time polls or send later, and only owners and admins add members. Reminders work. Calls work — see [Calls](/bastion/calls). A new device of an existing member is admitted automatically by another member's app.
+To keep that guarantee, high-security chats are text-only (replies and mentions included), don't support threads, edits, invite links, bots, the AI assistant, scheduled meetings, find-a-time polls or send later, and only owners and admins add members. Reminders work. Calls work — see [Calls](/hushgard/calls). A new device of an existing member is admitted automatically by another member's app.

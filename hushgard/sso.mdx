@@ -1,0 +1,65 @@
+---
+title: "Single sign-on & provisioning"
+description: "Sign in to Hushgard with your company's identity provider over OIDC or SAML, require it for everyone, and create, update and remove members automatically with SCIM."
+mode: "wide"
+---
+
+With **single sign-on (SSO)**, your people sign in to Hushgard with the same company account they use everywhere else — your identity provider's password rules and multi-factor authentication included. With **SCIM provisioning**, people are added, updated and removed in Hushgard automatically when that happens in your identity provider.
+
+SSO and SCIM are part of the **Enterprise controls** module, together with [device management](/hushgard/device-management) — see [Plans & buying](/hushgard/pricing).
+
+## Supported identity providers
+
+Any identity provider that speaks **OpenID Connect (OIDC)** or **SAML 2.0** — for example Microsoft Entra ID, Okta, Google Workspace, Keycloak, Authentik or JumpCloud. OIDC is the simpler choice where your provider offers both.
+
+## Set it up
+
+<Steps>
+    <Step title="Prove you own your domain">
+        In the admin panel, open **Single sign-on** and add your company's e-mail domain, for example `example.com`. Hushgard shows a **DNS TXT record**; add it at your DNS provider and choose **Verify**. Only verified domains can be used for sign-in — so nobody can claim a domain that isn't theirs. The same verification is required for [joining by e-mail domain](/hushgard/organization-settings#join-without-an-invitation).
+    </Step>
+    <Step title="Connect your identity provider">
+        - **OIDC:** create an application in your identity provider with the redirect address Hushgard shows, then paste its **issuer URL**, **client ID** and **client secret** into the panel.
+        - **SAML:** paste your provider's **metadata URL** or upload its metadata file, and give your provider Hushgard's service-provider details from the panel.
+    </Step>
+    <Step title="Turn it on">
+        From now on, anyone who types an address at a verified domain is sent to your identity provider to sign in — in the browser, the desktop app and on phones alike.
+    </Step>
+</Steps>
+
+## Require single sign-on
+
+Turn on **Require SSO** to make your identity provider the only way into your organization: members can't use an e-mail code, Google or Sign in with Apple for it any more. A person who also belongs to other organizations signs in to each of them the way that organization requires.
+
+<Note>
+    **Your owner always has a way in.** If your identity provider fails — an expired certificate, a wrong setting, an outage — the organization's owner can still sign in with a one-time e-mail code to fix it. Every use is recorded in the [audit log](/hushgard/administration#audit-log) and e-mailed to all admins.
+</Note>
+
+You can also set how long a session lasts and how often people must sign in again. Signing out in your identity provider ends the Hushgard session too.
+
+## Provisioning with SCIM
+
+Connect your identity provider's SCIM provisioning to Hushgard so membership follows your directory:
+
+- **Base URL and token:** the **Single sign-on** page shows the SCIM base URL and creates a **token** for your identity provider. You can rotate or revoke the token at any time.
+- **New people** in the assigned users or groups become members.
+- **Changes** to names and e-mail addresses are picked up.
+- **Deactivated** people are suspended at once: their sessions end and they can't open the organization any more. **Deleted** people are removed.
+- **Groups become roles** — map a group to **admin** or **moderator**.
+- **Groups become channels** — map a group to channels its members are added to automatically.
+
+Every provisioning change appears in the audit log.
+
+<Tip>
+    Without SCIM, people from a verified domain become members the first time they sign in with SSO, with your organization's default role.
+</Tip>
+
+## What single sign-on doesn't change
+
+SSO proves **who you are**; it never unlocks your messages. Your encryption key still lives on your devices, and a new device still restores it from your own [key backup](/hushgard/security#your-key-your-backup). There's no company master key — that would break end-to-end encryption.
+
+Someone who's removed loses access to your organization at once, but whatever is already on their own devices stays there unless an admin [wipes those devices](/hushgard/device-management#devices-and-remote-wipe).
+
+## What Hushgard's control plane holds
+
+Sign-in is brokered by Hushgard's shared control plane, so your identity provider talks to it: it holds your SSO configuration, your verified domains and the people and groups your provider provisions — never your messages. See [Privacy & your data](/hushgard/accounts-and-privacy#what-the-control-plane-sees).

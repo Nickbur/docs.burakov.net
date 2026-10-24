@@ -1,10 +1,10 @@
 ---
 title: "Bots & integrations"
-description: "Connect GitHub, GitLab, Grafana, Sentry, Jira and other tools to Bastion with Slack-compatible webhooks, and build bots that read and answer — without opening your encryption."
+description: "Connect GitHub, GitLab, Grafana, Sentry, Jira and other tools to Hushgard with Slack-compatible webhooks, and build bots that read and answer — without opening your encryption."
 mode: "wide"
 ---
 
-Bastion has two kinds of bots:
+Hushgard has two kinds of bots:
 
 - **Webhooks** post notifications into a chat — a failed build, a server alert, a new error. They work with the tools you already use.
 - **Bot accounts** read a chat and respond — commands, buttons, helpdesk answers. They hold their own encryption key, so your organization's server still never sees the conversation.
@@ -15,7 +15,7 @@ Both are included in every plan.
 
 The organization's owner, admins and moderators can add a webhook to a chat from its info page. It gets a **secret address**; anything that sends a request there posts a message into the chat.
 
-**Works with tools made for Slack.** A Bastion webhook understands Slack's incoming-webhook format — plain text, the common layout blocks, the older attachment format with title, fields and a coloured stripe, and a custom bot name and icon. So any tool with a **Slack** notification option works as it is: choose Slack, and paste your Bastion webhook address instead of Slack's.
+**Works with tools made for Slack.** A Hushgard webhook understands Slack's incoming-webhook format — plain text, the common layout blocks, the older attachment format with title, fields and a coloured stripe, and a custom bot name and icon. So any tool with a **Slack** notification option works as it is: choose Slack, and paste your Hushgard webhook address instead of Slack's.
 
 ```bash
 curl -X POST "https://<your-node>/v1/bots/hook/<token>" \
@@ -23,7 +23,7 @@ curl -X POST "https://<your-node>/v1/bots/hook/<token>" \
   -d '{"text": "Deploy finished ✅"}'
 ```
 
-This covers monitoring and alerting (Grafana, Uptime Kuma, Zabbix), error tracking (Sentry), code and builds (GitHub Actions, GitLab, Jenkins) and task automation (Jira Automation, sending a web request in Slack's format) — wherever the tool offers a Slack webhook, Bastion's address goes in its place.
+This covers monitoring and alerting (Grafana, Uptime Kuma, Zabbix), error tracking (Sentry), code and builds (GitHub Actions, GitLab, Jenkins) and task automation (Jira Automation, sending a web request in Slack's format) — wherever the tool offers a Slack webhook, Hushgard's address goes in its place.
 
 - A message can be up to 4,000 characters; a webhook can post up to 120 messages a minute.
 - **Webhook messages are stored encrypted.** The sending tool can't encrypt for your chat, so your organization's server sees a message as it arrives — then seals it with a key only the chat's members hold and keeps only that. Messages show a **bot** badge that says so.
@@ -34,11 +34,11 @@ This covers monitoring and alerting (Grafana, Uptime Kuma, Zabbix), error tracki
 A **bot account** is for a bot that reads the chat and answers — a `/deploy staging` command, an approval with **Approve / Reject** buttons, a helpdesk bot that answers questions.
 
 - An admin creates the bot account in the admin panel and gets its access token.
-- Add the bot to a chat like a person. It appears in the member list marked **can read this chat**, and it receives the chat's key like any member — so it reads messages **on the server where the bot runs**, usually your own. Bastion's server never sees the text.
+- Add the bot to a chat like a person. It appears in the member list marked **can read this chat**, and it receives the chat's key like any member — so it reads messages **on the server where the bot runs**, usually your own. Hushgard's server never sees the text.
 - Bots can use **commands** (`/command arguments`), post messages with **buttons and menus**, reply in threads and send files. Commands and button clicks reach the bot end-to-end encrypted too.
-- The **Bastion bot SDK** for TypeScript takes care of keys, decryption, sending, commands and buttons; examples include an RSS bot and a deploy bot.
+- The **Hushgard bot SDK** for TypeScript takes care of keys, decryption, sending, commands and buttons; examples include an RSS bot and a deploy bot.
 
-Every action of a bot is recorded in the [audit log](/bastion/administration#audit-log), and each bot has its own rate limit. Bot accounts can't join high-security chats.
+Every action of a bot is recorded in the [audit log](/hushgard/administration#audit-log), and each bot has its own rate limit. Bot accounts can't join high-security chats.
 
 <Note>
     There are no "outgoing webhooks" that send your messages to another service in plain text: that would require your server to read your chats. A bot that needs to read always does it with its own key, and the member list always shows it.
