@@ -281,6 +281,20 @@ A failed API request is logged once, by `logError()` in
 status and endpoint in its message, so production failures show up in Sentry (a cancelled request
 is not logged).
 
+## After a deploy — open tabs catch up
+
+A tab still running the previous web build asks for chunks whose hashed names are gone once you deploy.
+`helpers/staleBuildRecovery.ts` (installed in `main.ts`) reloads the page for the fresh build:
+
+- It listens to Vite's `vite:preloadError`, fired for every failed lazy import, even one the caller
+    swallows (a `RouterLink` click, back / forward), and to `unhandledrejection` for anything else.
+- Only a module or stylesheet that could not be fetched counts (the Chromium, Firefox and Safari
+    wordings); an error thrown inside a module that did load is left alone.
+- At most one reload a minute per tab: a chunk still missing right after the reload is a broken
+    deploy and never loops, while a tab left open across several deploys recovers from each one.
+- It reports through `log()`, so each reload leaves a trace in Sentry. Native builds carry every
+    chunk inside the app, so it only ever fires on the web.
+
 ## Privacy & security: app lock, screenshots, crash reports
 
 Settings → **Privacy & security**. The lock and screenshot switches appear only in the native
