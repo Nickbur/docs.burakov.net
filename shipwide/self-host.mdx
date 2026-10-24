@@ -73,12 +73,12 @@ including the instance, and returns to the hosted sign-in.
 | Billing pages (`/subscription`, `/subscription/premium-example`) | Open | Redirect to `/home` (route meta `hostedOnly`) |
 | `X-Client-Id` · `X-App-Version` | Sent | Sent, so the instance can run its own upgrade gate |
 
-The switch lives in `helpers/systemUtils.ts`:
+The switch lives in `helpers/apiServer.ts` (`helpers/systemUtils.ts` re-exports it):
 
 - `isSelfHost()` tells you which mode is active.
 - `getSelfHostToken()` returns the stored token.
-- `getAuthToken()` returns the token a request should carry in either mode.
 - `getAvailableServer()` returns the instance first when one is stored.
+- `getAuthToken()` (in `systemUtils.ts`) returns the token a request should carry in either mode.
 
 `authenticatedAPI` uses these for every signed-in request. When you add a feature that sends a
 token or needs a hosted-only service, read the token through `getAuthToken()` (never
@@ -138,7 +138,9 @@ Users opt in to this mode one by one. To hide it, remove its entry points:
 </Steps>
 
 The rest of the plumbing does nothing while no instance is stored, so you can keep it or remove
-it. It consists of the `isSelfHost()` branches in `systemUtils.ts`, `authenticatedAPI.ts`, the
+it. To keep the API client (`authenticatedAPI.ts`) exactly the kit's — easier to update later — have
+`isSelfHost()` return `false` and `getSelfHostToken()` return `''` in `helpers/apiServer.ts` rather than
+deleting its branches. The plumbing consists of the `isSelfHost()` branches in `apiServer.ts`, `authenticatedAPI.ts`, the
 router guard, `Splash.vue`, `views/core/App.vue`, `OneSignalInitializer.vue`,
 `RevenueCatInitializer.vue` and `stores/core/subscriptionStore.ts`; `getAuthToken()` in
 `services/offline/createListSync.ts`, `composables/useFileUpload.ts` and

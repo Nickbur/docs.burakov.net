@@ -58,8 +58,11 @@ The app shell is three coordinated pieces — **reskin** them, don't recreate th
     **sub-page** (`<ion-buttons slot="start"><BackButton /></ion-buttons>`) instead of
     `ion-back-button`. It routes through `composables/useGoBack.ts`: a cached native pop when there
     is history, an instant `root`/`replace` swap when there is not — so the target page never
-    slide-animates in or re-creates. Main-section pages (bottom-bar destinations) carry no back
-    button.
+    slide-animates in or re-creates. Without history (a cold start, a deep link) it goes to the page
+    the browser came from, else the section root (`/account/sessions` → `/account`), else
+    `HOME_PATH` (exported from `router/routes.ts` — set it to your app's home): never back into
+    sign-in, never "back" to the page itself. Main-section pages (bottom-bar destinations) carry no
+    back button.
 
 <Note>
     **Desktop content width:** padded pages (`<ion-content class="ion-padding">`) cap their inner
@@ -94,15 +97,30 @@ Passwordless only — sign-in and sign-up are the same act. `views/pages/_base/L
 single entry point:
 
 1. The user enters an email and gets a six-digit code (or picks **Google** / **Apple**).
-2. A valid code signs them in; an unknown address gets an account on the spot.
-3. A code for an account that is pending deletion (`deletion_pending`) makes the screen offer to
-    **restore** it, then signs in.
+2. A valid code signs them in; an unknown address gets an account on the spot. The code field
+    opens the number pad, takes six digits and submits on Enter; a shorter code is turned back
+    on the device without a request (and isn't counted as a wrong code).
+3. A sign-in — code, Google or Apple — that lands on an account pending deletion
+    (`deletion_pending`) makes the screen offer to **restore** it, then signs in. One handler in
+    `accountStore` reads every sign-in answer, so a reply without a session is a failed sign-in,
+    never a signed-in screen without tokens.
 4. With `VITE_ENABLE_ONBOARDING='true'`, a fresh sign-in goes through onboarding, where the user
     picks a username (live availability check; the API enforces a 30-day cooldown between
     changes). Without it, the auto-generated username from the email stays.
 
+Five wrong codes for one address lock it out on that device for five minutes
+(`composables/useBruteForceProtection.ts`, keyed by the trimmed, lower-cased address). Only a code
+the server rejects counts — a lost connection, a rate limit or a server error never locks anyone
+out, and neither does asking for a code. A mistyped code keeps the code step (the field clears and
+the same emailed code can still be entered); an expired or burned code goes back to the email step
+for a new one. A failed sign-in names the server's code when there is a
+message for it (`login.error.<code>`), else says "too many requests", "server error" or "no
+connection" by what happened. Under the form, a line says that continuing accepts the Terms of
+Service and the Privacy Policy, each a link to `VITE_LEGAL_TERMS_URL` / `VITE_LEGAL_PRIVACY_URL`.
+
 Errors arrive as `{ code, message }` — switch on the code with `extractApiErrorCode()`, never show
-`message`. Every request follows the shared [wire contract](/shipwide/architecture#shared-wire-contract)
+`message`. It lives in the import-free `services/networkRequests/api/core/apiErrorCode.ts`, so session
+code can read a code without importing the error handler (which re-exports it). Every request follows the shared [wire contract](/shipwide/architecture#shared-wire-contract)
 (`/v1`, camelCase, ISO-8601, UUIDv7) and carries the access token — DPoP-bound (see *DPoP* below);
 a `401` refreshes the token pair (with rotation) and retries. The backend side is in [Backend](/shipwide/backend).
 
@@ -165,6 +183,21 @@ secrets here can hand the store a key from the platform keystore (Keychain / And
 `setStorageKeyProvider` — a small native plugin of your own; the provider must reject, never return
 nothing, while the keystore is locked, or the store would reset.
 
+## How the API reaches the session
+
+The API core (`services/networkRequests/api/core/`) imports neither the stores nor the session code:
+the account store calls the API, so either import would close a loop. It talks to the session through
+a small port, `apiSession.ts` — the access token, a refresh ahead of expiry, recovery after a 401 —
+which `installApiSession()` (`helpers/security/tokenManagement.ts`) plugs in first thing in
+`main.ts`. Until then the port answers as signed out. The server choice it needs lives apart in
+`helpers/apiServer.ts`, which reads only the system store. The same rule keeps `forceSignOut()` off
+the router: `router/index.ts` hands itself over (`provideSignOutRouter`) when it is created.
+`src/test/http.ts` plugs the real session in the same way for every test that runs the real client.
+
+`build` keeps the app free of import cycles: ESLint's `import-x/no-cycle` fails on any static import
+that leads back to the file it is in (type-only imports and lazy `import()`s don't count). When a
+lower layer needs something above it, hand it in as above instead of importing it.
+
 ## Token refresh across tabs
 
 The API treats a refresh token as single-use: presented a second time (past a 2-minute grace window
@@ -222,6 +255,32 @@ request you send past the API client.
 - Never pass these signals to a token refresh, a sync or a write queue: those are shared, and cut
     short mid-flight their outcome is unknown.
 
+## Dialogs and best-effort work
+
+Two small helpers keep every screen asking and failing the same way:
+
+- `helpers/ui/alertDialogs.ts` — `openConfirmAlert({ header, message, confirmText, destructive })`
+    resolves `true` only when the action is tapped (`destructive` styles it as dangerous, for a delete
+    or a sign-out); `openPromptAlert({ header, confirmText, value, placeholder, type, attributes })`
+    gives back the trimmed text, or `null` when dismissed. Both offer the shared "Cancel" unless you
+    pass `cancelText`. Build your own `alertController` alert only for something richer: three or more
+    choices, several fields, a checkbox, or a button that keeps the alert open.
+- `helpers/bestEffort.ts` — `bestEffort(promise, context, { fallback, report })` for work whose
+    failure must not stop the caller (a cache write, a prefetch, a cleanup). Instead of a silent
+    `.catch(() => {})` it resolves to `fallback` and leaves a trace: the console in development, a
+    Sentry breadcrumb in production (no event of its own, so an offline burst costs no quota).
+    `report: true` sends a full Sentry event — for a failure that matters on its own. For a `try`
+    around several steps, call `traceFailure(error, context, { report })` from the `catch` instead:
+    the same trace, and the caller keeps its own fallback. An empty `catch {}` is left only where
+    nothing failed — a capability check, a parse with a fallback, closing what may already be
+    closed. ESLint holds the line: a silent `.catch(() => …)` in `src/` (tests aside) fails `build`;
+    a deliberate one carries `// eslint-disable-next-line no-restricted-syntax -- <why>`.
+
+A failed API request is logged once, by `logError()` in
+`services/networkRequests/api/core/errorHandler.ts`, as an `Error` named `APIError:<type>` with the
+status and endpoint in its message, so production failures show up in Sentry (a cancelled request
+is not logged).
+
 ## Privacy & security: app lock, screenshots, crash reports
 
 Settings → **Privacy & security**. The lock and screenshot switches appear only in the native
@@ -255,7 +314,22 @@ config is in place: `NSFaceIDUsageDescription` in `Info.plist` (reword it for yo
 Push is wired end-to-end: on sign-in the app logs the device into OneSignal under the account's
 id (`user.id`, the OneSignal **External ID**) and out again on sign-out — all from
 `views/core/OneSignalInitializer.vue` — and the server targets that alias, so a push reaches every
-device the user is signed in on. See [Push & VoIP](/shipwide/push).
+device the user is signed in on. The OS permission prompt is asked once per install (the persisted
+`onesignalPermissionRequested`), never again on later launches. See [Push & VoIP](/shipwide/push).
+
+Settings → **Notifications** controls this device:
+
+- **Notifications on this device** — opts this device in or out of OneSignal
+    (`useOneSignal().setPushSubscribed`); the switch follows only once OneSignal accepted the change,
+    otherwise it snaps back with a message. The choice is the `settingsStore.pushNotifications` flag:
+    a device switched off stays opted out after every sign-in and is never prompted.
+- **Permission** — whether the OS lets the app show notifications, with **Allow** while it doesn't
+    (on iOS / Android a refused permission leads to the system settings).
+- **Send test notification** — a push to the account's devices, which reports whether any was
+    reached.
+
+The desktop app and a build without `VITE_ONESIGNAL_APP_ID` show a one-line explanation instead of
+the switch.
 
 ## Offline-first data & self-hosted instances
 
@@ -334,6 +408,12 @@ at packaging (`ignoreAssetsPattern` in `android/app/build.gradle`; AGP would oth
 The `ios/` and `android/` native projects are **committed** (regenerate with
 `npx cap add <platform>` only for a clean slate); the desktop app lives in `src-tauri/`.
 
+`isTauri` in `helpers/platform.ts` tells the desktop shell apart (Capacitor reports it as `web`).
+External links go through `openExternalUrl()` (`helpers/appLinks.ts`), which opens them in the
+system browser everywhere — on desktop through `tauri-plugin-opener` (registered in
+`src-tauri/src/lib.rs`, allowed in `src-tauri/capabilities/default.json`), since the Tauri WebView
+would swallow `window.open`.
+
 **Scripts:** `serve` (dev server on :8100) · `serve:desktop` (Tauri dev) · `fix` (auto-fix by hand:
 Prettier + `eslint --fix`) · `build` (the full gate: Prettier + ESLint + vue-tsc + tests + web
 build + cap sync) · `license-check` (production-dependency licences) · `bump` (version, across
@@ -343,7 +423,8 @@ build + cap sync) · `license-check` (production-dependency licences) · `bump` 
 **Tests:** `*.test.ts` next to the code — unit tests for the API client, token refresh, encrypted
 storage, the offline layer (its real SQL runs on an in-memory SQLite), stores, composables and routing,
 and component tests that mount every screen with the network and native plugins mocked (Vitest +
-`@vue/test-utils` in happy-dom, `fake-indexeddb`; shared helpers in `src/test/`). `build` measures
+`@vue/test-utils` in happy-dom, `fake-indexeddb`; shared helpers in `src/test/` — after `render()`, reach
+stores through the returned `store(useXStore)`, the screen's own Pinia). `build` measures
 coverage and fails below 80% overall, 90% for `composables`, `helpers`, `i18n`, `router`, `services`,
 `stores` and the TypeScript in `src/features/`, or 80% for any single file. One file on its own: `npx vitest run <file> --coverage.enabled=false`. Keep the tests when
 you build on the kit: they are the quickest way to see that a change broke a shared mechanic.

@@ -38,10 +38,17 @@ code for an unknown address creates the account. No password, no register/login 
 reset, no separate email verification.
 
 - `POST /v1/auth/code` — emails a code. **204 for any address** (not an enumeration oracle).
-    10-min life, 5 attempts, single use, hashed at rest, constant-time compare.
+    10-min life, 5 attempts, single use, hashed at rest, constant-time compare. Wrong guesses are
+    counted with an atomic Redis `INCR`, so guesses sent in parallel can't stretch the limit — the
+    fifth wrong one burns the code.
 - `POST /v1/auth/code/verify` — **sign in** · **create-and-sign-in** (username auto-generated
     from the email) · **`deletion_pending`** (soft-deleted → `restoreToken`).
-- Google / Apple sign-in available alongside.
+- Google / Apple sign-in available alongside: the account is found by the provider id, else linked by
+    an address the provider **verified** (an unverified one never adopts an existing account), else
+    created. A match that is pending deletion answers the same **`deletion_pending`** as a code.
+    Apple on the web and desktop (`/apple/web` → Apple → `/apple/web/callback` → `/apple/web/exchange`)
+    issues a single-use OAuth `state` (10 minutes, kept in Redis); a callback with a missing, unknown or
+    reused one is refused with `400 invalid_oauth_state`, which closes login CSRF.
 - Access 15 min, refresh 30 days, HS256, rotation on every refresh; each pair bound to a
     `sessions` row; live-session check cached in Redis with a DB fallback. An expired access token
     answers `401 token_expired`, any other bad one `401 invalid_token`.

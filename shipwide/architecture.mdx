@@ -15,7 +15,7 @@ product on — not a finished app.
 - **The app** (`VITE_BACKEND_URL`) and **the admin** (`VITE_API_URL`) are separate origins —
     the admin reads everyone's data, so it's deployed and gated separately.
 - **The app resolves its API origin once**, through `getAvailableServer()`
-    (`src/helpers/systemUtils.ts`) — the single place every request gets its base URL. A
+    (`src/helpers/apiServer.ts`) — the single place every request gets its base URL. A
     [self-hosted instance](/shipwide/self-host) the user connected to wins over everything;
     otherwise it reads `VITE_BACKEND_URL`, upgrades a non-local origin to HTTPS (`enforceHttps`),
     and caches the choice for the session. Set `VITE_BACKEND_FALLBACK` too and it health-checks
