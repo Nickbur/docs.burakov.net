@@ -156,6 +156,7 @@
                                 "pages": [
                                     "shipwide/billing",
                                     "shipwide/push",
+                                    "shipwide/deep-links",
                                     "shipwide/support",
                                     "shipwide/progress-bar",
                                     "shipwide/offline-sync",

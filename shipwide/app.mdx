@@ -26,8 +26,8 @@ src/
 │   ├── pages/account/, _settings/— account: profile, sessions, account + app settings
 │   └── components/               — ready-made components
 ├── services/
-│   ├── networkRequests/api/      — api client: core/ (authenticatedAPI, publicAPI,
-│   │                               errorHandler) + one file per area (auth, account, sessions, upload…)
+│   ├── networkRequests/api/      — api client: core/ (authenticatedAPI, publicAPI on a shared
+│   │                               httpClient, errorHandler) + one file per area (auth, account, sessions, upload…)
 │   ├── localStorage/             — encrypted storage layer + per-domain helpers
 │   └── offline/                  — offline-first SQLite + sync layer
 ├── stores/                       — Pinia (accountStore, systemStore, settingsStore…)
@@ -394,6 +394,8 @@ error, it just reads `undefined`.
 | `VITE_DOCS_URL` | Your user guide — the "Documentation" item on the About page. Optional — a placeholder if unset. |
 | `VITE_DEVELOPER_URL` | Your website, shown on About as "Developed by …". Optional — empty hides the row. |
 | `VITE_STORE_IOS_URL` · `VITE_STORE_ANDROID_URL` · `VITE_STORE_WEB_URL` | Store links for the About "Update" button and the "Update required" screen, per platform. Optional. |
+| `VITE_APP_LINK_BASE` | The https address app links start with — your web app's origin or a prefix on another site. Empty = only the app's own scheme. See [Deep links](/shipwide/deep-links). |
+| `VITE_APP_SCHEME` | The app's own URL scheme (`myapp://…`). Optional — defaults to `VITE_APP_NAME`. |
 
 The `VITE_REVENUECAT_*` billing variables are covered in [Billing](/shipwide/billing). That's the
 complete list — anything else is unused.

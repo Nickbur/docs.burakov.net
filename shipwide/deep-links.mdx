@@ -1,0 +1,94 @@
+---
+title: "Deep links"
+description: "Links that open the installed app on a page — https app links and the app's own scheme, on iOS, Android and the desktop builds."
+mode: "wide"
+---
+
+A deep link opens the installed app straight on a page: a note shared in a chat, a pricing page linked
+from an email, a page another app hands over. The kit takes two kinds of link and sends both through
+one place — `src/services/deepLinks.ts`.
+
+| Kind | Example | Opens the app on | Without the app |
+|---|---|---|---|
+| **https app link** | `https://app.example.com/notes` | iOS (universal links), Android (App Links) | opens the web page |
+| **the app's own scheme** | `myapp://notes` | iOS, Android, macOS / Windows / Linux desktop | nothing — the OS has no handler |
+
+On the web a link is simply the page's URL, so nothing extra runs there.
+
+## What happens when a link arrives
+
+1. The link is read: an https link must start with `VITE_APP_LINK_BASE`, a scheme link must use the
+    app's scheme. Anything else is ignored (and logged).
+2. Its path must be on the **allow-list** in `src/router/linkablePaths.ts`. A path that is not listed
+    is ignored, so no page becomes reachable from outside by accident. A bare link
+    (`https://app.example.com/`, `myapp://`) only brings the app up.
+3. A link that arrives while the app is still starting (a cold start) is held and opened by the
+    splash screen instead of the usual landing page.
+4. A page that needs a session sends a signed-out user to sign-in first — `/login?redirect=<page>` —
+    and opens the page right after it (through onboarding first when that is still due). The same
+    return works for any protected page, not only links.
+
+The OS reports a cold-start link twice (the launch URL and the event); the kit opens it once.
+
+## Configure
+
+1. **Choose the addresses** in `env/env.prod`:
+
+    ```bash
+    VITE_APP_LINK_BASE=https://app.example.com   # or a prefix: https://example.com/open/myapp
+    VITE_APP_SCHEME=                              # empty = VITE_APP_NAME
+    ```
+
+2. **List the pages** in `src/router/linkablePaths.ts` — `:name` stands for one path segment:
+
+    ```ts
+    export const LINKABLE_PATHS: readonly string[] = ['/home', '/notes', '/notes/:id', '/subscription'];
+    ```
+
+3. **Mirror the list natively** — the OS decides which https links reach the app before the app runs:
+    - **Android** — `android/app/src/main/AndroidManifest.xml`: the `autoVerify` intent filter's
+        `android:host` is your link host and its `android:path` / `android:pathPattern` entries are
+        your paths (`/notes/:id` → `pathPattern="/notes/.*"`); the second intent filter carries your
+        scheme.
+    - **iOS** — `ios/App/App/App.entitlements`: `applinks:<your host>`; `ios/App/App/Info.plist`:
+        `CFBundleURLTypes` carries your scheme. Enable **Associated Domains** for the App ID in the
+        Apple Developer portal.
+    - **Desktop** — `src-tauri/tauri.conf.json` → `plugins.deep-link.desktop.schemes`.
+
+4. **Publish the verification files** on the link host — the kit's web build serves
+    `public/.well-known/` at the site root:
+    - `apple-app-site-association`: replace `REPLACE_ME_APPLE_TEAM_ID` with your Team ID and keep
+        `components` in step with your paths (`/notes/:id` → `/notes/*`). Serve it as
+        `application/json`, without a redirect.
+    - `assetlinks.json`: replace `REPLACE_ME_RELEASE_SIGNING_CERT_SHA256` with the SHA-256 of your
+        release signing key (Play Console → App integrity, or `keytool -list -v`). Add the debug key's
+        fingerprint too if you want App Links verified on debug builds.
+
+<Note>
+    Links that live under a prefix on another site (`https://example.com/open/myapp/...`) work the
+    same way: the verification files go on that site, the paths in them and in the Android intent
+    filter carry the prefix, and the site should send a visitor without the app to your web app or
+    store pages.
+</Note>
+
+## Share a link from the app
+
+`appLink('/notes/42')` returns the https link when `VITE_APP_LINK_BASE` is set, else the scheme link —
+use it wherever the app hands out a link to one of its pages.
+
+## Desktop
+
+The desktop builds use `tauri-plugin-deep-link` with `tauri-plugin-single-instance`: when the OS opens
+`myapp://…` while the app is running, the second launch only brings the running window forward and
+hands it the link. macOS registers the scheme from the app bundle, the Windows and Linux installers
+register it on install, and a development run registers it at start-up. https links open in the browser
+on the desktop — that is how the desktop OSes treat them.
+
+## Test it
+
+- **Android:** `adb shell am start -a android.intent.action.VIEW -d "myapp://notes"`; for App Links,
+    `adb shell pm verify-app-links --re-verify <package>` then
+    `adb shell pm get-app-links <package>`.
+- **iOS Simulator:** `xcrun simctl openurl booted "myapp://notes"`. Universal links need a device or a
+    simulator with the associated domain reachable.
+- **Desktop:** open `myapp://notes` from the browser's address bar or `open myapp://notes` (macOS).
