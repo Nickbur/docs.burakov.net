@@ -537,6 +537,64 @@
                 ]
             },
             {
+                "product": "Swornlist",
+                "icon": "shield-check",
+                "description": "Verified guest list and door for events",
+                "tabs": [
+                    {
+                        "tab": "Get started",
+                        "groups": [
+                            {
+                                "group": "Getting started",
+                                "pages": [
+                                    "swornlist",
+                                    "swornlist/quickstart-guests",
+                                    "swornlist/quickstart-organizers",
+                                    "swornlist/app-screens"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "Features",
+                        "groups": [
+                            {
+                                "group": "For guests",
+                                "pages": ["swornlist/verification", "swornlist/tickets"]
+                            },
+                            {
+                                "group": "For organizers",
+                                "pages": [
+                                    "swornlist/events",
+                                    "swornlist/registration",
+                                    "swornlist/payments",
+                                    "swornlist/door",
+                                    "swornlist/team",
+                                    "swornlist/messages-and-analytics"
+                                ]
+                            },
+                            {
+                                "group": "Venue",
+                                "pages": ["swornlist/clubs", "swornlist/kids"]
+                            }
+                        ]
+                    },
+                    {
+                        "tab": "Help",
+                        "groups": [
+                            {
+                                "group": "Plans & privacy",
+                                "pages": ["swornlist/plans-and-credits", "swornlist/privacy"]
+                            },
+                            {
+                                "group": "Help",
+                                "pages": ["swornlist/faq", "swornlist/troubleshooting"]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
                 "product": "Remigent",
                 "icon": "robot",
                 "description": "Autonomous software team for your products",

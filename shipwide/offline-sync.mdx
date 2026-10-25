@@ -37,7 +37,7 @@ All paths are under `shipwide_app/src/`.
 | `services/offline/types.ts` | `BaseEntity`, `OfflineEntitySpec`, `OfflineApiClient`, `PendingChange`, `NewEntity` / `EntityPatch`. |
 | `services/offline/sqlite.ts` | Opens the one database on first use and migrates it. `getDb()`, `persist()`. |
 | `services/offline/migrations.ts` | Runs each registered migration step once, in ascending order, tracked by `PRAGMA user_version`. |
-| `services/offline/registry.ts` | `registerOfflineEntity(spec, clearAll)` collects each entity's migrations and its sign-out teardown. |
+| `services/offline/registry.ts` | `registerOfflineEntity(spec, clearAll)` collects each entity's migrations and its sign-out teardown. `registerTeardown(clearAll)` adds a wipe for account data kept outside SQLite (for example an encrypted key-value cache), so it goes with the account too. |
 | `services/offline/createOfflineRepo.ts` | `createOfflineRepo(spec)`: CRUD, sync primitives, the last-write-wins merge, `clearAll()`. |
 | `services/offline/createListSync.ts` | `createListSync(repo, api)`: `sync()` · `scheduleSync()` · `initOnlineResync()`. |
 | `services/offline/teardown.ts` | `clearAllLocalData()` wipes every registered table. Called on Log out, and when a different account signs in. |
