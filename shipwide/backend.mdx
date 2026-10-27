@@ -114,6 +114,24 @@ physical purge after `PURGE_AFTER_DAYS` — and a way back: signing in during th
 `deletion_pending` with a `restoreToken`, which `POST /v1/auth/restore` exchanges to restore the
 account and sign in.
 
+**Uploads.** A single-shot upload streams to disk, never into memory. A chunked upload is resumable:
+`GET /chunk/:uploadId/status` lists the chunks the server holds, and `useFileUpload` resumes a
+paused or failed upload into the same `uploadId`, sending only what is missing. The server checks
+every step against the declaration: the chunk count must fit the size (`invalid_chunk_count`), a
+chunk index must be one of the declared ones (`invalid_chunk_index`), a chunk may not be larger than
+the declaration allows (`invalid_chunk_size`), and on completion the bytes must add up to the
+declared size (`size_mismatch`). The declared type is read canonically before the allowlist check
+and stored that way: lower-cased, without parameters, and with other names for the same type
+resolved — Chrome and Edge on Windows send a `.zip` as `application/x-zip-compressed`, which is
+stored as `application/zip`. A file claiming an image or PDF type — by its declared type or its
+extension — must start with that format's signature (`file_type_mismatch`). One account holds at
+most 20 unfinished uploads (`409 too_many_uploads`); one with no new chunk for a day is abandoned
+and swept by `purge`. `GET /files/:filename` streams the file with byte ranges (`206` / `416`) and
+validators (`ETag`, `Last-Modified`): an interrupted download resumes with `If-Range` — from the
+same copy only — and a cached copy is confirmed with `304`. Every response carries `nosniff` and a
+CSP with `sandbox` (PDFs: without `sandbox`); types a browser could run as active content (SVG
+above all) download as attachments.
+
 ## App version policy & upgrade gate
 
 The app publishes a version policy the client honours — set it in **Admin → Settings**, no deploy:
@@ -145,7 +163,7 @@ API version is winding down. Unset by default.
 | `start` | run compiled |
 | `db:generate` / `db:migrate` / `db:push` / `db:studio` | migration from schema / apply / push schema / Drizzle Studio. `db:generate`, `db:push` and `db:studio` compile first — drizzle-kit reads the compiled schema (`dist/db/schema/index.js`); `postdb:generate` then formats the new migration automatically |
 | `seed` | test/review accounts |
-| `purge` | physically delete accounts past the soft-delete window, tickets past retention and expired sessions (daily cron) |
+| `purge` | physically delete accounts past the soft-delete window, tickets past retention, expired sessions and chunked uploads abandoned for a day (daily cron) |
 | `admin:password -- 'pw'` | print a `scrypt$…` hash for `ADMIN_PASSWORD` |
 | `encrypt:backfill [-- --dry-run]` | encrypt TOTP secrets stored before `DATA_ENCRYPTION_KEY` was set, or re-encrypt them after a key rotation (prod: `node dist/scripts/encryptAtRest.js`) |
 | `re-install-deps` | clean reinstall |
