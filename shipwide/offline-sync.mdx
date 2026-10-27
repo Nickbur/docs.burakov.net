@@ -235,13 +235,13 @@ pending, but the tab keeps working locally.
         `src/i18n/locales/*/navigation.json`.
     </Step>
     <Step title="API — delete the module">
-        Delete `src/modules/notes/`, `src/db/schema/notes.ts` and `tests/notes.schemas.test.ts`.
+        Delete `src/modules/notes/` (its tests sit inside it) and `src/db/schema/notes.ts`.
         Then remove three references: the `notesRoutes` import and its `app.register(...)` line in
         `src/app.ts`; the `export * from './notes.js'` line in `src/db/schema/index.ts`; and
         `noteDTO` with its `NoteRow` import in `src/shared/serializers.ts`. The account data export
         includes the notes too: in `src/modules/account/account.export.ts`, delete the two lines marked
         `NOTES DEMO MODULE` and the `listNotes` / `noteDTO` imports. In
-        `tests/account.export.test.ts`, drop `'notes'` from `SECTIONS` along with the notes rows and
+        `src/modules/account/account.export.test.ts`, drop `'notes'` from `SECTIONS` along with the notes rows and
         assertions.
     </Step>
     <Step title="API — drop the table">

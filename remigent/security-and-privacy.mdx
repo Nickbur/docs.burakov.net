@@ -46,7 +46,9 @@ public become proposals for you.
 Remigent agents can use external tools through MCP servers you allow per project. Their results are
 treated as data, not instructions. **Autonomous work may use read-only tools only**, unless your
 constitution explicitly marks a tool as writing to a reversible development resource, such as a test
-database. Local MCP servers run only on your compute, in a sandbox separate from your code.
+database. Local MCP servers run only on your compute, in a sandbox separate from your code. One piece of work
+loads at most 32 of the allowed tools — the ones its plan names come first — so the agent picks among a short,
+relevant list; if it needs a tool that did not fit, it says so in its report instead of working around it.
 
 ## Your data
 
