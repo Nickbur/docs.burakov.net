@@ -10,7 +10,7 @@ two ways:
 | Mode | Where the engine runs | Where code executes | What Remigent stores |
 |---|---|---|---|
 | **Self-hosted runner** | on your machine | a local, isolated sandbox on the same machine | job status, verdict summaries, pull request links, cost and usage — nothing that contains code |
-| **Managed sandbox** | Remigent's engine workers | your own **E2B**, **Daytona** or **Modal** account, with your key | code-bearing artifacts (code index, exams, traces), encrypted with a key unique to your workspace |
+| **Managed sandbox** | Remigent's engine workers | your own **E2B**, **Daytona** or **Modal** account, with your key | working data derived from your code, encrypted with a key unique to your workspace |
 
 This page covers the self-hosted runner. It is the choice when your code, keys and secrets must stay
 inside your own perimeter, when you use a model on your own network, or when you need iOS builds.
@@ -31,14 +31,13 @@ free to pull without an account — so you can read exactly what runs on your ma
 
 ## What stays on your machine
 
-- your source code and the code index;
-- the judge's hidden exams and any trace that contains code;
+- your source code and every piece of working data derived from it;
 - your model keys and git credentials.
 
 Only job status, verdict summaries, pull request links, cost and usage, decision logs and escalations
 reach Remigent. The runner applies the same [retention rules](/remigent/security-and-privacy#your-data) to its own
-store: once a day it deletes traces older than 90 days, and the code index and hidden exams of projects you
-disconnected more than 30 days ago.
+store: once a day it deletes working logs older than 90 days, and the working data of projects you disconnected more
+than 30 days ago.
 
 ## Requirements
 
@@ -81,7 +80,8 @@ disconnected more than 30 days ago.
 
         - the three values from enrollment;
         - `EGRESS_ADMIN_TOKEN` — a long random token, for example the output of `openssl rand -hex 32`;
-        - `REMIGENT_PROVIDERS` — your model providers and keys (see [below](#model-providers));
+        - `REMIGENT_PROVIDERS` — how the runner reaches the models: your OpenRouter key and/or your own model server
+          (see [below](#models));
         - `REMIGENT_GIT_CREDENTIALS` — only for git hosts other than the Remigent GitHub App (see
           [below](#git-and-tool-credentials)).
     </Step>
@@ -91,7 +91,7 @@ disconnected more than 30 days ago.
         ```
 
         The stack has three services: the **runner**, an **egress proxy** that is the sandbox network's only way
-        out, and a local **custody database** for the code index and hidden exams.
+        out, and a local **database** for the working data that must stay on your machine.
     </Step>
     <Step title="Check it's online">
         The runner shows as online in **Connections → Compute**, with its platform and sandbox runtime. On the
@@ -115,30 +115,33 @@ disconnected more than 30 days ago.
 | `SANDBOX_CPUS`, `SANDBOX_MEMORY_MB`, `SANDBOX_PIDS` | resources per sandbox (defaults: 2 CPUs, 4096 MB, 1024 processes) |
 | `DOCKER_RUNTIME` | the sandbox runtime: `runsc` (gVisor, default), or `kata-runtime` / `kata-fc` (see [Stronger isolation](#stronger-isolation)) |
 | `SANDBOX_IMAGE`, `SANDBOX_IMAGE_FULL` | the sandbox images (defaults: the published `standard` and `full` images) |
-| `REMIGENT_PROVIDERS` | your model providers as a JSON list — keys stay on this machine |
+| `REMIGENT_PROVIDERS` | how the runner reaches the models, as a JSON list — keys stay on this machine |
 | `REMIGENT_GIT_CREDENTIALS` | credentials for git hosts other than the GitHub App, as a JSON list |
 | `REMIGENT_MCP_CREDENTIALS` | credentials for the [MCP tools](/remigent/security-and-privacy#tools-from-other-services) you allow, as a JSON list |
 | `LOG_LEVEL` | `debug`, `info` (default), `warn`, `error` |
 
-### Model providers
+### Models
 
-A provider list with OpenRouter and a local Ollama looks like this:
+Remigent runs only on open-weight models it has selected. A list with your OpenRouter key and your own vLLM server
+looks like this:
 
 ```json
 [
     { "id": "or", "adapter": "openrouter", "apiKey": "sk-or-…" },
     {
-        "id": "ollama",
+        "id": "gpu",
         "adapter": "local",
-        "baseUrl": "http://localhost:11434/v1",
-        "options": { "models": "qwen3:32b" }
+        "baseUrl": "http://localhost:8000/v1",
+        "options": { "models": "…" }
     }
 ]
 ```
 
-The adapters are `openrouter`, `anthropic`, `openai`, `replicate`, `bedrock`, `vertex`, `foundry` and
-`local` (any OpenAI-compatible endpoint) — see [Your own models](/remigent/your-own-models). Put the list on one
-line in `.env`.
+There are two adapters: `openrouter` and `local` — any OpenAI-compatible server on your own hardware. For a `local`
+server, `options.models` lists the models it serves, comma-separated, and `options.embeddingModel` its embedding model.
+The model IDs to use are shown in the dashboard under **Connections → Models** when you choose your own server; write
+`<ID>=<name>` when your server serves a model under another name. Whatever your server doesn't serve goes through
+OpenRouter. See [Open-weight models](/remigent/your-own-models). Put the list on one line in `.env`.
 
 ### Git and tool credentials
 
@@ -162,7 +165,7 @@ headers or environment variables:
 | Image | Tags | What it is |
 |---|---|---|
 | `registry.burakov.net/remigent-runner` | `1`, `1.2`, `1.2.3`, `latest` | the engine and the egress proxy |
-| `registry.burakov.net/remigent-sandbox` | `1`, `1.2.3` | the **standard** sandbox: JavaScript / TypeScript and Python toolchains, plus the check tools (secret and dependency scanners, static analysis, browser tests, mutation and property tests) |
+| `registry.burakov.net/remigent-sandbox` | `1`, `1.2.3` | the **standard** sandbox: JavaScript / TypeScript and Python toolchains, plus the verification tools |
 | `registry.burakov.net/remigent-sandbox` | `1-full`, `1.2.3-full` | the **full** sandbox: standard plus Go, Rust and load testing |
 
 Every image is built for x86-64 and ARM64. The `1` tags follow the latest 1.x release; pin an exact version such as

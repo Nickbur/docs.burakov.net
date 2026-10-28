@@ -17,22 +17,21 @@ signature. You stand **at the door, not in the loop**.
     </Step>
     <Step title="Scheduling">
         An item starts only when it is worth its cost, fits the [monthly budget](/remigent/budget) and
-        doesn't collide with other work in flight. Items that touch different parts of the code run in
-        parallel; overlapping ones are ordered.
+        doesn't collide with other work in flight. Independent work runs in parallel; work that would
+        collide waits its turn.
     </Step>
     <Step title="Planning">
-        Remigent estimates, analyses risks, scouts the libraries and APIs it is unsure about, and writes a
+        Remigent estimates, analyses risks, researches whatever it is unsure about, and writes a
         complete plan with a cost forecast before any code changes. Larger work is split into a set of
         small, dependent steps — each one becomes its own pull request.
     </Step>
     <Step title="Building">
-        The executor writes the code and its own tests inside an isolated
+        Remigent writes the code and its own tests inside an isolated
         [sandbox](/remigent/security-and-privacy#sandboxing), using your build and test commands.
     </Step>
     <Step title="Judging">
-        An independent judge checks the result on a fresh copy of the exact commit, with its own hidden
-        acceptance tests and the full check set. A failure goes back to the executor to fix, and the judge
-        verifies the fix again. See [Verification](/remigent/verification).
+        An independent judge checks the result on a fresh copy of the exact commit, with checks the code's
+        author never saw. A failure goes back to be fixed, and the judge verifies the fix again. See [Verification](/remigent/verification).
     </Step>
     <Step title="Pull request">
         The verified change is opened as a pull request in your own git host, with the evidence, the

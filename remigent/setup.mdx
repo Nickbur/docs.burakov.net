@@ -35,17 +35,17 @@ Your code always runs on **your** compute. The **Owner** picks the mode in **Set
 
 See [Compute & sandboxes](/remigent/compute).
 
-## 4. Connect model providers
+## 4. Connect the models
 
-Bring at least one key — OpenRouter, Anthropic, OpenAI, Replicate, Claude through Bedrock, Vertex AI or Foundry — or an
-OpenAI-compatible endpoint you host. Where it goes depends on the mode:
+Remigent runs only on open-weight models. Bring your OpenRouter key, an OpenAI-compatible server on your own hardware
+that serves the models the dashboard lists, or both. Where they go depends on the mode:
 
 - **Managed** — add it in **Connections → Models**; it's kept encrypted in Remigent's vault;
 - **Self-hosted** — put it in the runner's configuration (`REMIGENT_PROVIDERS`); it never reaches Remigent. See
-    [Self-hosted runner](/remigent/self-hosted-runner#model-providers).
+    [Self-hosted runner](/remigent/self-hosted-runner#models).
 
-Connect two different model families if you can, so the judge's exam is written by a different family than the code.
-See [Your own models](/remigent/your-own-models).
+Remigent selects the models itself — there is nothing to choose. When you add your own server, the dashboard shows the
+models it needs to serve; if it doesn't serve all of them, connect OpenRouter too. See [Open-weight models](/remigent/your-own-models).
 
 ## 5. Add projects
 

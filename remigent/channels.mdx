@@ -31,14 +31,14 @@ Channel credentials are stored in your workspace's encrypted vault.
 Remigent treats input by where it comes from:
 
 - **Your team** — trusted, within each person's [role](/remigent/team-and-permissions).
-- **Outside input** — reviews, support messages, crash reports, issues from strangers. It's read only by a triage step
-    with **no tools, no code and no secrets**, which turns it into a structured item; raw outside text never reaches
-    the agents that write code. Outside input can start only **maintenance work** — a bug, a security issue, a
+- **Outside input** — reviews, support messages, crash reports, issues from strangers. It's first read in isolation,
+    with **no tools, no code and no secrets**, and turned into a structured item; raw outside text never reaches
+    the work that writes code. Outside input can start only **maintenance work** — a bug, a security issue, a
     performance problem. A feature request from the public becomes a **proposal** for you.
 - **Data** — metrics and uptime signals, used to measure the effect of merged changes.
 
-Duplicates are merged, and the value gate and your budget cap keep a flood of reviews from turning into a flood of
-spending. Only the excerpt Remigent needs is stored, for up to **180 days**.
+Duplicates are merged, and Remigent's sense of what is worth doing plus your budget cap keep a flood of reviews from
+turning into a flood of spending. Only the excerpt Remigent needs is stored, for up to **180 days**.
 
 ## After a merge
 

@@ -48,26 +48,17 @@ The rule is simple: **Remigent refuses what is broken, not what is unusual.**
 ## Input from strangers is handled safely
 
 Reviews, support messages and error reports often contain text written by people you don't know. That
-text is read only by a triage step with **no tools, no code and no secrets**, which turns it into a
-structured summary. Raw outside text never reaches the agents that write code.
+text is first read in isolation, with **no tools, no code and no secrets**, and turned into a structured
+summary. Raw outside text never reaches the work that writes code.
 
 Outside input can start only **maintenance-level work** — a bug, a security issue, a performance
 problem. A feature request from the public becomes a **proposal** for you to accept or decline.
 
 ## When nothing is queued
 
-With no tasks waiting, Remigent keeps your existing products healthy. It works through a fleet-wide list
-of maintenance work in this order:
-
-1. security
-2. correctness and bugs
-3. cost savings
-4. technical debt and performance
-5. test coverage
-6. polish
-
-Each item has an estimated value and cost. Remigent works top-down only **while the value is worth the
-cost and the budget allows** — below that line it genuinely stops. Maintenance never adds features or
+With no tasks waiting, Remigent keeps your existing products healthy — security, bugs, upkeep and quality
+across the whole fleet, most important first. It does this only **while the work is worth its cost and the
+budget allows** — below that line it genuinely stops. Maintenance never adds features or
 changes product direction; that always takes a task from you.
 
 <Tip>

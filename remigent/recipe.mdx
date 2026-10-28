@@ -5,8 +5,8 @@ mode: "wide"
 ---
 
 A **recipe** tells Remigent how to work with one repository: the environment, setup, services, build, test and run
-commands, and where the app answers once it's running. The executor and the judge build their sandboxes **only** from
-the confirmed recipe.
+commands, and where the app answers once it's running. Remigent builds its sandboxes **only** from the confirmed
+recipe.
 
 Remigent proposes a recipe during the [onboarding interview](/remigent/setup) from what it
 finds in the repository; an **Owner or Admin** confirms it. The confirmed recipe is shown on the project's page
@@ -88,6 +88,5 @@ secrets never appear in `recipe.yaml`, and they're the only secrets that knowing
 credentials never do.
 
 <Tip>
-    Keep `serve` and `health` accurate: the web and API checks — and the judge's black-box exam — need the app running
-    to test it.
+    Keep `serve` and `health` accurate: the web and API checks need the app running to test it.
 </Tip>

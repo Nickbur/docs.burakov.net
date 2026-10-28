@@ -24,7 +24,7 @@ under test is never trusted**, and neither is text from outside your team.
 
 **Code-bearing artifacts live where the code lives.**
 
-| Mode | Code, code index, hidden exams, traces | Model keys and git credentials |
+| Mode | Code and everything derived from it | Model keys and git credentials |
 |---|---|---|
 | **Self-hosted runner** | only on your machine | only in the runner's configuration |
 | **Managed sandbox** | in Remigent storage, encrypted with a key unique to your workspace; code passes through the engine in memory only | in an encrypted vault, decrypted only in memory for the job, never logged |
@@ -36,8 +36,8 @@ escalations reach Remigent's control plane. In managed mode the code-bearing art
 ## Outside input is quarantined
 
 Error reports, store reviews and support messages can contain anything — including instructions aimed at
-an AI. That text is read only by a triage step with **no tools, no code and no secrets**, which turns it
-into a structured item. The agents that write code see only those structured fields, never the raw text.
+an AI. That text is first read in isolation, with **no tools, no code and no secrets**, and turned into a
+structured item. The work that writes code sees only those structured fields, never the raw text.
 Outside input can only start maintenance work (bugs, security, performance); feature requests from the
 public become proposals for you.
 
@@ -46,14 +46,15 @@ public become proposals for you.
 Remigent agents can use external tools through MCP servers you allow per project. Their results are
 treated as data, not instructions. **Autonomous work may use read-only tools only**, unless your
 constitution explicitly marks a tool as writing to a reversible development resource, such as a test
-database. Local MCP servers run only on your compute, in a sandbox separate from your code. One piece of work
-loads at most 32 of the allowed tools — the ones its plan names come first — so the agent picks among a short,
-relevant list; if it needs a tool that did not fit, it says so in its report instead of working around it.
+database. Local MCP servers run only on your compute, in a sandbox separate from your code. If a piece of work needs
+a tool it was not given, it says so in its report instead of working around it.
 
 ## Your data
 
 - **Never used for training.** Your code and data are never used to train models. Sharing anonymous,
   non-proprietary patterns across customers is opt-in.
+- **Model hosts that keep nothing, by default.** Model calls through OpenRouter go only to hosts that keep no copy
+  of your requests. The workspace Owner can allow other hosts in **Settings**.
 - **You own the output.** All code in the pull requests is yours.
 - **Model and sandbox providers you connect** with your own keys are your own processors, under your own
   agreements with them.
@@ -66,7 +67,7 @@ relevant list; if it needs a tool that did not fit, it says so in its report ins
 |---|---|
 | Working logs and traces | 90 days |
 | Excerpts from outside channels | 180 days |
-| Code index and hidden exams | while the project is connected; deleted within 30 days of disconnecting |
+| Working data derived from your code | while the project is connected; deleted within 30 days of disconnecting |
 | Audit log | 1 year |
 | Backups | 30 days |
 | Everything, after you delete your account | deleted within 30 days |

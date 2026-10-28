@@ -1,6 +1,6 @@
 ---
 title: "Verification"
-description: "The independent judge — why every change is proven against executed reality, the hidden exam, the check layers, and the evidence on every pull request."
+description: "The independent judge — why every change is proven against executed reality, what gets checked, and the evidence on every pull request."
 mode: "wide"
 ---
 
@@ -10,47 +10,42 @@ Most AI coding tools ask a second model whether the first one did a good job. Th
 the same mistakes. Remigent doesn't do that.
 
 Its judge **binds every verdict to executed reality**: the code compiles, the tests pass, the scanners
-are clean, the API answers, the app actually renders the screen. An executor can't talk its way past a
-compiler, a fuzzer or a real browser. A model's opinion is used only as a soft signal on the rare parts
+are clean, the API answers, the app actually renders the screen. Nobody can talk their way past a
+compiler, a test run or a real browser. A model's opinion is used only as a soft signal on the rare parts
 that can't be executed — never as the verdict.
 
 ## Separation of powers
 
-- **The judge writes its own exam** from the plan — black-box acceptance tests, the way an independent QA
-  team writes tests from requirements.
-- **The executor never sees the exam.** It writes the code and its own development tests, but can't
-  read, influence or game the acceptance tests.
-- **The judge runs on a fresh sandbox at the exact commit** being proposed — never on the executor's
-  working copy.
-- **The model that writes the exam comes from a different model family** than the one that wrote the
-  code, so their blind spots don't line up.
+- **The judge brings its own checks**, written from the agreed plan — the way an independent QA team writes
+  tests from requirements.
+- **The code's author never sees them.** It writes the code and its own development tests, but can't read,
+  influence or game the checks that judge it.
+- **The judge works on a fresh copy of the exact commit** being proposed — never on the author's working copy.
 
-After you merge, the exam **graduates**: its tests become permanent regression checks in
-`.remigent/checks/`, and the next change gets a new hidden exam.
+After you merge, what the judge learned stays behind as **permanent checks** that protect every later change.
 
 ## "Green" isn't enough
 
 A passing test suite can still be wrong. Remigent closes the gap from several sides:
 
-- **Mutation testing** on the changed lines proves the checks actually catch bugs.
-- **Property and fuzz tests** go beyond hand-picked examples.
+- **It proves the checks actually catch bugs**, instead of trusting that a passing suite means correct code.
+- **It tests beyond hand-picked examples.**
 - **Every escaped defect becomes a permanent check**, so the same class of bug is caught across your
   whole fleet from then on.
 - **What can only be judged in use** — is the new flow better? — is made reversible (feature flags,
   safe migrations) and checked against real signals after you ship.
 
-## The check layers
+## What gets checked
 
-| Layer | What runs | Applies to |
+| Area | What is verified | Applies to |
 |---|---|---|
-| **Universal** | your build and tests from the recipe; the judge's acceptance tests; secret scanning (gitleaks); vulnerable dependencies (osv-scanner); static analysis (Semgrep); the change staying within its scope; your linters | every stack |
-| **Web UI** | Playwright in Chromium: every key route renders, no new console errors, two viewports, light and dark, accessibility (axe), screenshot comparison against the base | any web front end — including Capacitor/Ionic apps through their web build, and Astro sites |
-| **HTTP API** | the service is started with its dependencies and tested black-box; a load test against your latency budget | any backend |
-| **Properties & fuzzing** | fast-check, Hypothesis, proptest | by ecosystem |
-| **Mutation** | Stryker, mutmut, cargo-mutants — changed lines only | by ecosystem |
+| **Every change** | your build, tests and linters from the recipe; the judge's own checks; security and dependency scans; the change staying within its scope | every stack |
+| **Web UI** | the running app on its key routes — rendering, errors, screen sizes and themes, accessibility and visual changes | any web front end — including Capacitor/Ionic apps through their web build, and Astro sites |
+| **HTTP API** | the running service, tested from the outside, including against your latency budget | any backend |
+| **Test strength** | that the tests catch real mistakes and hold beyond hand-picked examples | by ecosystem |
 
-**Full coverage** (every layer): JavaScript/TypeScript (Node, Vue, React, Ionic web, Astro), Python, Rust
-and Go. **Other stacks** (PHP, Java, …) get the recipe, the universal layer, and the web and API layers
+**Full coverage** (every area): JavaScript/TypeScript (Node, Vue, React, Ionic web, Astro), Python, Rust
+and Go. **Other stacks** (PHP, Java, …) get the recipe, the checks every change gets, and the web and API checks
 where they apply. **Native apps** get their build and unit tests, plus the web layer when there is one.
 iOS builds need a [self-hosted runner](/remigent/self-hosted-runner) on a Mac.
 

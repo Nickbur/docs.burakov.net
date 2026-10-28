@@ -20,9 +20,15 @@ mode: "wide"
         queued. You answer the occasional escalation and merge.
     </Accordion>
     <Accordion title="Which models does it use?">
-        Yours. Connect keys for OpenRouter, Anthropic, OpenAI, Replicate, or Claude through Amazon Bedrock,
-        Google Vertex AI or Microsoft Foundry — or any OpenAI-compatible endpoint, including open-weight
-        models you host. See [Your own models](/remigent/your-own-models).
+        Open-weight models only, selected and tested by Remigent. They run through your own OpenRouter key, or on
+        your own hardware through any OpenAI-compatible server. See
+        [Open-weight models](/remigent/your-own-models).
+    </Accordion>
+    <Accordion title="Why not Claude or GPT?">
+        A closed model bought by the token through an API is usually the most expensive way to use it, and its lab can
+        reprice, change or retire it at any time. Remigent's quality comes from being tuned and tested on the models it
+        runs — that only holds on models that can't change underneath it, and that you can also run on your own
+        hardware. See [Open-weight models](/remigent/your-own-models).
     </Accordion>
     <Accordion title="What does it cost?">
         A flat monthly fee by the number of active projects — from Free to Agency — never per token or per
@@ -30,14 +36,14 @@ mode: "wide"
         cap keeps it in check. See [Pricing](/remigent/pricing).
     </Accordion>
     <Accordion title="Can my code stay on my own machine?">
-        Yes — run a [self-hosted runner](/remigent/self-hosted-runner). Your code, code index, hidden exams,
+        Yes — run a [self-hosted runner](/remigent/self-hosted-runner). Your code, everything derived from it,
         model keys and git credentials then never leave your machine; only job status and summaries reach
         Remigent.
     </Accordion>
     <Accordion title="Which languages and stacks are supported?">
-        JavaScript/TypeScript (Node, Vue, React, Ionic, Astro), Python, Rust and Go get every check layer.
-        Other stacks — PHP, Java and more — get your build and tests, the universal checks, and the web and
-        API checks where they apply. iOS builds need a self-hosted runner on a Mac. See
+        JavaScript/TypeScript (Node, Vue, React, Ionic, Astro), Python, Rust and Go get the full verification.
+        Other stacks — PHP, Java and more — are verified through their builds, tests and behaviour, including the
+        running web UI and API where they apply. iOS builds need a self-hosted runner on a Mac. See
         [Verification](/remigent/verification).
     </Accordion>
     <Accordion title="Which git hosts work?">

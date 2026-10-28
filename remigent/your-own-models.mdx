@@ -1,45 +1,45 @@
 ---
-title: "Your own models"
-description: "Bring your own keys for any major model provider, or run open-weight models on your own endpoint."
+title: "Open-weight models"
+description: "Remigent runs only on open-weight models — through your own OpenRouter key or on your own hardware."
 mode: "wide"
 ---
 
-Remigent is **provider-agnostic by design**. It doesn't resell tokens: you connect your own model keys,
-and every call is billed to you by that provider at their prices. Nothing locks you to a single lab.
+Remigent runs **only on open-weight models**. It doesn't resell tokens: you bring your own access to the models, and
+every call is billed to you at your provider's prices — or runs on hardware you already own.
 
-## Supported providers
+## Why open weights
 
-| Provider | Notes |
-|---|---|
-| **OpenRouter** | one key for a wide catalog of models |
-| **Anthropic** | Claude models through the Anthropic API |
-| **OpenAI** | the OpenAI API |
-| **Replicate** | hosted open models |
-| **Amazon Bedrock** | Claude models in your AWS account |
-| **Google Vertex AI** | Claude models in your Google Cloud project |
-| **Microsoft Foundry** | Claude models in your Azure deployment |
-| **Your own endpoint** | any OpenAI-compatible server — vLLM, Ollama, or your own |
+- **Selected and tested.** Remigent selects the models it runs on and tests them on real tasks, so its quality and
+  its cost forecasts stay predictable.
+- **Can't be taken back.** A closed model can be repriced, changed or retired overnight. Open weights stay available,
+  so the model your work was tested on stays the same model.
+- **Yours to run.** The same models run through a hosted provider or on your own hardware — nothing locks you to a
+  single lab or a single vendor.
+
+## How the models are chosen
+
+Remigent chooses the models — there is nothing to choose or tune. It picks open-weight models as close as possible to
+the best proprietary ones, and changes them only when a newer one passes the same checks on real tasks.
+
+## Connect the models
+
+| Route | What you bring | Notes |
+|---|---|---|
+| **OpenRouter** | one OpenRouter API key | every model Remigent uses through one key, billed by OpenRouter at its prices |
+| **Your own hardware** | an OpenAI-compatible server — vLLM, SGLang, Ollama or your own — serving the models the dashboard lists | no token bill; the hardware is yours |
+
+You can connect both: work runs on your server where it can, and through OpenRouter otherwise.
+When you add your own server in **Connections → Models**, the dashboard shows the models it needs to serve. Serve them
+at their original precision or higher — a reduced-precision copy is a different model from the one Remigent tested.
+
+Through OpenRouter, Remigent sends each call only to hosts it has checked serve the model at full quality; you don't
+pick or manage hosts.
 
 <Note>
-    An endpoint on your own network (for example `localhost`) is reachable only from a
-    [self-hosted runner](/remigent/self-hosted-runner). With hosted compute, a custom endpoint must be
-    reachable from the internet, with its URL and key.
+    A server on your own network (for example `localhost`) is reachable only from a
+    [self-hosted runner](/remigent/self-hosted-runner). With hosted compute, your server must be reachable from the
+    internet, with its URL and key.
 </Note>
-
-## Which model does what
-
-Remigent routes every call by **capability, cost and remaining budget**: routine, low-risk work goes to
-cheap or local models, while high-stakes reasoning gets the strongest model you've connected.
-
-| Role | Default tier |
-|---|---|
-| Translating, classifying, triage, scouting | cheap |
-| Planning and coordination | premium |
-| Writing code | mid to premium, by complexity |
-| Writing the judge's exam and soft review | premium, **from a different model family than the code writer** |
-
-The family rule keeps the judge independent: when the exam is written by a different family than the
-code, the two don't share the same blind spots. You can adjust the defaults per workspace.
 
 ## Your keys stay protected
 
@@ -49,7 +49,17 @@ code, the two don't share the same blind spots. You can adjust the defaults per 
   never receives them.
 - **Model keys never enter the sandbox** where code runs, so code under test can't read them.
 
+## When a model is unavailable
+
+If a model Remigent uses goes down, work doesn't stop: it continues on a **tested backup model** that passed the same
+checks on real tasks. Remigent keeps checking the usual model and switches back on its own as soon as it returns.
+While a backup is in use, the dashboard says so; a pull request made partly on it says so too. Verification and the
+judge's verdicts are the same either way.
+
 ## Your code is never used for training
 
 Remigent never uses your code or data to train models. Fleet memory stays inside your workspace; sharing
 anonymous, non-proprietary patterns across customers is strictly opt-in.
+
+By default, calls through OpenRouter go only to hosts that keep no copy of your requests. The workspace Owner can
+widen the choice to hosts that may keep or learn from them, in **Settings**.
