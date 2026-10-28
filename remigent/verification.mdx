@@ -40,6 +40,8 @@ A passing test suite can still be wrong. Remigent closes the gap from several si
 | Area | What is verified | Applies to |
 |---|---|---|
 | **Every change** | your build, tests and linters from the recipe; the judge's own checks; security and dependency scans; the change staying within its scope | every stack |
+| **Tests and tidiness** | tests come with the code they cover (expected, or required — your choice); the tests are never weakened — no skipped or focused tests, no lowered coverage thresholds, no new exclusions; no debug output, temporary or stray files left in the change | every stack |
+| **Living docs** | the documentation you declared living — and the interface copy — matches what is actually built | every stack |
 | **Web UI** | the running app on its key routes — rendering, errors, screen sizes and themes, accessibility and visual changes | any web front end — including Capacitor/Ionic apps through their web build, and Astro sites |
 | **HTTP API** | the running service, tested from the outside, including against your latency budget | any backend |
 | **Test strength** | that the tests catch real mistakes and hold beyond hand-picked examples | by ecosystem |

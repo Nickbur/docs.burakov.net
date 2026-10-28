@@ -1,0 +1,53 @@
+---
+title: "Playbooks"
+description: "Saved, repeatable audits — run a proven checklist over your projects on demand or on a schedule, and get fixes as pull requests."
+mode: "wide"
+---
+
+A **playbook** is a saved task brief that Remigent runs over the projects you choose — once, or on a schedule such as
+every month. Each run audits a project by the brief, fixes what is plainly broken through ordinary pull requests, asks
+you about what only you can decide, and leaves a report.
+
+## The library
+
+Remigent ships a library of proven playbooks. Use one as it is, or save your own.
+
+| Playbook | What it checks |
+| --- | --- |
+| **User actions audit** | Every action a user can take — each button, link, menu item and icon — traced from the screen through the code to the result. Broken actions are fixed; a control that seems superfluous or missing becomes a question for you. |
+| **Call-chain audit** | Every function followed down its whole call chain and every exit path: dead code, broken functions, places where the interface promises what the code does not do, unfinished features, security and performance problems. |
+| **Config parity across environments** | The configuration of every environment holds the same keys, comments and order, with values right for each environment. Secrets are never invented — a missing one is listed as something needed from you. |
+| **Dependency placement** | Runtime and development dependencies each in their right section. |
+| **Docs to current state** | The documentation Remigent keeps — the living docs you declared — describes the product as it is now; obsolete content is removed, not appended to. |
+| **SEO and web performance** | Search readiness and page speed of every public site and web app. |
+| **Project audit** | The project as a whole against your constitution: identity and branding, repository hygiene, every platform it targets, documentation and content. |
+
+Your own playbook is a title and a brief in your own words — in any language.
+
+## Running a playbook
+
+Open **Playbooks** in the dashboard, pick one from the library or write your own, choose the projects and how often it
+runs: **only when you start it**, **weekly** or **monthly**. **Run now** starts it at once.
+
+Each run audits every chosen project:
+
+1. Remigent reads the project's code — and, where it helps, builds it and runs its tests — and judges each item the
+   brief covers as **correct**, **wrong**, **partial**, **missing** or **not applicable**, always pointing to the
+   exact place in the code.
+2. Whatever is plainly broken becomes ordinary work, as if you had filed it: it is planned, built, verified by the
+   judge and arrives as its own pull request.
+3. Whatever would change what your product is or does — a new feature, a removal, a content choice — becomes a
+   **proposal** in your inbox, unless your constitution already settles it.
+4. The **run report** shows the full table, the work it filed, its proposals and what it could not verify, and why.
+   It reaches you in your language, and you are notified when it is ready.
+
+<Note>
+    A playbook run spends your budget like any work. A scheduled run that would not fit what is left of the month's
+    cap is skipped, and you are told why. Scheduled runs are part of the paid plans; on Free you start playbooks
+    yourself.
+</Note>
+
+## Who can use playbooks
+
+Anyone who can file tasks can save and run playbooks — over the projects they can see. Viewers can read the reports.
+See [Team & permissions](/remigent/team-and-permissions).

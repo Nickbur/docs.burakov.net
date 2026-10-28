@@ -608,7 +608,7 @@
                             },
                             {
                                 "group": "Working with Remigent",
-                                "pages": ["remigent/how-it-works", "remigent/feeding-work", "remigent/review-and-merge", "remigent/verification"]
+                                "pages": ["remigent/how-it-works", "remigent/feeding-work", "remigent/playbooks", "remigent/review-and-merge", "remigent/verification"]
                             }
                         ]
                     },
