@@ -33,11 +33,12 @@ Every dependency script in the kit is **denied**, because none is needed:
 | `esbuild` | Checks its platform binary | The binary comes from the optional `@esbuild/<platform>` package. |
 | `@parcel/watcher` | Compiles from source when no prebuilt exists | Prebuilt packages cover macOS, Windows and Linux (glibc and musl/Alpine). |
 | `fsevents` | `node-gyp rebuild` | macOS-only and already ships a prebuilt binary; never installed on Linux. |
+| `unrs-resolver` | Checks its native binding and fetches one if missing | The binding comes from the optional `@unrs/resolver-binding-<platform>` package (macOS, Windows, Linux glibc and musl). It arrives with the app's lint tooling. |
 
 | Repo | `allowScripts` |
 |------|----------------|
 | backend | `esbuild`, `fsevents` → `false` |
-| app | `@parcel/watcher`, `esbuild`, `fsevents` → `false` |
+| app | `@parcel/watcher`, `esbuild`, `fsevents`, `unrs-resolver` → `false` |
 | admin | `@parcel/watcher`, `fsevents` → `false` |
 | website | `@parcel/watcher`, `esbuild`, `fsevents` → `false` |
 

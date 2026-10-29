@@ -60,7 +60,7 @@ The app shell is three coordinated pieces — **reskin** them, don't recreate th
     is history, an instant `root`/`replace` swap when there is not — so the target page never
     slide-animates in or re-creates. Without history (a cold start, a deep link) it goes to the page
     the browser came from, else the section root (`/account/sessions` → `/account`), else
-    `HOME_PATH` (exported from `router/routes.ts` — set it to your app's home): never back into
+    `HOME_PATH` (exported from `router/paths.ts` — set it to your app's home): never back into
     sign-in, never "back" to the page itself. Main-section pages (bottom-bar destinations) carry no
     back button.
 
@@ -194,9 +194,11 @@ which `installApiSession()` (`helpers/security/tokenManagement.ts`) plugs in fir
 the router: `router/index.ts` hands itself over (`provideSignOutRouter`) when it is created.
 `src/test/http.ts` plugs the real session in the same way for every test that runs the real client.
 
-`build` keeps the app free of import cycles: ESLint's `import-x/no-cycle` fails on any static import
-that leads back to the file it is in (type-only imports and lazy `import()`s don't count). When a
-lower layer needs something above it, hand it in as above instead of importing it.
+`build` keeps the app free of import cycles: ESLint's `import-x/no-cycle` fails on any import that
+leads back to the file it is in — a lazy `import()` included, since it hides the same dependency (only
+type-only imports don't count). When a lower layer needs something above it, hand it in as above
+instead of importing it. `main.ts` does the same for the offline layer (`provideEntityLoader`), and
+the home path lives in `router/paths.ts` rather than the route table, which lazy-loads every page.
 
 ## Token refresh across tabs
 
