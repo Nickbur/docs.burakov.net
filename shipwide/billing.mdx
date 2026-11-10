@@ -43,6 +43,7 @@ in the future. There is **no consumable/credit ledger** — deliberately out of 
 | `VITE_REVENUECAT_WEB_KEY` | RevenueCat Web public key — used on web **and** Tauri desktop (the engine behind it — Web Billing/Stripe or Paddle — is a dashboard choice) |
 | `VITE_REVENUECAT_ENTITLEMENT_ID` | The entitlement premium features gate on (default `pro`) |
 | `VITE_REVENUECAT_MOCK` | `true` = fake billing provider (see Mock mode) |
+| `VITE_BILLING_MANAGE_URL` | Where web-billing subscribers manage their plan — your engine's customer portal or your site's account page; the subscription screen's "Manage billing" button opens it. Optional — unset shows a plain hint. The button follows the store the plan was bought in: an App Store or Google Play plan opens that store's own settings on any device, a promotional grant shows no button |
 
 **API (`shipwide_api`, `.env`)**
 

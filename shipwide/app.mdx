@@ -385,7 +385,7 @@ error, it just reads `undefined`.
 | `VITE_BACKEND_FALLBACK` | **Optional** backup API. When set, `getAvailableServer()` health-checks both and fails over to it if the primary is down. Leave empty for a single backend — the failover path stays dormant. |
 | `VITE_APP_NAME` | Namespace prefix for **everything local** (encrypted storage, settings, file cache, tab state, deep-link scheme). Changing it orphans existing local data. |
 | `VITE_OFFLINE_DB_NAME` | Name of the offline SQLite database ([Offline-first data](/shipwide/offline-sync)). Empty → falls back to `VITE_APP_NAME`; the templates set `shipwide`. Changing it after launch orphans the local database, unsynced changes included. |
-| `VITE_APP_VERSION` | Reported to Sentry as the release. |
+| `VITE_APP_VERSION` | Optional release tag your deploy pipeline can bake in for Sentry (e.g. a dated release tag). Unset — as in the templates — reports are filed under the `package.json` version, the one the version bump keeps in step with the native builds. |
 | `VITE_APP_ENV` | `production` switches on `isProduction()` (logging, Sentry). |
 | `VITE_CLIENT_ID` | Which app this is, sent on every sign-in. Must match an entry in the API's `CLIENT_IDS`, or sign-in fails with `unknown_client`. The kit's templates set both to `shipwide` — rename them together. (Left empty, the app sends `app`.) |
 | `VITE_ENABLE_ONBOARDING` | `'true'` routes a fresh sign-in through onboarding. |

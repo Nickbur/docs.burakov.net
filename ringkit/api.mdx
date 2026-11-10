@@ -19,7 +19,7 @@ import { RingKit } from '@nickbur/ringkit';
 | `startCall(opts)` | Start an **outgoing** call (native UI, call log, audio). `{ callId, handle, hasVideo?, chatId? }` |
 | `reportCallConnected({ callId })` | Mark the call connected (required for outgoing). |
 | `endCall({ callId })` | Dismiss the call UI. |
-| `setMuted({ callId, muted })` | Mute or unmute the call on the native call UI — both platforms. |
+| `setMuted({ callId, muted })` | Mute or unmute the call on the native call UI (iOS CallKit). No-op on Android: the system keeps no mute state for a VoIP app's own call — keep the mute in your media layer. |
 | `setSpeakerphone({ enabled, callId? })` | Loudspeaker ⇄ earpiece (in-call audio module). |
 | `setProximityMonitoring({ enabled })` | Screen blackout near the ear. |
 | `getAudioDevices()` | `{ devices: AudioDevice[]; selectedId: string \| null }` |
@@ -39,7 +39,7 @@ import { RingKit } from '@nickbur/ringkit';
 | `callAnswered` | `{ callId, chatId?, hasVideo? }` | User answered on the native UI → join the call. |
 | `callEnded` | `{ callId, chatId?, hasVideo? }` | User declined/ended, or the call ended remotely. |
 | `callStarted` | `{ callId, chatId?, hasVideo? }` | An outgoing `startCall` was accepted by the OS. |
-| `callMuted` | `{ callId, muted }` | Mute changed outside your code — the CallKit screen on iOS, the system call audio on Android. |
+| `callMuted` | `{ callId, muted }` | Mute changed outside your code — the CallKit screen on iOS; a Bluetooth headset, a car kit or the system on both platforms. On Android it fires only when the system mute actually changes, never on a mere audio-route change. |
 | `audioSessionActivated` | `{ callId }` | Safe to start media (`getUserMedia`/SFU connect). |
 | `audioSessionDeactivated` | `{ callId }` | Session deactivated — stop media. |
 | `audioSessionError` | `{ callId, context, error }` | Configuring/activating/routing the session failed (non-fatal). |

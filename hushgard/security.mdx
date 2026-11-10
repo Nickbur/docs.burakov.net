@@ -1,6 +1,6 @@
 ---
 title: "Security & encryption"
-description: "How Hushgard's end-to-end encryption works — verifying contacts with safety numbers, backing up and replacing your key, high-security chats, and what the server can and can't see."
+description: "How Hushgard's end-to-end encryption works — post-quantum key exchange, verifying contacts with safety numbers, backing up and replacing your key, high-security chats, and what the server can and can't see."
 mode: "wide"
 ---
 
@@ -12,7 +12,19 @@ Hushgard is **end-to-end encrypted by default**. There's no toggle to forget: ev
 
 ## The building blocks
 
-Hushgard's encryption is built on **vetted, widely-audited cryptography** (X25519 key exchange, XChaCha20-Poly1305 for content, Argon2id for your passphrase). High-security chats use the **MLS** messaging-security standard (RFC 9420), with a short-lived certificate for each device. You don't have to think about any of that day to day — it's the foundation the features below stand on.
+Hushgard's encryption is built on **vetted, widely-audited cryptography**: a hybrid post-quantum key exchange (ML-KEM together with X25519), XChaCha20-Poly1305 for content and Argon2id for your passphrase. High-security chats use the **MLS** messaging-security standard (RFC 9420) with a post-quantum hybrid cipher suite and a short-lived certificate for each device. You don't have to think about any of that day to day — it's the foundation the features below stand on.
+
+## Protected against future quantum computers
+
+Some attackers record encrypted traffic today and wait for quantum computers strong enough to break today's key exchange. Hushgard is built so that waiting gets them nothing:
+
+- **Every key that unlocks your conversations** — for chats, topics and calls — reaches each member through a **hybrid key exchange**: a post-quantum algorithm (ML-KEM, standardized by NIST as FIPS 203) combined with X25519. To read anything, an attacker would have to break both.
+- **High-security chats** use a post-quantum hybrid cipher suite for MLS.
+- **It's always on.** There's nothing to switch on, and nothing changes in how you use Hushgard.
+
+<Note>
+    This protects **what was said**. The signatures that prove which key belongs to whom still use today's algorithms — a future quantum computer couldn't use them to open messages recorded today.
+</Note>
 
 ## Open-source cryptography
 
@@ -74,7 +86,7 @@ For the most sensitive conversations, [high-security chats](/hushgard/chat#high-
 ## Calls
 
 - **Always encrypted:** a device that can't encrypt a call isn't connected — there's no fallback to unencrypted media.
-- **A new key whenever someone joins or leaves:** a newcomer can't decrypt what was said before they arrived, and someone who left can't hear what follows. The keys go only to the verified keys of the people in the call, so the server can't add a device of its own.
+- **A new key whenever someone joins or leaves:** a newcomer can't decrypt what was said before they arrived, and someone who left can't hear what follows. The keys go only to the verified keys of the people in the call, through the same [post-quantum key exchange](#protected-against-future-quantum-computers), so the server can't add a device of its own.
 - **Guests by link** stay end-to-end encrypted: the secret that unlocks the call is in the part of the link browsers never send to a server.
 - **Recording** happens on a participant's device and is saved to the chat encrypted — the server only sees encrypted media and can't record.
 - **Noise suppression and background blur** run on your device, before encryption — no outside service hears or sees your call.

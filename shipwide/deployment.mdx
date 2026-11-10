@@ -38,11 +38,14 @@ needs a decision — see [Install scripts](/shipwide/install-scripts).
     clients could spoof their IP and dodge per-IP rate limits.
 - **Secrets to set**: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET` (≥32), `SMTP_*`, `ADMIN_*`,
     `DATA_ENCRYPTION_KEY`, and any `GOOGLE_/APPLE_/REVENUECAT/ONESIGNAL` integration you enable.
+    In production the API **refuses to start** without `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET` and
+    `DATA_ENCRYPTION_KEY` (unset, or still a `REPLACE_ME_*` placeholder) and names each missing one.
+    Any other key left as a placeholder counts as unset: that integration stays off, and the API lists
+    those keys in a warning at boot.
 - **At-rest encryption key**: `DATA_ENCRYPTION_KEY` (`openssl rand -base64 32`) encrypts admin
-    TOTP secrets in the database. Unset ⇒ they are stored in plaintext and the API logs a warning at
-    boot. Once set, **never lose or remove it** — keep an offline copy. To rotate: move the old key
-    to `DATA_ENCRYPTION_PREVIOUS_KEYS`, set the new one, restart, run
-    `node dist/scripts/encryptAtRest.js`, then drop the old key.
+    TOTP secrets in the database — required in production. Once set, **never lose or remove it** —
+    keep an offline copy. To rotate: move the old key to `DATA_ENCRYPTION_PREVIOUS_KEYS`, set the new
+    one, restart, run `node dist/scripts/encryptAtRest.js`, then drop the old key.
 
 ## App (`shipwide_app`)
 
